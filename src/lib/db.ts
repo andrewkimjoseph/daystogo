@@ -16,7 +16,7 @@ export interface Countdown {
   startedAt: number;
   endsAt: number;
   status: CountdownStatus;
-  pausedRemainingMs?: number;
+  pausedRemainingMs?: number | undefined;
   colorTag: string;
   hasCelebrated: boolean;
   createdAt: number;
