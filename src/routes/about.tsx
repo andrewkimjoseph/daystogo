@@ -38,7 +38,7 @@ function AboutPage() {
           <div className="flex items-center gap-3">
             <Link
               to="/"
-              className="brut brut-press hidden rounded-full bg-cream px-4 py-2 text-sm font-bold uppercase text-ink sm:inline-flex"
+              className="brut brut-press hidden rounded-none bg-cream px-4 py-2 text-sm font-bold uppercase text-ink sm:inline-flex"
             >
               Home
             </Link>
@@ -84,7 +84,7 @@ function AboutPage() {
             href="https://github.com/andrewkimjoseph"
             target="_blank"
             rel="noreferrer"
-            className="brut brut-press mt-4 inline-flex items-center gap-3 rounded-xl bg-primary px-6 py-4 text-lg font-bold uppercase text-primary-foreground"
+            className="brut brut-press mt-4 inline-flex items-center gap-3 rounded-none bg-primary px-6 py-4 text-lg font-bold uppercase text-primary-foreground"
           >
             <Github className="h-6 w-6" strokeWidth={2.5} />
             andrewkimjoseph on GitHub
@@ -94,7 +94,7 @@ function AboutPage() {
         <div className="mt-10">
           <Link
             to="/"
-            className="brut brut-press inline-flex items-center gap-2 rounded-full bg-cream px-5 py-3 text-sm font-bold uppercase text-ink"
+            className="brut brut-press inline-flex items-center gap-2 rounded-none bg-cream px-5 py-3 text-sm font-bold uppercase text-ink"
           >
             <ArrowLeft className="h-4 w-4" strokeWidth={3} />
             Back to the timers

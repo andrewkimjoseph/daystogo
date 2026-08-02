@@ -75,7 +75,7 @@ export function NewCountdownModal({
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="brut-thin brut-press flex h-9 w-9 items-center justify-center rounded-full bg-card"
+            className="brut-thin brut-press flex h-9 w-9 items-center justify-center rounded-none bg-card"
           >
             <X className="h-4 w-4" strokeWidth={3} />
           </button>
@@ -100,7 +100,7 @@ export function NewCountdownModal({
               key={t.key}
               type="button"
               onClick={() => setDurationType(t.key)}
-              className="brut-thin brut-press rounded-full px-4 py-2 text-sm font-bold uppercase"
+              className="brut-thin brut-press rounded-none px-4 py-2 text-sm font-bold uppercase"
               style={
                 durationType === t.key
                   ? { backgroundColor: PALETTE.teal, color: PALETTE.cream }
@@ -135,7 +135,7 @@ export function NewCountdownModal({
               onClick={() => setColorTag(c.hex)}
               aria-label={c.label}
               aria-pressed={colorTag === c.hex}
-              className="brut-thin brut-press h-10 w-10 rounded-full"
+              className="brut-thin brut-press h-10 w-10 rounded-none"
               style={{
                 backgroundColor: c.hex,
                 boxShadow: colorTag === c.hex ? "0 0 0 4px var(--ink) inset" : undefined,
@@ -157,7 +157,7 @@ export function NewCountdownModal({
 
         <button
           type="submit"
-          className="brut-thin brut-press w-full rounded-full bg-primary px-4 py-3 text-lg font-bold text-primary-foreground uppercase"
+          className="brut-thin brut-press w-full rounded-none bg-primary px-4 py-3 text-lg font-bold text-primary-foreground uppercase"
         >
           Start the clock
         </button>

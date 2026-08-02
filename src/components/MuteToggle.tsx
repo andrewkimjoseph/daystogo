@@ -16,7 +16,7 @@ export function MuteToggle() {
       type="button"
       onClick={() => setMuted(!muted)}
       aria-label={muted ? "Unmute sounds" : "Mute sounds"}
-      className="brut-thin brut-press flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-card"
+      className="brut-thin brut-press flex h-11 w-11 shrink-0 items-center justify-center rounded-none bg-card"
       style={{ backgroundColor: muted ? undefined : "var(--teal)" }}
     >
       {muted ? (

@@ -75,7 +75,7 @@ export function CountdownCard({
           {countdown.title}
         </h2>
         <span
-          className="brut-thin shrink-0 rounded-full px-3 py-1 text-xs font-bold whitespace-nowrap uppercase"
+          className="brut-thin shrink-0 rounded-none px-3 py-1 text-xs font-bold whitespace-nowrap uppercase"
           style={{ backgroundColor: tagColor, color: tagTextColor(tagColor) }}
         >
           {badge}
@@ -111,14 +111,14 @@ export function CountdownCard({
                 await countdownsRepo.remove(countdown.id);
                 onChanged();
               }}
-              className="brut-thin brut-press rounded-full bg-card px-3 py-1 text-xs font-bold uppercase"
+              className="brut-thin brut-press rounded-none bg-card px-3 py-1 text-xs font-bold uppercase"
             >
               Do it
             </button>
             <button
               type="button"
               onClick={() => setConfirmingDelete(false)}
-              className="brut-thin brut-press rounded-full bg-cream px-3 py-1 text-xs font-bold uppercase"
+              className="brut-thin brut-press rounded-none bg-cream px-3 py-1 text-xs font-bold uppercase"
             >
               Nope
             </button>
@@ -135,7 +135,7 @@ export function CountdownCard({
                 playSound("start");
                 onChanged();
               }}
-              className="brut-thin brut-press flex flex-1 items-center justify-center gap-2 rounded-full bg-cream px-3 py-2 text-sm font-bold uppercase"
+              className="brut-thin brut-press flex flex-1 items-center justify-center gap-2 rounded-none bg-cream px-3 py-2 text-sm font-bold uppercase"
             >
               <RotateCcw className="h-4 w-4" strokeWidth={3} /> Run again
             </button>
@@ -147,7 +147,7 @@ export function CountdownCard({
                 else await countdownsRepo.resume(countdown.id);
                 onChanged();
               }}
-              className="brut-thin brut-press flex flex-1 items-center justify-center gap-2 rounded-full bg-primary px-3 py-2 text-sm font-bold text-primary-foreground uppercase"
+              className="brut-thin brut-press flex flex-1 items-center justify-center gap-2 rounded-none bg-primary px-3 py-2 text-sm font-bold text-primary-foreground uppercase"
             >
               {countdown.status === "running" ? (
                 <>
@@ -164,7 +164,7 @@ export function CountdownCard({
             type="button"
             onClick={() => setConfirmingDelete(true)}
             aria-label="Delete countdown"
-            className="brut-thin brut-press flex h-10 w-10 items-center justify-center rounded-full bg-card"
+            className="brut-thin brut-press flex h-10 w-10 items-center justify-center rounded-none bg-card"
           >
             <Trash2 className="h-4 w-4" strokeWidth={3} />
           </button>

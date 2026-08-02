@@ -18,7 +18,7 @@ export function AppShell({ children }: { children: (openNew: () => void) => Reac
           <div className="flex items-center gap-3">
             <Link
               to="/about"
-              className="brut brut-press hidden rounded-full bg-cream px-4 py-2 text-sm font-bold uppercase text-ink sm:inline-flex"
+              className="brut brut-press hidden rounded-none bg-cream px-4 py-2 text-sm font-bold uppercase text-ink sm:inline-flex"
             >
               About
             </Link>
@@ -42,7 +42,7 @@ export function AppShell({ children }: { children: (openNew: () => void) => Reac
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="brut brut-press fixed right-5 bottom-5 z-40 flex items-center gap-2 rounded-full bg-primary px-5 py-4 text-base font-bold text-primary-foreground uppercase sm:right-8 sm:bottom-8"
+        className="brut brut-press fixed right-5 bottom-5 z-40 flex items-center gap-2 rounded-none bg-primary px-5 py-4 text-base font-bold text-primary-foreground uppercase sm:right-8 sm:bottom-8"
       >
         <Plus className="h-5 w-5" strokeWidth={3.5} /> New countdown
       </button>
