@@ -10,6 +10,9 @@ import { Sparkle } from "./Sparkle";
 
 const SEGMENTS = 16;
 
+/** Ids already celebrated this session — survives effect teardown/re-runs. */
+const celebrated = new Set<string>();
+
 export function CountdownCard({
   countdown,
   now,
@@ -127,6 +130,7 @@ export function CountdownCard({
             <button
               type="button"
               onClick={async () => {
+                celebrated.delete(countdown.id);
                 await countdownsRepo.restart(countdown.id);
                 playSound("start");
                 onChanged();
