@@ -30,27 +30,23 @@ export function CountdownCard({
   const urgent = !lapsed && countdown.status === "running" && remaining <= 60_000;
 
   // Lapse detection + one-time celebration, driven by the shared tick.
+  // Celebrate synchronously and guard with a module-level set: the DB writes
+  // below re-render this card, which would otherwise cancel the effect midway.
   useEffect(() => {
     if (!lapsed) return;
-    let cancelled = false;
-    void (async () => {
-      if (countdown.status !== "lapsed") {
-        await countdownsRepo.markLapsed(countdown.id);
-      }
-      if (!countdown.hasCelebrated) {
-        await countdownsRepo.markCelebrated(countdown.id);
-        if (!cancelled) {
-          burstConfetti(cardRef.current);
-          playSound("lapsed");
-        }
-      }
-      if (!cancelled) onChanged();
-    })();
-    return () => {
-      cancelled = true;
-    };
+    if (!countdown.hasCelebrated && !celebrated.has(countdown.id)) {
+      celebrated.add(countdown.id);
+      burstConfetti(cardRef.current);
+      playSound("lapsed");
+      void countdownsRepo.markCelebrated(countdown.id);
+    }
+    if (countdown.status !== "lapsed") {
+      void countdownsRepo.markLapsed(countdown.id);
+    }
+    onChanged();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lapsed, countdown.id, countdown.status, countdown.hasCelebrated]);
+
 
   const tagColor = lapsed ? PALETTE.red : countdown.colorTag;
   const badge = lapsed ? "🎉 Lapsed!" : countdown.status === "paused" ? "Paused" : "Running";
