@@ -26,7 +26,7 @@ export function CountdownGrid({ onNew }: { onNew: () => void }) {
         <button
           type="button"
           onClick={onNew}
-          className="brut-thin brut-press rounded-full bg-primary px-5 py-3 font-bold text-primary-foreground uppercase"
+          className="brut-thin brut-press rounded-none bg-primary px-5 py-3 font-bold text-primary-foreground uppercase"
         >
           Start one now
         </button>
