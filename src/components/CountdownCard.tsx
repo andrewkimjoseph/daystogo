@@ -95,7 +95,7 @@ export function CountdownCard({
           <span
             key={i}
             className="h-4 flex-1 border-2 border-ink"
-            style={{ backgroundColor: i < filled ? tagColor : "transparent" }}
+            style={{ backgroundColor: i < filled ? (lapsed ? PALETTE.cream : tagColor) : "transparent" }}
           />
         ))}
       </div>
