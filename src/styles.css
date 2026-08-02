@@ -134,9 +134,13 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
-    background-image: radial-gradient(var(--color-slate) 1px, transparent 1px);
-    background-size: 22px 22px;
+    background-image: radial-gradient(
+      color-mix(in oklab, var(--color-slate) 22%, transparent) 1px,
+      transparent 1px
+    );
+    background-size: 28px 28px;
     background-position: -1px -1px;
+
   }
 
   h1,
