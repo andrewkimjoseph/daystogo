@@ -86,6 +86,7 @@ export function BrutalDateTimePicker({ value, onChange }: Props) {
   function moveTo(y: number, m: number) {
     const day = Math.min(selected.getDate(), daysInMonth(y, m));
     const next = new Date(y, m, day, selected.getHours(), selected.getMinutes(), 0, 0);
+    setDir(0);
     setView({ y, m });
     setPane("days");
     commit(next);
@@ -101,11 +102,18 @@ export function BrutalDateTimePicker({ value, onChange }: Props) {
 
   function shiftMonth(delta: number) {
     const d = new Date(view.y, view.m + delta, 1);
+    setDir(delta > 0 ? 1 : -1);
     setView({ y: d.getFullYear(), m: d.getMonth() });
   }
 
   function shiftYear(delta: number) {
+    setDir(delta > 0 ? 1 : -1);
     setView((v) => ({ ...v, y: v.y + delta }));
+  }
+
+  function togglePane(next: Pane) {
+    setDir(0);
+    setPane((p) => (p === next ? "days" : next));
   }
 
   function preset(kind: "tonight" | "tomorrow" | "week" | "year") {
@@ -119,9 +127,11 @@ export function BrutalDateTimePicker({ value, onChange }: Props) {
     if (kind === "week") next.setDate(next.getDate() + 7);
     if (kind === "year") next.setFullYear(next.getFullYear() + 1);
     commit(next);
+    setDir(0);
     setView({ y: next.getFullYear(), m: next.getMonth() });
     setPane("days");
   }
+
 
   const arrow = (label: string, dir: "l" | "r", onClick: () => void) => (
     <button
