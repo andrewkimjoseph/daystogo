@@ -139,7 +139,7 @@ export function CreateCountdownForm() {
         />
 
         <span className="mb-2 block text-xs font-bold uppercase">Colour tag</span>
-        <div className="flex flex-wrap gap-2">
+        <div className="mb-6 flex flex-wrap gap-2">
           {COLOR_TAGS.map((c) => (
             <button
               key={c.hex}
@@ -157,27 +157,31 @@ export function CreateCountdownForm() {
           ))}
         </div>
 
-        {mode === "target" && (
-          <>
-            <span className="mt-6 mb-2 block text-xs font-bold uppercase">
-              Time (type it or tap)
-            </span>
-            {targetInput ? (
-              <BrutalTimeField
-                value={targetInput}
-                onChange={(next: string) => {
-                  setTargetInput(next);
-                  setError(null);
-                }}
-              />
-            ) : (
-              <div className="brut-thin h-[152px] bg-card" aria-hidden />
-            )}
-            <p className="mt-3 text-sm font-bold text-muted-foreground">
-              {targetPreview ?? "Pick a date and time."}
-            </p>
-          </>
-        )}
+        <span className="mb-2 block text-xs font-bold uppercase">Category</span>
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+          {CATEGORIES.map((c) => {
+            const Icon = c.icon;
+            const on = category === c.key;
+            return (
+              <button
+                key={c.key}
+                type="button"
+                onClick={() => setCategory(c.key)}
+                aria-pressed={on}
+                className="brut-thin brut-press flex min-h-[56px] items-center gap-2 rounded-none px-2 py-2 text-left text-[11px] font-bold uppercase"
+                style={
+                  on
+                    ? { backgroundColor: PALETTE.mauve, color: PALETTE.cream }
+                    : { backgroundColor: "var(--cream)" }
+                }
+              >
+                <Icon className="h-4 w-4 shrink-0" strokeWidth={2.5} />
+                <span className="min-w-0 break-words">{c.label}</span>
+              </button>
+            );
+          })}
+        </div>
+        <p className="mt-3 text-sm font-bold text-muted-foreground">{activeCategory.hint}</p>
       </div>
 
       {/* Right column: how long */}
