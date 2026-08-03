@@ -174,7 +174,7 @@ export function CreateCountdownForm() {
                 }}
               />
             ) : (
-              <div className="brut-thin h-[420px] bg-card" aria-hidden />
+              <div className="brut-thin h-[560px] bg-card" aria-hidden />
             )}
             <p className="mt-3 text-sm font-bold text-muted-foreground">
               {targetPreview ?? "Pick a date and time."}
