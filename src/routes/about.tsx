@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Github, ArrowLeft } from "lucide-react";
-import logoAsset from "@/assets/logo.svg.asset.json";
-import { MuteToggle } from "@/components/MuteToggle";
+import { SiteHeader } from "@/components/SiteHeader";
 import { PALETTE } from "@/lib/palette";
+
 
 export const Route = createFileRoute("/about")({
   head: () => ({
