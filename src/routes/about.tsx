@@ -20,9 +20,9 @@ export const Route = createFileRoute("/about")({
           "Playful brutalist countdown timers, 3 seconds to years out, running locally in your browser.",
       },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "https://daystogo.lovable.app/about" },
+      { property: "og:url", content: "https://daystogo.xyz/about" },
     ],
-    links: [{ rel: "canonical", href: "https://daystogo.lovable.app/about" }],
+    links: [{ rel: "canonical", href: "https://daystogo.xyz/about" }],
     scripts: [
       {
         type: "application/ld+json",

@@ -2,7 +2,7 @@
 
 A playful, brutalist countdown timer web app. Run as many clocks as you like — from 3 seconds to years out — ticking down to the second, with a burst of confetti and a chime when the timer hits zero. Local-first: your timers live in your browser, so there's no account and no server to trust. Put a clock on it.
 
-**Live:** [daystogo.lovable.app](https://daystogo.lovable.app) · **Source:** [github.com/andrewkimjoseph](https://github.com/andrewkimjoseph)
+**Live:** [daystogo.xyz](https://daystogo.xyz) · **Source:** [github.com/andrewkimjoseph](https://github.com/andrewkimjoseph)
 
 ## Features
 
