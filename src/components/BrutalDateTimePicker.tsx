@@ -302,9 +302,16 @@ export function BrutalDateTimePicker({ value, onChange }: Props) {
         </div>
       )}
 
-      <div className="mt-3 flex items-end justify-center gap-2 border-t-2 border-[var(--ink)] pt-3">
+      <div className="mt-3 flex items-start justify-center gap-2 border-t-2 border-[var(--ink)] pt-3">
         {stepper("Hour", pad(selected.getHours()), "hours", 1)}
-        <span className="tick-numerals pb-6 text-2xl">:</span>
+        {/* Mirrors the stepper column so the colon lines up with the numerals. */}
+        <div className="flex flex-col items-center gap-1">
+          <span aria-hidden className="text-[10px] font-bold uppercase opacity-0">
+            .
+          </span>
+          <span aria-hidden className="block h-9 sm:h-7" />
+          <span className="tick-numerals py-1 text-2xl leading-none">:</span>
+        </div>
         {stepper("Min", pad(selected.getMinutes()), "minutes", 1)}
       </div>
 
