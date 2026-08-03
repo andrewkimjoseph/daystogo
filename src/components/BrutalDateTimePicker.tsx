@@ -190,12 +190,14 @@ export function BrutalDateTimePicker({ value, onChange }: Props) {
           type="button"
           onClick={() => {
             setYearPage(view.y - 5);
-            setPane((p) => (p === "years" ? "days" : "years"));
+            togglePane("years");
           }}
           aria-pressed={pane === "years"}
           className="brut-thin brut-press tick-numerals flex-1 bg-cream py-1 text-center text-lg"
         >
-          {view.y}
+          <span key={view.y} className="tick-bump inline-block">
+            {view.y}
+          </span>
         </button>
         {arrow("Next year", "r", () => shiftYear(1))}
       </div>
@@ -205,11 +207,13 @@ export function BrutalDateTimePicker({ value, onChange }: Props) {
         {arrow("Previous month", "l", () => shiftMonth(-1))}
         <button
           type="button"
-          onClick={() => setPane((p) => (p === "months" ? "days" : "months"))}
+          onClick={() => togglePane("months")}
           aria-pressed={pane === "months"}
           className="brut-thin brut-press flex-1 bg-cream py-1 text-center text-sm font-bold uppercase"
         >
-          {MONTHS[view.m]}
+          <span key={view.m} className="tick-bump inline-block">
+            {MONTHS[view.m]}
+          </span>
         </button>
         {arrow("Next month", "r", () => shiftMonth(1))}
       </div>
@@ -217,13 +221,19 @@ export function BrutalDateTimePicker({ value, onChange }: Props) {
       {pane === "years" && (
         <div>
           <div className="mb-2 flex items-center justify-between gap-2">
-            {arrow("Previous years", "l", () => setYearPage((y) => y - 12))}
+            {arrow("Previous years", "l", () => {
+              setDir(-1);
+              setYearPage((y) => y - 12);
+            })}
             <span className="tick-numerals flex-1 text-center text-xs">
               {years[0]} – {years[years.length - 1]}
             </span>
-            {arrow("Next years", "r", () => setYearPage((y) => y + 12))}
+            {arrow("Next years", "r", () => {
+              setDir(1);
+              setYearPage((y) => y + 12);
+            })}
           </div>
-          <div className="grid grid-cols-4 gap-1">
+          <div key={`years-${yearPage}`} className={`grid grid-cols-4 gap-1 ${swapClass}`}>
             {years.map((y) => {
               const isSelected = y === selected.getFullYear();
               return (
@@ -246,7 +256,7 @@ export function BrutalDateTimePicker({ value, onChange }: Props) {
       )}
 
       {pane === "months" && (
-        <div className="grid grid-cols-3 gap-1">
+        <div key={`months-${view.y}`} className={`grid grid-cols-3 gap-1 ${swapClass}`}>
           {MONTHS_SHORT.map((label, i) => {
             const isSelected = i === selected.getMonth() && view.y === selected.getFullYear();
             return (
@@ -268,7 +278,7 @@ export function BrutalDateTimePicker({ value, onChange }: Props) {
       )}
 
       {pane === "days" && (
-        <div className="grid grid-cols-7 gap-1">
+        <div key={`days-${view.y}-${view.m}`} className={`grid grid-cols-7 gap-1 ${swapClass}`}>
           {WEEKDAYS.map((w, i) => (
             <span
               key={i}
