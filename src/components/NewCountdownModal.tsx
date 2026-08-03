@@ -100,6 +100,34 @@ export function NewCountdownModal({
           </button>
         </div>
 
+        <span className="mb-2 block text-xs font-bold uppercase">How do we count?</span>
+        <div className="mb-5 flex flex-wrap gap-2">
+          {(
+            [
+              { key: "duration", label: "Duration" },
+              { key: "target", label: "End time" },
+            ] as { key: Mode; label: string }[]
+          ).map((m) => (
+            <button
+              key={m.key}
+              type="button"
+              onClick={() => {
+                setMode(m.key);
+                setError(null);
+              }}
+              aria-pressed={mode === m.key}
+              className="brut-thin brut-press flex-1 rounded-none px-4 py-2 text-sm font-bold uppercase"
+              style={
+                mode === m.key
+                  ? { backgroundColor: PALETTE.mauve, color: PALETTE.cream }
+                  : { backgroundColor: "var(--card)" }
+              }
+            >
+              {m.label}
+            </button>
+          ))}
+        </div>
+
         <label className="mb-2 block text-xs font-bold uppercase" htmlFor="title">
           What are we waiting for?
         </label>
@@ -112,38 +140,59 @@ export function NewCountdownModal({
           className="brut-thin mb-5 w-full bg-card px-3 py-2.5 font-bold outline-none focus:ring-4 focus:ring-primary"
         />
 
-        <span className="mb-2 block text-xs font-bold uppercase">Duration type</span>
-        <div className="mb-5 flex flex-wrap gap-2">
-          {TYPES.map((t) => (
-            <button
-              key={t.key}
-              type="button"
-              onClick={() => setDurationType(t.key)}
-              className="brut-thin brut-press rounded-none px-4 py-2 text-sm font-bold uppercase"
-              style={
-                durationType === t.key
-                  ? { backgroundColor: PALETTE.teal, color: PALETTE.cream }
-                  : { backgroundColor: "var(--card)" }
-              }
-            >
-              {t.label}
-            </button>
-          ))}
-        </div>
+        {mode === "target" ? (
+          <>
+            <label className="mb-2 block text-xs font-bold uppercase" htmlFor="targetAt">
+              End it at (your local time)
+            </label>
+            <input
+              id="targetAt"
+              type="datetime-local"
+              value={targetInput}
+              onChange={(e) => setTargetInput(e.target.value)}
+              className="tick-numerals brut-thin w-full bg-card px-3 py-2.5 text-xl outline-none focus:ring-4 focus:ring-primary"
+            />
+            <p className="mt-2 mb-5 text-sm font-bold text-muted-foreground">
+              {targetPreview ?? "Pick a date and time."}
+            </p>
+          </>
+        ) : (
+          <>
+            <span className="mb-2 block text-xs font-bold uppercase">Duration type</span>
+            <div className="mb-5 flex flex-wrap gap-2">
+              {TYPES.map((t) => (
+                <button
+                  key={t.key}
+                  type="button"
+                  onClick={() => setDurationType(t.key)}
+                  className="brut-thin brut-press rounded-none px-4 py-2 text-sm font-bold uppercase"
+                  style={
+                    durationType === t.key
+                      ? { backgroundColor: PALETTE.teal, color: PALETTE.cream }
+                      : { backgroundColor: "var(--card)" }
+                  }
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
 
-        <label className="mb-2 block text-xs font-bold uppercase" htmlFor="value">
-          How many {activeType.label.toLowerCase()}? (max {activeType.max.toLocaleString()})
-        </label>
-        <input
-          id="value"
-          type="number"
-          inputMode="numeric"
-          min={1}
-          max={activeType.max}
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          className="tick-numerals brut-thin mb-5 w-full bg-card px-3 py-2.5 text-2xl outline-none focus:ring-4 focus:ring-primary"
-        />
+            <label className="mb-2 block text-xs font-bold uppercase" htmlFor="value">
+              How many {activeType.label.toLowerCase()}? (max {activeType.max.toLocaleString()})
+            </label>
+            <input
+              id="value"
+              type="number"
+              inputMode="numeric"
+              min={1}
+              max={activeType.max}
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+              className="tick-numerals brut-thin mb-5 w-full bg-card px-3 py-2.5 text-2xl outline-none focus:ring-4 focus:ring-primary"
+            />
+          </>
+        )}
+
 
         <span className="mb-2 block text-xs font-bold uppercase">Colour tag</span>
         <div className="mb-5 flex flex-wrap gap-2">
