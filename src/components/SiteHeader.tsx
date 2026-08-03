@@ -6,6 +6,7 @@ export function SiteHeader() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const onAbout = pathname.startsWith("/about");
   const onCreate = pathname.startsWith("/create-countdown");
+  const onCalendar = pathname.startsWith("/calendar");
 
   return (
     <header className="view-header border-b-4 border-ink bg-cream">
