@@ -63,7 +63,7 @@ export function CountdownCard({
   return (
     <article
       ref={cardRef}
-      className="brut animate-pop-in relative flex h-full flex-col gap-4 bg-card p-5"
+      className={`brut animate-pop-in relative flex h-full flex-col gap-4 bg-card p-5 ${editing && !lapsed ? "z-20" : "z-0"}`}
       style={lapsed ? { backgroundImage: `linear-gradient(140deg, ${PALETTE.mauve}, ${PALETTE.red})` } : undefined}
     >
       {lapsed && (
@@ -113,7 +113,7 @@ export function CountdownCard({
       </p>
 
       {editing && !lapsed && (
-        <div className="brut-thin animate-pop-in flex flex-col gap-3 bg-cream p-3">
+        <div className="absolute inset-x-5 top-32 z-10 flex flex-col gap-3 bg-cream p-3 brut-thin animate-pop-in">
           <div>
             <span className="mb-2 block text-[10px] font-bold uppercase">Colour tag</span>
             <div className="flex flex-wrap gap-2">
@@ -181,6 +181,13 @@ export function CountdownCard({
           <p className="text-[10px] font-bold uppercase text-muted-foreground">
             Time can’t be edited — the clock is already running.
           </p>
+          <button
+            type="button"
+            onClick={() => setEditing(false)}
+            className="brut-thin brut-press flex items-center justify-center gap-2 rounded-none bg-primary px-3 py-2 text-sm font-bold text-primary-foreground uppercase"
+          >
+            <Pencil className="h-4 w-4" strokeWidth={3} /> Done
+          </button>
         </div>
       )}
 
