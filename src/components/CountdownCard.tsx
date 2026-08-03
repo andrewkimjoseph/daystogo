@@ -181,6 +181,13 @@ export function CountdownCard({
           <p className="text-[10px] font-bold uppercase text-muted-foreground">
             Time can’t be edited — the clock is already running.
           </p>
+          <button
+            type="button"
+            onClick={() => setEditing(false)}
+            className="brut-thin brut-press flex items-center justify-center gap-2 rounded-none bg-primary px-3 py-2 text-sm font-bold text-primary-foreground uppercase"
+          >
+            <Pencil className="h-4 w-4" strokeWidth={3} /> Done
+          </button>
         </div>
       )}
 
