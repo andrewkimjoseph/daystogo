@@ -24,6 +24,8 @@ export interface Countdown {
   status: CountdownStatus;
   pausedRemainingMs?: number | undefined;
   colorTag: string;
+  /** Absent on rows created before categories existed — treat as "other". */
+  category?: CountdownCategory | undefined;
   hasCelebrated: boolean;
   createdAt: number;
   updatedAt: number;
