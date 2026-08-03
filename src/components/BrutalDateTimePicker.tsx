@@ -164,7 +164,12 @@ export function BrutalDateTimePicker({ value, onChange }: Props) {
       >
         <ChevronUp className="h-4 w-4" strokeWidth={3} />
       </button>
-      <span className="tick-numerals w-16 py-1 text-center text-2xl sm:w-14">{display}</span>
+      <span
+        key={display}
+        className="tick-numerals tick-bump w-16 py-1 text-center text-2xl sm:w-14"
+      >
+        {display}
+      </span>
       <button
         type="button"
         aria-label={`${label} down`}
