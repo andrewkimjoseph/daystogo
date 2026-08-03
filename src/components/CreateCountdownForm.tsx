@@ -37,6 +37,7 @@ export function CreateCountdownForm() {
   }, []);
 
   const activeType = TYPES.find((t) => t.key === durationType)!;
+  const activeCategory = CATEGORIES.find((c) => c.key === category)!;
   const targetPreview = targetInput ? spanFromNow(targetInput) : null;
   const durationPreview = (() => {
     if (!hydrated) return null;
