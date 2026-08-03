@@ -32,6 +32,7 @@ export const Route = createFileRoute("/create-countdown")({
 });
 
 function CreateCountdownPage() {
+  const { date } = Route.useSearch();
   return (
     <div className="min-h-screen">
       <SiteHeader />
