@@ -25,6 +25,13 @@ export function SiteHeader() {
             </Link>
           )}
           <Link
+            to={onCalendar ? "/" : "/calendar"}
+            viewTransition
+            className="brut brut-press rounded-none bg-cream px-3 py-2 text-xs font-bold text-ink uppercase sm:px-4 sm:text-sm"
+          >
+            {onCalendar ? "Home" : "Calendar"}
+          </Link>
+          <Link
             to={onAbout ? "/" : "/about"}
             viewTransition
             className="brut brut-press rounded-none bg-cream px-3 py-2 text-xs font-bold text-ink uppercase sm:px-4 sm:text-sm"
