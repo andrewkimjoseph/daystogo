@@ -58,9 +58,17 @@ export function CreateCountdownForm({ initialDate }: { initialDate?: string }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialDate]);
 
+  // Previews now quote seconds, so they have to re-render every second.
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    if (!hydrated) return;
+    const id = window.setInterval(() => setTick((t) => t + 1), 1000);
+    return () => window.clearInterval(id);
+  }, [hydrated]);
+
   const activeType = TYPES.find((t) => t.key === durationType)!;
   const activeCategory = CATEGORIES.find((c) => c.key === category)!;
-  const targetPreview = targetInput ? spanFromNow(targetInput) : null;
+  const targetPreview = targetInput && hydrated ? spanFromNow(targetInput) : null;
   const durationPreview = (() => {
     if (!hydrated) return null;
     const num = Number(value);
@@ -74,6 +82,7 @@ export function CreateCountdownForm({ initialDate }: { initialDate?: string }) {
       year: "numeric",
       hour: "2-digit",
       minute: "2-digit",
+      second: "2-digit",
     });
   })();
 

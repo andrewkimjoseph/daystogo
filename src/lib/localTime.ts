@@ -23,17 +23,18 @@ export function spanFromNow(inputValue: string): string | null {
   const hours = Math.floor(seconds / 3600);
   seconds -= hours * 3600;
   const minutes = Math.floor(seconds / 60);
+  seconds -= minutes * 60;
 
   const parts: string[] = [];
   if (days) parts.push(`${days} day${days === 1 ? "" : "s"}`);
   if (hours) parts.push(`${hours} hour${hours === 1 ? "" : "s"}`);
   if (minutes) parts.push(`${minutes} minute${minutes === 1 ? "" : "s"}`);
-  if (parts.length === 0) parts.push("under a minute");
+  parts.push(`${seconds} second${seconds === 1 ? "" : "s"}`);
 
-  return `That's ${parts.slice(0, 2).join(", ")} from now.`;
+  return `That's ${parts.join(", ")} from now.`;
 }
 
-/** Short local label for a card, e.g. "Mon 3 Aug, 18:30" (adds year if not this year). */
+/** Short local label for a card, e.g. "Mon 3 Aug, 18:30:00" (adds year if not this year). */
 export function formatTargetLabel(ms: number): string {
   const target = new Date(ms);
   const sameYear = target.getFullYear() === new Date().getFullYear();
@@ -44,5 +45,6 @@ export function formatTargetLabel(ms: number): string {
     ...(sameYear ? {} : { year: "numeric" }),
     hour: "2-digit",
     minute: "2-digit",
+    second: "2-digit",
   });
 }
