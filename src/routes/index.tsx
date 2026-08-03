@@ -23,5 +23,9 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  return <AppShell>{(openNew) => <CountdownGrid onNew={openNew} />}</AppShell>;
+  return (
+    <AppShell>
+      <CountdownGrid />
+    </AppShell>
+  );
 }
