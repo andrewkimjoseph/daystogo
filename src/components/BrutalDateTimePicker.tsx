@@ -310,7 +310,7 @@ export function BrutalDateTimePicker({ value, onChange }: Props) {
             .
           </span>
           <span aria-hidden className="block h-9 sm:h-7" />
-          <span className="tick-numerals py-1 text-2xl leading-none">:</span>
+          <span className="tick-numerals py-1 text-2xl">:</span>
         </div>
         {stepper("Min", pad(selected.getMinutes()), "minutes", 1)}
       </div>
