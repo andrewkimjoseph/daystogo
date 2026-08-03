@@ -4,9 +4,8 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { CreateCountdownForm } from "@/components/CreateCountdownForm";
 
 export const Route = createFileRoute("/create-countdown")({
-  validateSearch: (search: Record<string, unknown>) => ({
-    date: typeof search["date"] === "string" ? (search["date"] as string) : undefined,
-  }),
+  validateSearch: (search: Record<string, unknown>): { date?: string } =>
+    typeof search["date"] === "string" ? { date: search["date"] as string } : {},
   head: () => ({
     meta: [
       { title: "New Countdown — Days To Go" },
@@ -48,7 +47,7 @@ function CreateCountdownPage() {
           </Link>
         </div>
 
-        <CreateCountdownForm initialDate={date} />
+        <CreateCountdownForm initialDate={date ?? ""} />
       </main>
 
     </div>
