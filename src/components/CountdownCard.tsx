@@ -118,22 +118,27 @@ export function CountdownCard({
             <span className="mb-2 block text-[10px] font-bold uppercase">Colour tag</span>
             <div className="flex flex-wrap gap-2">
               {COLOR_TAGS.map((c) => (
-                <button
-                  key={c.hex}
-                  type="button"
-                  aria-label={c.label}
-                  aria-pressed={countdown.colorTag === c.hex}
-                  onClick={async () => {
-                    await countdownsRepo.updateTags(countdown.id, { colorTag: c.hex });
-                    onChanged();
-                  }}
-                  className="brut-thin brut-press h-8 w-8 rounded-none"
-                  style={{
-                    backgroundColor: c.hex,
-                    boxShadow:
-                      countdown.colorTag === c.hex ? "0 0 0 3px var(--ink) inset" : undefined,
-                  }}
-                />
+                <span key={c.hex} className="group relative inline-flex">
+                  <button
+                    type="button"
+                    title={c.label}
+                    aria-label={c.label}
+                    aria-pressed={countdown.colorTag === c.hex}
+                    onClick={async () => {
+                      await countdownsRepo.updateTags(countdown.id, { colorTag: c.hex });
+                      onChanged();
+                    }}
+                    className="brut-thin brut-press h-8 w-8 rounded-none"
+                    style={{
+                      backgroundColor: c.hex,
+                      boxShadow:
+                        countdown.colorTag === c.hex ? "0 0 0 3px var(--ink) inset" : undefined,
+                    }}
+                  />
+                  <span className="brut-thin pointer-events-none absolute -top-7 left-1/2 z-20 -translate-x-1/2 bg-ink px-1.5 py-0.5 text-[9px] font-bold whitespace-nowrap text-cream uppercase opacity-0 transition-opacity group-hover:opacity-100">
+                    {c.label}
+                  </span>
+                </span>
               ))}
             </div>
           </div>
@@ -144,27 +149,31 @@ export function CountdownCard({
                 const Icon = c.icon;
                 const on = categoryMeta(countdown.category).key === c.key;
                 return (
-                  <button
-                    key={c.key}
-                    type="button"
-                    title={c.label}
-                    aria-label={c.label}
-                    aria-pressed={on}
-                    onClick={async () => {
-                      await countdownsRepo.updateTags(countdown.id, {
-                        category: c.key as CountdownCategory,
-                      });
-                      onChanged();
-                    }}
-                    className="brut-thin brut-press flex h-9 items-center justify-center rounded-none"
-                    style={
-                      on
-                        ? { backgroundColor: PALETTE.mauve, color: PALETTE.cream }
-                        : { backgroundColor: "var(--card)" }
-                    }
-                  >
-                    <Icon className="h-4 w-4" strokeWidth={2.5} />
-                  </button>
+                  <span key={c.key} className="group relative inline-flex">
+                    <button
+                      type="button"
+                      title={c.label}
+                      aria-label={c.label}
+                      aria-pressed={on}
+                      onClick={async () => {
+                        await countdownsRepo.updateTags(countdown.id, {
+                          category: c.key as CountdownCategory,
+                        });
+                        onChanged();
+                      }}
+                      className="brut-thin brut-press flex h-9 w-full items-center justify-center rounded-none"
+                      style={
+                        on
+                          ? { backgroundColor: PALETTE.mauve, color: PALETTE.cream }
+                          : { backgroundColor: "var(--card)" }
+                      }
+                    >
+                      <Icon className="h-4 w-4" strokeWidth={2.5} />
+                    </button>
+                    <span className="brut-thin pointer-events-none absolute -top-7 left-1/2 z-20 -translate-x-1/2 bg-ink px-1.5 py-0.5 text-[9px] font-bold whitespace-nowrap text-cream uppercase opacity-0 transition-opacity group-hover:opacity-100">
+                      {c.label}
+                    </span>
+                  </span>
                 );
               })}
             </div>
