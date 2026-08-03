@@ -68,12 +68,22 @@ export function CountdownCard({
       )}
 
       <header className="flex items-start justify-between gap-3">
-        <h2
-          className="text-lg leading-tight break-words uppercase"
-          style={lapsed ? { color: PALETTE.cream } : undefined}
-        >
-          {countdown.title}
-        </h2>
+        <div className="min-w-0">
+          <h2
+            className="text-lg leading-tight break-words uppercase"
+            style={lapsed ? { color: PALETTE.cream } : undefined}
+          >
+            {countdown.title}
+          </h2>
+          {countdown.targetAt !== undefined && !lapsed && (
+            <p
+              className="mt-1 text-xs font-bold uppercase"
+              style={{ color: lapsed ? PALETTE.cream : "var(--muted-foreground)" }}
+            >
+              Ends {formatTargetLabel(countdown.targetAt)}
+            </p>
+          )}
+        </div>
         <span
           className="brut-thin shrink-0 rounded-none px-3 py-1 text-xs font-bold whitespace-nowrap uppercase"
           style={{ backgroundColor: tagColor, color: tagTextColor(tagColor) }}
@@ -82,12 +92,6 @@ export function CountdownCard({
         </span>
       </header>
 
-      <p
-        className={`tick-numerals ${dramatic ? "text-5xl sm:text-6xl" : "text-4xl"} ${urgent ? "animate-pulse-hard" : ""}`}
-        style={{ color: lapsed ? PALETTE.cream : urgent ? PALETTE.red : "var(--ink)" }}
-      >
-        {text}
-      </p>
 
       <div className="flex gap-[3px]" aria-label={`${Math.round(pct)}% elapsed`}>
         {Array.from({ length: SEGMENTS }).map((_, i) => (
