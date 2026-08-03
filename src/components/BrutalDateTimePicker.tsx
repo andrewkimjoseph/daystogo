@@ -60,7 +60,11 @@ export function BrutalDateTimePicker({ value, onChange }: Props) {
   const [view, setView] = useState(() => ({ y: selected.getFullYear(), m: selected.getMonth() }));
   const [pane, setPane] = useState<Pane>("days");
   const [yearPage, setYearPage] = useState(() => selected.getFullYear() - 5);
+  /** Direction of the last navigation, for the slide animation. 0 = zoom swap. */
+  const [dir, setDir] = useState<-1 | 0 | 1>(0);
   const today = new Date();
+  const swapClass = dir === 1 ? "swap-right" : dir === -1 ? "swap-left" : "swap-zoom";
+
 
   const days = useMemo(() => monthGrid(view.y, view.m), [view]);
   const years = useMemo(
