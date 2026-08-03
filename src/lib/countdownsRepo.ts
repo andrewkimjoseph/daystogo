@@ -19,11 +19,38 @@ export function remainingMs(c: Countdown, now: number): number {
   return Math.max(0, c.endsAt - now);
 }
 
-export interface NewCountdownInput {
+export interface NewDurationInput {
+  mode?: "duration";
   title: string;
   durationType: DurationType;
   durationValue: number;
   colorTag: string;
+}
+
+export interface NewTargetInput {
+  mode: "target";
+  title: string;
+  /** Epoch ms of the exact local moment the countdown should lapse. */
+  targetAt: number;
+  colorTag: string;
+}
+
+export type NewCountdownInput = NewDurationInput | NewTargetInput;
+
+/** Best-fit duration unit/value for a raw span, so restart + labels keep working. */
+function describeSeconds(seconds: number): { type: DurationType; value: number } {
+  if (seconds % 86400 === 0) return { type: "days", value: seconds / 86400 };
+  if (seconds % 3600 === 0) return { type: "hours", value: seconds / 3600 };
+  if (seconds % 60 === 0) return { type: "minutes", value: seconds / 60 };
+  return { type: "seconds", value: seconds };
+}
+
+/** Shared validation for both creation modes. Returns null when valid. */
+export function validateSeconds(seconds: number): string | null {
+  if (!Number.isFinite(seconds)) return "That's not a number we can count down from.";
+  if (seconds < MIN_DURATION_SECONDS) return "Give it at least 3 seconds to be a real countdown.";
+  if (seconds > MAX_DURATION_SECONDS) return "Whoa there — max is 365 days.";
+  return null;
 }
 
 export const countdownsRepo = {
@@ -33,12 +60,18 @@ export const countdownsRepo = {
 
   async create(input: NewCountdownInput): Promise<Countdown> {
     const now = Date.now();
-    const durationSeconds = toSeconds(input.durationType, input.durationValue);
+    const isTarget = input.mode === "target";
+    const durationSeconds = isTarget
+      ? Math.max(1, Math.round((input.targetAt - now) / 1000))
+      : toSeconds(input.durationType, input.durationValue);
+    const described = describeSeconds(durationSeconds);
     const row: Countdown = {
       id: crypto.randomUUID(),
       title: input.title.trim(),
-      durationType: input.durationType,
-      durationValue: input.durationValue,
+      mode: isTarget ? "target" : "duration",
+      targetAt: isTarget ? input.targetAt : undefined,
+      durationType: isTarget ? described.type : input.durationType,
+      durationValue: isTarget ? described.value : input.durationValue,
       durationSeconds,
       startedAt: now,
       endsAt: now + durationSeconds * 1000,
