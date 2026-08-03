@@ -7,6 +7,7 @@ import { categoryMeta } from "@/lib/categories";
 import { PALETTE, tagTextColor } from "@/lib/palette";
 import { formatTargetLabel } from "@/lib/localTime";
 import type { Countdown } from "@/lib/db";
+import { useHydrated } from "@/hooks/useHydrated";
 
 const WEEKDAYS = ["M", "T", "W", "T", "F", "S", "S"];
 const MONTHS = [
@@ -285,12 +286,27 @@ export function CountdownCalendar() {
 }
 
 function DayPanel({ date, items }: { date: Date; items: Countdown[] }) {
-  const heading = date.toLocaleDateString(undefined, {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
+  // Locale formatting differs between server and browser, so wait for hydration.
+  const hydrated = useHydrated();
+  const heading = hydrated
+    ? date.toLocaleDateString(undefined, {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      })
+    : `${date.getDate()} ${MONTHS[date.getMonth()]} ${date.getFullYear()}`;
+
+  const newCountdownLink = (
+    <Link
+      to="/create-countdown"
+      search={{ date: dayKey(date) }}
+      viewTransition
+      className="brut-thin brut-press bg-primary px-4 py-2 text-xs font-bold text-primary-foreground uppercase"
+    >
+      New countdown
+    </Link>
+  );
 
   return (
     <div className="brut flex flex-col gap-3 bg-card p-4">
@@ -308,15 +324,12 @@ function DayPanel({ date, items }: { date: Date; items: Countdown[] }) {
           <p className="font-bold text-muted-foreground">
             A blank day. Suspiciously calm — want to put a clock on something?
           </p>
-          <Link
-            to="/create-countdown"
-            viewTransition
-            className="brut-thin brut-press bg-primary px-4 py-2 text-xs font-bold text-primary-foreground uppercase"
-          >
-            New countdown
-          </Link>
+          {newCountdownLink}
         </div>
       ) : (
+        <>
+          <div className="flex">{newCountdownLink}</div>
+
         <ul className="flex flex-col gap-2">
           {items.map((c) => {
             const meta = categoryMeta(c.category);
@@ -345,6 +358,7 @@ function DayPanel({ date, items }: { date: Date; items: Countdown[] }) {
             );
           })}
         </ul>
+        </>
       )}
     </div>
   );

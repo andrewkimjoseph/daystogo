@@ -18,9 +18,19 @@ const TYPES: { key: DurationType; label: string; max: number }[] = [
 
 type Mode = "duration" | "target";
 
-export function CreateCountdownForm() {
+/** `YYYY-MM-DD` -> local start of that day, or null when unusable. */
+function parseDayParam(raw: string | undefined): Date | null {
+  if (!raw) return null;
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(raw);
+  if (!m) return null;
+  const d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]), 9, 0, 0, 0);
+  return Number.isFinite(d.getTime()) ? d : null;
+}
+
+export function CreateCountdownForm({ initialDate }: { initialDate?: string }) {
   const navigate = useNavigate();
-  const [mode, setMode] = useState<Mode>("duration");
+  const seededDay = parseDayParam(initialDate);
+  const [mode, setMode] = useState<Mode>(seededDay ? "target" : "duration");
   const [title, setTitle] = useState("");
   const [durationType, setDurationType] = useState<DurationType>("days");
   const [value, setValue] = useState("7");
@@ -33,8 +43,13 @@ export function CreateCountdownForm() {
   // from them waits for hydration.
   const hydrated = useHydrated();
   useEffect(() => {
-    setTargetInput((prev) => prev || localInputValue(Date.now() + 3600_000));
-  }, []);
+    // A day picked in the calendar seeds 09:00 local; fall back to an hour out
+    // whenever that moment has already passed (or no date came along).
+    const soon = Date.now() + 3600_000;
+    const seeded = seededDay && seededDay.getTime() > Date.now() ? seededDay.getTime() : soon;
+    setTargetInput((prev) => prev || localInputValue(seeded));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialDate]);
 
   const activeType = TYPES.find((t) => t.key === durationType)!;
   const activeCategory = CATEGORIES.find((c) => c.key === category)!;
