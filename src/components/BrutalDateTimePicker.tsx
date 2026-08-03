@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown } from "lucide-react";
 import { PALETTE } from "@/lib/palette";
 import { localInputValue } from "@/lib/localTime";
@@ -55,7 +55,8 @@ interface Props {
 
 type Pane = "days" | "months" | "years";
 
-export function BrutalDateTimePicker({ value, onChange }: Props) {
+/** Calendar half of the picker: year, month, and day selection. */
+export function BrutalCalendar({ value, onChange }: Props) {
   const selected = useMemo(() => parse(value), [value]);
   const [view, setView] = useState(() => ({ y: selected.getFullYear(), m: selected.getMonth() }));
   const [pane, setPane] = useState<Pane>("days");
@@ -64,7 +65,6 @@ export function BrutalDateTimePicker({ value, onChange }: Props) {
   const [dir, setDir] = useState<-1 | 0 | 1>(0);
   const today = new Date();
   const swapClass = dir === 1 ? "swap-right" : dir === -1 ? "swap-left" : "swap-zoom";
-
 
   const days = useMemo(() => monthGrid(view.y, view.m), [view]);
   const years = useMemo(
@@ -92,14 +92,6 @@ export function BrutalDateTimePicker({ value, onChange }: Props) {
     commit(next);
   }
 
-  function nudge(unit: "hours" | "minutes", delta: number) {
-    const next = new Date(selected);
-    if (unit === "hours") next.setHours(next.getHours() + delta);
-    else next.setMinutes(next.getMinutes() + delta);
-    commit(next);
-    setView({ y: next.getFullYear(), m: next.getMonth() });
-  }
-
   function shiftMonth(delta: number) {
     const d = new Date(view.y, view.m + delta, 1);
     setDir(delta > 0 ? 1 : -1);
@@ -116,56 +108,19 @@ export function BrutalDateTimePicker({ value, onChange }: Props) {
     setPane((p) => (p === next ? "days" : next));
   }
 
-
-
-
-
-  const arrow = (label: string, dir: "l" | "r", onClick: () => void) => (
+  const arrow = (label: string, side: "l" | "r", onClick: () => void) => (
     <button
       type="button"
       aria-label={label}
       onClick={onClick}
       className="brut-thin brut-press flex h-8 w-8 shrink-0 items-center justify-center bg-cream"
     >
-      {dir === "l" ? (
+      {side === "l" ? (
         <ChevronLeft className="h-4 w-4" strokeWidth={3} />
       ) : (
         <ChevronRight className="h-4 w-4" strokeWidth={3} />
       )}
     </button>
-  );
-
-  const stepper = (
-    label: string,
-    display: string,
-    unit: "hours" | "minutes",
-    step: number,
-  ) => (
-    <div className="flex flex-col items-center gap-1">
-      <span className="text-[10px] font-bold uppercase text-muted-foreground">{label}</span>
-      <button
-        type="button"
-        aria-label={`${label} up`}
-        onClick={() => nudge(unit, step)}
-        className="brut-thin brut-press flex h-9 w-16 items-center justify-center bg-card sm:h-7 sm:w-14"
-      >
-        <ChevronUp className="h-4 w-4" strokeWidth={3} />
-      </button>
-      <span
-        key={display}
-        className="tick-numerals tick-bump w-16 py-1 text-center text-2xl sm:w-14"
-      >
-        {display}
-      </span>
-      <button
-        type="button"
-        aria-label={`${label} down`}
-        onClick={() => nudge(unit, -step)}
-        className="brut-thin brut-press flex h-9 w-16 items-center justify-center bg-card sm:h-7 sm:w-14"
-      >
-        <ChevronDown className="h-4 w-4" strokeWidth={3} />
-      </button>
-    </div>
   );
 
   return (
@@ -301,20 +256,112 @@ export function BrutalDateTimePicker({ value, onChange }: Props) {
           })}
         </div>
       )}
+    </div>
+  );
+}
 
-      <div className="mt-3 flex items-start justify-center gap-2 border-t-2 border-[var(--ink)] pt-3">
-        {stepper("Hour", pad(selected.getHours()), "hours", 1)}
-        {/* Mirrors the stepper column so the colon lines up with the numerals. */}
-        <div className="flex flex-col items-center gap-1">
-          <span aria-hidden className="text-[10px] font-bold uppercase opacity-0">
-            .
-          </span>
-          <span aria-hidden className="block h-9 sm:h-7" />
-          <span className="tick-numerals py-1 text-2xl">:</span>
-        </div>
-        {stepper("Min", pad(selected.getMinutes()), "minutes", 1)}
+/** Time half of the picker: typable hour/minute fields with steppers. */
+export function BrutalTimeField({ value, onChange }: Props) {
+  const selected = useMemo(() => parse(value), [value]);
+  const hours = pad(selected.getHours());
+  const minutes = pad(selected.getMinutes());
+  // Drafts let the field hold partial text ("", "1") while typing.
+  const [draft, setDraft] = useState<{ hours: string | null; minutes: string | null }>({
+    hours: null,
+    minutes: null,
+  });
+
+  // Drop stale drafts if the value changes from elsewhere (e.g. picking a day).
+  useEffect(() => {
+    setDraft({ hours: null, minutes: null });
+  }, [value]);
+
+  function commit(d: Date) {
+    onChange(localInputValue(d.getTime()));
+  }
+
+  function nudge(unit: "hours" | "minutes", delta: number) {
+    const next = new Date(selected);
+    if (unit === "hours") next.setHours(next.getHours() + delta);
+    else next.setMinutes(next.getMinutes() + delta);
+    commit(next);
+  }
+
+  function commitText(unit: "hours" | "minutes") {
+    const text = draft[unit];
+    setDraft((d) => ({ ...d, [unit]: null }));
+    if (text === null) return;
+    const num = Number(text.replace(/\D/g, ""));
+    if (text.trim() === "" || !Number.isFinite(num)) return; // revert
+    const max = unit === "hours" ? 23 : 59;
+    const clamped = Math.max(0, Math.min(max, num));
+    const next = new Date(selected);
+    if (unit === "hours") next.setHours(clamped);
+    else next.setMinutes(clamped);
+    next.setSeconds(0, 0);
+    commit(next);
+  }
+
+  const field = (label: string, unit: "hours" | "minutes", display: string) => (
+    <div className="flex flex-col items-center gap-1">
+      <span className="text-[10px] font-bold uppercase text-muted-foreground">{label}</span>
+      <button
+        type="button"
+        aria-label={`${label} up`}
+        onClick={() => nudge(unit, 1)}
+        className="brut-thin brut-press flex h-9 w-20 items-center justify-center bg-card"
+      >
+        <ChevronUp className="h-4 w-4" strokeWidth={3} />
+      </button>
+      <input
+        type="text"
+        inputMode="numeric"
+        aria-label={label}
+        maxLength={2}
+        value={draft[unit] ?? display}
+        onChange={(e) => setDraft((d) => ({ ...d, [unit]: e.target.value.replace(/\D/g, "") }))}
+        onFocus={(e) => e.currentTarget.select()}
+        onBlur={() => commitText(unit)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            commitText(unit);
+            e.currentTarget.blur();
+          }
+          if (e.key === "ArrowUp") {
+            e.preventDefault();
+            nudge(unit, 1);
+          }
+          if (e.key === "ArrowDown") {
+            e.preventDefault();
+            nudge(unit, -1);
+          }
+        }}
+        className="brut-thin tick-numerals w-20 bg-cream py-1 text-center text-2xl outline-none focus:ring-4 focus:ring-primary"
+      />
+      <button
+        type="button"
+        aria-label={`${label} down`}
+        onClick={() => nudge(unit, -1)}
+        className="brut-thin brut-press flex h-9 w-20 items-center justify-center bg-card"
+      >
+        <ChevronDown className="h-4 w-4" strokeWidth={3} />
+      </button>
+    </div>
+  );
+
+  return (
+    <div className="brut-thin flex items-start justify-center gap-2 bg-card p-3">
+      {field("Hour", "hours", hours)}
+      {/* Mirrors a field column so the colon lines up with the numerals. */}
+      <div className="flex flex-col items-center gap-1">
+        <span aria-hidden className="text-[10px] font-bold uppercase opacity-0">
+          .
+        </span>
+        <span aria-hidden className="block h-9" />
+        <span className="tick-numerals py-1 text-2xl leading-[1.9]">:</span>
       </div>
-
+      {field("Min", "minutes", minutes)}
     </div>
   );
 }
