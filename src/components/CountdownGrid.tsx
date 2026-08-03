@@ -1,14 +1,17 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
 import { Link } from "@tanstack/react-router";
 import logoAsset from "@/assets/logo.svg.asset.json";
 import { countdownsRepo } from "@/lib/countdownsRepo";
+import { CATEGORIES, categoryMeta, type CountdownCategory } from "@/lib/categories";
+import { PALETTE } from "@/lib/palette";
 import { useCountdownTick } from "@/hooks/useCountdownTick";
 import { CountdownCard } from "./CountdownCard";
 
 export function CountdownGrid() {
   const now = useCountdownTick();
   const countdowns = useLiveQuery(() => countdownsRepo.all(), [], undefined);
+  const [filter, setFilter] = useState<CountdownCategory | "all">("all");
 
   useEffect(() => {
     void countdownsRepo.reconcile();
