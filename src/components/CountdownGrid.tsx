@@ -1,11 +1,12 @@
 import { useEffect } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
+import { Link } from "@tanstack/react-router";
 import logoAsset from "@/assets/logo.svg.asset.json";
 import { countdownsRepo } from "@/lib/countdownsRepo";
 import { useCountdownTick } from "@/hooks/useCountdownTick";
 import { CountdownCard } from "./CountdownCard";
 
-export function CountdownGrid({ onNew }: { onNew: () => void }) {
+export function CountdownGrid() {
   const now = useCountdownTick();
   const countdowns = useLiveQuery(() => countdownsRepo.all(), [], undefined);
 
