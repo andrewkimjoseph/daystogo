@@ -5,7 +5,7 @@ import { CreateCountdownForm } from "@/components/CreateCountdownForm";
 
 export const Route = createFileRoute("/create-countdown")({
   validateSearch: (search: Record<string, unknown>) => ({
-    date: typeof search.date === "string" ? search.date : undefined,
+    date: typeof search["date"] === "string" ? (search["date"] as string) : undefined,
   }),
   head: () => ({
     meta: [
