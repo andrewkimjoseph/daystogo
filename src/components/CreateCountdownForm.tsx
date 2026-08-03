@@ -26,6 +26,7 @@ export function CreateCountdownForm() {
   const [value, setValue] = useState("7");
   const [targetInput, setTargetInput] = useState("");
   const [colorTag, setColorTag] = useState<string>(PALETTE.teal);
+  const [category, setCategory] = useState<CountdownCategory>("other");
   const [error, setError] = useState<string | null>(null);
 
   // The viewer's clock and locale are unknown during SSR, so anything derived
