@@ -194,7 +194,7 @@ export function CreateCountdownForm() {
       </div>
 
       {/* Right column: how long */}
-      <div className="brut bg-card p-4 sm:p-6">
+      <div className="brut h-full bg-card p-4 sm:p-6">
         {mode === "target" ? (
           <>
             <span className="mb-2 block text-xs font-bold uppercase">
