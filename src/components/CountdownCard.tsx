@@ -165,22 +165,11 @@ export function CountdownCard({
           ) : (
             <button
               type="button"
-              onClick={async () => {
-                if (countdown.status === "running") await countdownsRepo.pause(countdown.id);
-                else await countdownsRepo.resume(countdown.id);
-                onChanged();
-              }}
+              onClick={() => setEditing((v) => !v)}
+              aria-expanded={editing}
               className="brut-thin brut-press flex flex-1 items-center justify-center gap-2 rounded-none bg-primary px-3 py-2 text-sm font-bold text-primary-foreground uppercase"
             >
-              {countdown.status === "running" ? (
-                <>
-                  <Pause className="h-4 w-4" strokeWidth={3} /> Pause
-                </>
-              ) : (
-                <>
-                  <Play className="h-4 w-4" strokeWidth={3} /> Resume
-                </>
-              )}
+              <Pencil className="h-4 w-4" strokeWidth={3} /> {editing ? "Done" : "Edit tags"}
             </button>
           )}
           <button
