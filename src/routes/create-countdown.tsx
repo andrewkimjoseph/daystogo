@@ -44,12 +44,6 @@ function CreateCountdownPage() {
           </Link>
         </div>
 
-        <h1 className="hero-gradient text-3xl uppercase sm:text-5xl">New countdown</h1>
-        <p className="mt-2 mb-6 max-w-xl font-bold text-muted-foreground">
-          Count a stretch of time, or count to an exact moment. Either way it starts the second you
-          hit go.
-        </p>
-
         <CreateCountdownForm />
       </main>
 
