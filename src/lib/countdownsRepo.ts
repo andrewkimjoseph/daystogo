@@ -90,30 +90,14 @@ export const countdownsRepo = {
     return row;
   },
 
-  async pause(id: string): Promise<void> {
-    const db = getDb();
-    const c = await db.countdowns.get(id);
-    if (!c || c.status !== "running") return;
-    const now = Date.now();
-    await db.countdowns.update(id, {
-      status: "paused",
-      pausedRemainingMs: Math.max(0, c.endsAt - now),
-      updatedAt: now,
-    });
+  /** Only the cosmetic fields are editable once a clock is running. */
+  async updateTags(
+    id: string,
+    patch: { colorTag?: string; category?: CountdownCategory },
+  ): Promise<void> {
+    await getDb().countdowns.update(id, { ...patch, updatedAt: Date.now() });
   },
 
-  async resume(id: string): Promise<void> {
-    const db = getDb();
-    const c = await db.countdowns.get(id);
-    if (!c || c.status !== "paused") return;
-    const now = Date.now();
-    await db.countdowns.update(id, {
-      status: "running",
-      endsAt: now + (c.pausedRemainingMs ?? 0),
-      pausedRemainingMs: undefined,
-      updatedAt: now,
-    });
-  },
 
   async markLapsed(id: string): Promise<void> {
     await getDb().countdowns.update(id, { status: "lapsed", updatedAt: Date.now() });
