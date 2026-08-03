@@ -7,8 +7,8 @@ import { formatTargetLabel } from "@/lib/localTime";
 
 import { burstConfetti } from "@/lib/confetti";
 import { playSound } from "@/lib/soundManager";
-import { PALETTE, tagTextColor } from "@/lib/palette";
-import { categoryMeta } from "@/lib/categories";
+import { COLOR_TAGS, PALETTE, tagTextColor } from "@/lib/palette";
+import { CATEGORIES, categoryMeta, type CountdownCategory } from "@/lib/categories";
 import { Sparkle } from "./Sparkle";
 
 const SEGMENTS = 16;
