@@ -321,25 +321,6 @@ export function BrutalDateTimePicker({ value, onChange }: Props) {
         {stepper("Min", pad(selected.getMinutes()), "minutes", 1)}
       </div>
 
-      <div className="mt-3 flex flex-wrap gap-2">
-        {(
-          [
-            { key: "tonight", label: "Tonight 18:00" },
-            { key: "tomorrow", label: "Tomorrow 09:00" },
-            { key: "week", label: "+1 week" },
-            { key: "year", label: "+1 year" },
-          ] as const
-        ).map((p) => (
-          <button
-            key={p.key}
-            type="button"
-            onClick={() => preset(p.key)}
-            className="brut-thin brut-press basis-[calc(50%-0.25rem)] bg-cream px-2 py-2.5 text-[11px] font-bold uppercase sm:flex-1 sm:basis-auto"
-          >
-            {p.label}
-          </button>
-        ))}
-      </div>
     </div>
   );
 }
