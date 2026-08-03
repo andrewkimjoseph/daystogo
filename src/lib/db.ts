@@ -2,6 +2,7 @@ import Dexie, { type Table } from "dexie";
 
 export type DurationType = "seconds" | "minutes" | "hours" | "days";
 export type CountdownStatus = "running" | "paused" | "lapsed";
+export type CountdownMode = "duration" | "target";
 
 /**
  * Flat, SQL-friendly shape. Keep it portable: no nested objects, no Dexie-only
@@ -10,6 +11,10 @@ export type CountdownStatus = "running" | "paused" | "lapsed";
 export interface Countdown {
   id: string;
   title: string;
+  /** Absent on rows created before target mode existed — treat as "duration". */
+  mode?: CountdownMode | undefined;
+  /** Epoch ms the user picked, only for mode === "target". */
+  targetAt?: number | undefined;
   durationType: DurationType;
   durationValue: number;
   durationSeconds: number;
@@ -30,6 +35,9 @@ class DaysToGoDB extends Dexie {
     super("daystogo");
     this.version(1).stores({
       countdowns: "id, status, endsAt, createdAt",
+    });
+    this.version(2).stores({
+      countdowns: "id, status, endsAt, createdAt, targetAt",
     });
   }
 }

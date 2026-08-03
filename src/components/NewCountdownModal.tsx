@@ -1,14 +1,10 @@
 import { useState } from "react";
 import { X } from "lucide-react";
 import type { DurationType } from "@/lib/db";
-import {
-  MAX_DURATION_SECONDS,
-  MIN_DURATION_SECONDS,
-  countdownsRepo,
-  toSeconds,
-} from "@/lib/countdownsRepo";
+import { countdownsRepo, toSeconds, validateSeconds } from "@/lib/countdownsRepo";
 import { COLOR_TAGS, PALETTE, tagTextColor } from "@/lib/palette";
 import { playSound } from "@/lib/soundManager";
+import { localInputValue, spanFromNow } from "@/lib/localTime";
 
 const TYPES: { key: DurationType; label: string; max: number }[] = [
   { key: "seconds", label: "Secs", max: 86400 },
@@ -17,6 +13,8 @@ const TYPES: { key: DurationType; label: string; max: number }[] = [
   { key: "days", label: "Days", max: 365 },
 ];
 
+type Mode = "duration" | "target";
+
 export function NewCountdownModal({
   onClose,
   onCreated,
@@ -24,13 +22,16 @@ export function NewCountdownModal({
   onClose: () => void;
   onCreated: () => void;
 }) {
+  const [mode, setMode] = useState<Mode>("duration");
   const [title, setTitle] = useState("");
   const [durationType, setDurationType] = useState<DurationType>("days");
   const [value, setValue] = useState("7");
+  const [targetInput, setTargetInput] = useState(() => localInputValue(Date.now() + 3600_000));
   const [colorTag, setColorTag] = useState<string>(PALETTE.teal);
   const [error, setError] = useState<string | null>(null);
 
   const activeType = TYPES.find((t) => t.key === durationType)!;
+  const targetPreview = spanFromNow(targetInput);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -38,25 +39,43 @@ export function NewCountdownModal({
       setError("Every countdown needs a name. Go on.");
       return;
     }
-    const num = Number(value);
-    if (!Number.isFinite(num) || num <= 0) {
-      setError("That's not a number we can count down from.");
-      return;
+
+    if (mode === "target") {
+      const targetAt = new Date(targetInput).getTime();
+      if (!Number.isFinite(targetAt)) {
+        setError("Pick a date and time we can actually count to.");
+        return;
+      }
+      const seconds = Math.round((targetAt - Date.now()) / 1000);
+      if (seconds <= 0) {
+        setError("That moment has already been and gone. Pick a future one.");
+        return;
+      }
+      const problem = validateSeconds(seconds);
+      if (problem) {
+        setError(problem);
+        return;
+      }
+      await countdownsRepo.create({ mode: "target", title, targetAt, colorTag });
+    } else {
+      const num = Number(value);
+      if (!Number.isFinite(num) || num <= 0) {
+        setError("That's not a number we can count down from.");
+        return;
+      }
+      const problem = validateSeconds(toSeconds(durationType, num));
+      if (problem) {
+        setError(problem);
+        return;
+      }
+      await countdownsRepo.create({ title, durationType, durationValue: num, colorTag });
     }
-    const seconds = toSeconds(durationType, num);
-    if (seconds < MIN_DURATION_SECONDS) {
-      setError("Give it at least 3 seconds to be a real countdown.");
-      return;
-    }
-    if (seconds > MAX_DURATION_SECONDS) {
-      setError("Whoa there — max is 365 days.");
-      return;
-    }
-    await countdownsRepo.create({ title, durationType, durationValue: num, colorTag });
+
     playSound("start");
     onCreated();
     onClose();
   }
+
 
   return (
     <div
@@ -81,6 +100,34 @@ export function NewCountdownModal({
           </button>
         </div>
 
+        <span className="mb-2 block text-xs font-bold uppercase">How do we count?</span>
+        <div className="mb-5 flex flex-wrap gap-2">
+          {(
+            [
+              { key: "duration", label: "Duration" },
+              { key: "target", label: "End time" },
+            ] as { key: Mode; label: string }[]
+          ).map((m) => (
+            <button
+              key={m.key}
+              type="button"
+              onClick={() => {
+                setMode(m.key);
+                setError(null);
+              }}
+              aria-pressed={mode === m.key}
+              className="brut-thin brut-press flex-1 rounded-none px-4 py-2 text-sm font-bold uppercase"
+              style={
+                mode === m.key
+                  ? { backgroundColor: PALETTE.mauve, color: PALETTE.cream }
+                  : { backgroundColor: "var(--card)" }
+              }
+            >
+              {m.label}
+            </button>
+          ))}
+        </div>
+
         <label className="mb-2 block text-xs font-bold uppercase" htmlFor="title">
           What are we waiting for?
         </label>
@@ -93,38 +140,59 @@ export function NewCountdownModal({
           className="brut-thin mb-5 w-full bg-card px-3 py-2.5 font-bold outline-none focus:ring-4 focus:ring-primary"
         />
 
-        <span className="mb-2 block text-xs font-bold uppercase">Duration type</span>
-        <div className="mb-5 flex flex-wrap gap-2">
-          {TYPES.map((t) => (
-            <button
-              key={t.key}
-              type="button"
-              onClick={() => setDurationType(t.key)}
-              className="brut-thin brut-press rounded-none px-4 py-2 text-sm font-bold uppercase"
-              style={
-                durationType === t.key
-                  ? { backgroundColor: PALETTE.teal, color: PALETTE.cream }
-                  : { backgroundColor: "var(--card)" }
-              }
-            >
-              {t.label}
-            </button>
-          ))}
-        </div>
+        {mode === "target" ? (
+          <>
+            <label className="mb-2 block text-xs font-bold uppercase" htmlFor="targetAt">
+              End it at (your local time)
+            </label>
+            <input
+              id="targetAt"
+              type="datetime-local"
+              value={targetInput}
+              onChange={(e) => setTargetInput(e.target.value)}
+              className="tick-numerals brut-thin w-full bg-card px-3 py-2.5 text-xl outline-none focus:ring-4 focus:ring-primary"
+            />
+            <p className="mt-2 mb-5 text-sm font-bold text-muted-foreground">
+              {targetPreview ?? "Pick a date and time."}
+            </p>
+          </>
+        ) : (
+          <>
+            <span className="mb-2 block text-xs font-bold uppercase">Duration type</span>
+            <div className="mb-5 flex flex-wrap gap-2">
+              {TYPES.map((t) => (
+                <button
+                  key={t.key}
+                  type="button"
+                  onClick={() => setDurationType(t.key)}
+                  className="brut-thin brut-press rounded-none px-4 py-2 text-sm font-bold uppercase"
+                  style={
+                    durationType === t.key
+                      ? { backgroundColor: PALETTE.teal, color: PALETTE.cream }
+                      : { backgroundColor: "var(--card)" }
+                  }
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
 
-        <label className="mb-2 block text-xs font-bold uppercase" htmlFor="value">
-          How many {activeType.label.toLowerCase()}? (max {activeType.max.toLocaleString()})
-        </label>
-        <input
-          id="value"
-          type="number"
-          inputMode="numeric"
-          min={1}
-          max={activeType.max}
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          className="tick-numerals brut-thin mb-5 w-full bg-card px-3 py-2.5 text-2xl outline-none focus:ring-4 focus:ring-primary"
-        />
+            <label className="mb-2 block text-xs font-bold uppercase" htmlFor="value">
+              How many {activeType.label.toLowerCase()}? (max {activeType.max.toLocaleString()})
+            </label>
+            <input
+              id="value"
+              type="number"
+              inputMode="numeric"
+              min={1}
+              max={activeType.max}
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+              className="tick-numerals brut-thin mb-5 w-full bg-card px-3 py-2.5 text-2xl outline-none focus:ring-4 focus:ring-primary"
+            />
+          </>
+        )}
+
 
         <span className="mb-2 block text-xs font-bold uppercase">Colour tag</span>
         <div className="mb-5 flex flex-wrap gap-2">

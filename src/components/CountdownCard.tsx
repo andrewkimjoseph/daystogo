@@ -3,6 +3,8 @@ import { Pause, Play, RotateCcw, Trash2 } from "lucide-react";
 import type { Countdown } from "@/lib/db";
 import { countdownsRepo, remainingMs } from "@/lib/countdownsRepo";
 import { formatRemaining, progressPercent } from "@/lib/formatTime";
+import { formatTargetLabel } from "@/lib/localTime";
+
 import { burstConfetti } from "@/lib/confetti";
 import { playSound } from "@/lib/soundManager";
 import { PALETTE, tagTextColor } from "@/lib/palette";
@@ -68,12 +70,22 @@ export function CountdownCard({
       )}
 
       <header className="flex items-start justify-between gap-3">
-        <h2
-          className="text-lg leading-tight break-words uppercase"
-          style={lapsed ? { color: PALETTE.cream } : undefined}
-        >
-          {countdown.title}
-        </h2>
+        <div className="min-w-0">
+          <h2
+            className="text-lg leading-tight break-words uppercase"
+            style={lapsed ? { color: PALETTE.cream } : undefined}
+          >
+            {countdown.title}
+          </h2>
+          {countdown.targetAt !== undefined && !lapsed && (
+            <p
+              className="mt-1 text-xs font-bold uppercase"
+              style={{ color: lapsed ? PALETTE.cream : "var(--muted-foreground)" }}
+            >
+              Ends {formatTargetLabel(countdown.targetAt)}
+            </p>
+          )}
+        </div>
         <span
           className="brut-thin shrink-0 rounded-none px-3 py-1 text-xs font-bold whitespace-nowrap uppercase"
           style={{ backgroundColor: tagColor, color: tagTextColor(tagColor) }}
@@ -88,6 +100,7 @@ export function CountdownCard({
       >
         {text}
       </p>
+
 
       <div className="flex gap-[3px]" aria-label={`${Math.round(pct)}% elapsed`}>
         {Array.from({ length: SEGMENTS }).map((_, i) => (
