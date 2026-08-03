@@ -38,11 +38,43 @@ export function CountdownGrid() {
     );
   }
 
+  const used = CATEGORIES.filter((cat) =>
+    countdowns.some((c) => categoryMeta(c.category).key === cat.key),
+  );
+  const visible =
+    filter === "all" ? countdowns : countdowns.filter((c) => categoryMeta(c.category).key === filter);
+
   return (
-    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
-      {countdowns.map((c) => (
-        <CountdownCard key={c.id} countdown={c} now={now} onChanged={() => {}} />
-      ))}
+    <div className="flex flex-col gap-6">
+      {used.length > 1 && (
+        <div className="flex flex-wrap gap-2">
+          {[{ key: "all" as const, label: "All" }, ...used].map((cat) => {
+            const on = filter === cat.key;
+            return (
+              <button
+                key={cat.key}
+                type="button"
+                onClick={() => setFilter(cat.key)}
+                aria-pressed={on}
+                className="brut-thin brut-press rounded-none px-3 py-2 text-xs font-bold uppercase"
+                style={
+                  on
+                    ? { backgroundColor: PALETTE.mauve, color: PALETTE.cream }
+                    : { backgroundColor: "var(--cream)" }
+                }
+              >
+                {cat.label}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
+        {visible.map((c) => (
+          <CountdownCard key={c.id} countdown={c} now={now} onChanged={() => {}} />
+        ))}
+      </div>
     </div>
   );
 }
