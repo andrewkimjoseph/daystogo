@@ -7,23 +7,36 @@ import { PALETTE } from "@/lib/palette";
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "Days To Go — About" },
+      { title: "About Days To Go — Local-First Countdown Timers" },
       {
         name: "description",
         content:
           "What Days To Go is: playful brutalist countdown timers, 3 seconds to years out, running locally in your browser with confetti and a chime at zero.",
       },
-      { property: "og:title", content: "Days To Go — About" },
+      { property: "og:title", content: "About Days To Go — Local-First Countdown Timers" },
       {
         property: "og:description",
         content:
           "Playful brutalist countdown timers, 3 seconds to years out, running locally in your browser.",
       },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "/about" },
+      { property: "og:url", content: "https://daystogo.lovable.app/about" },
     ],
-    links: [{ rel: "canonical", href: "/about" }],
+    links: [{ rel: "canonical", href: "https://daystogo.lovable.app/about" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Person",
+          name: "Andrew Kim Joseph",
+          url: "https://github.com/andrewkimjoseph",
+          sameAs: ["https://github.com/andrewkimjoseph"],
+        }),
+      },
+    ],
   }),
+
   component: AboutPage,
 });
 
