@@ -357,6 +357,7 @@ function DayPanel({ date, items }: { date: Date; items: Countdown[] }) {
             );
           })}
         </ul>
+        </>
       )}
     </div>
   );
