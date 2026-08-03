@@ -1,4 +1,5 @@
 import { getDb, type Countdown, type DurationType } from "./db";
+import type { CountdownCategory } from "./categories";
 
 export const MIN_DURATION_SECONDS = 3;
 /** Sanity bound, not a product limit: ~100 years keeps dates valid. */
