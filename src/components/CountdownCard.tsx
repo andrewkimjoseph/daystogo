@@ -62,7 +62,7 @@ export function CountdownCard({
   return (
     <article
       ref={cardRef}
-      className="brut animate-pop-in relative flex flex-col gap-4 bg-card p-5"
+      className="brut animate-pop-in relative flex h-full flex-col gap-4 bg-card p-5"
       style={lapsed ? { backgroundImage: `linear-gradient(140deg, ${PALETTE.mauve}, ${PALETTE.red})` } : undefined}
     >
       {lapsed && (
@@ -112,7 +112,7 @@ export function CountdownCard({
       </p>
 
 
-      <div className="flex gap-[3px]" aria-label={`${Math.round(pct)}% elapsed`}>
+      <div className="mt-auto flex gap-[3px]" aria-label={`${Math.round(pct)}% elapsed`}>
         {Array.from({ length: SEGMENTS }).map((_, i) => (
           <span
             key={i}
