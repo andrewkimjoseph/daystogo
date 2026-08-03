@@ -146,16 +146,16 @@ export function BrutalDateTimePicker({ value, onChange }: Props) {
         type="button"
         aria-label={`${label} up`}
         onClick={() => nudge(unit, step)}
-        className="brut-thin brut-press flex h-7 w-14 items-center justify-center bg-card"
+        className="brut-thin brut-press flex h-9 w-16 items-center justify-center bg-card sm:h-7 sm:w-14"
       >
         <ChevronUp className="h-4 w-4" strokeWidth={3} />
       </button>
-      <span className="tick-numerals w-14 py-1 text-center text-2xl">{display}</span>
+      <span className="tick-numerals w-16 py-1 text-center text-2xl sm:w-14">{display}</span>
       <button
         type="button"
         aria-label={`${label} down`}
         onClick={() => nudge(unit, -step)}
-        className="brut-thin brut-press flex h-7 w-14 items-center justify-center bg-card"
+        className="brut-thin brut-press flex h-9 w-16 items-center justify-center bg-card sm:h-7 sm:w-14"
       >
         <ChevronDown className="h-4 w-4" strokeWidth={3} />
       </button>
@@ -213,7 +213,7 @@ export function BrutalDateTimePicker({ value, onChange }: Props) {
                   type="button"
                   onClick={() => moveTo(y, view.m)}
                   aria-pressed={isSelected}
-                  className={`tick-numerals h-9 text-sm ${isSelected ? "brut-thin" : ""}`}
+                  className={`tick-numerals h-11 text-base sm:h-9 sm:text-sm ${isSelected ? "brut-thin" : ""}`}
                   style={
                     isSelected ? { backgroundColor: PALETTE.teal, color: PALETTE.cream } : undefined
                   }
@@ -236,7 +236,7 @@ export function BrutalDateTimePicker({ value, onChange }: Props) {
                 type="button"
                 onClick={() => moveTo(view.y, i)}
                 aria-pressed={isSelected}
-                className={`h-9 text-xs font-bold uppercase ${isSelected ? "brut-thin" : ""}`}
+                className={`h-11 text-xs font-bold uppercase sm:h-9 ${isSelected ? "brut-thin" : ""}`}
                 style={
                   isSelected ? { backgroundColor: PALETTE.teal, color: PALETTE.cream } : undefined
                 }
@@ -268,7 +268,7 @@ export function BrutalDateTimePicker({ value, onChange }: Props) {
                 type="button"
                 onClick={() => pickDay(d)}
                 aria-pressed={isSelected}
-                className={`tick-numerals h-9 text-sm ${isSelected ? "brut-thin" : ""} ${
+                className={`tick-numerals h-11 text-base sm:h-9 sm:text-sm ${isSelected ? "brut-thin" : ""} ${
                   outside && !isSelected ? "opacity-35" : ""
                 }`}
                 style={
@@ -305,7 +305,7 @@ export function BrutalDateTimePicker({ value, onChange }: Props) {
             key={p.key}
             type="button"
             onClick={() => preset(p.key)}
-            className="brut-thin brut-press flex-1 bg-cream px-2 py-1.5 text-[11px] font-bold uppercase"
+            className="brut-thin brut-press basis-[calc(50%-0.25rem)] bg-cream px-2 py-2.5 text-[11px] font-bold uppercase sm:flex-1 sm:basis-auto"
           >
             {p.label}
           </button>
