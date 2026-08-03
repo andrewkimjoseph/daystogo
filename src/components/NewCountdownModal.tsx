@@ -5,6 +5,7 @@ import { countdownsRepo, toSeconds, validateSeconds } from "@/lib/countdownsRepo
 import { COLOR_TAGS, PALETTE, tagTextColor } from "@/lib/palette";
 import { playSound } from "@/lib/soundManager";
 import { localInputValue, spanFromNow } from "@/lib/localTime";
+import { BrutalDateTimePicker } from "./BrutalDateTimePicker";
 
 const TYPES: { key: DurationType; label: string; max: number }[] = [
   { key: "seconds", label: "Secs", max: 86400 },
@@ -142,15 +143,15 @@ export function NewCountdownModal({
 
         {mode === "target" ? (
           <>
-            <label className="mb-2 block text-xs font-bold uppercase" htmlFor="targetAt">
+            <span className="mb-2 block text-xs font-bold uppercase">
               End it at (your local time)
-            </label>
-            <input
-              id="targetAt"
-              type="datetime-local"
+            </span>
+            <BrutalDateTimePicker
               value={targetInput}
-              onChange={(e) => setTargetInput(e.target.value)}
-              className="tick-numerals brut-thin w-full bg-card px-3 py-2.5 text-xl outline-none focus:ring-4 focus:ring-primary"
+              onChange={(next) => {
+                setTargetInput(next);
+                setError(null);
+              }}
             />
             <p className="mt-2 mb-5 text-sm font-bold text-muted-foreground">
               {targetPreview ?? "Pick a date and time."}
