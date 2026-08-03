@@ -90,7 +90,13 @@ export function CreateCountdownForm() {
         setError(problem);
         return;
       }
-      await countdownsRepo.create({ title, durationType, durationValue: num, colorTag });
+      await countdownsRepo.create({
+        title,
+        durationType,
+        durationValue: num,
+        colorTag,
+        category,
+      });
     }
 
     playSound("start");
