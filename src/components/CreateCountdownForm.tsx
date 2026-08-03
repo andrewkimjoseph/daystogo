@@ -13,7 +13,6 @@ const TYPES: { key: DurationType; label: string; max: number }[] = [
   { key: "seconds", label: "Secs", max: 86400 },
   { key: "minutes", label: "Mins", max: 525600 },
   { key: "hours", label: "Hours", max: 8760 },
-  { key: "days", label: "Days", max: 36500 },
 ];
 
 type Mode = "duration" | "target";
@@ -32,8 +31,8 @@ export function CreateCountdownForm({ initialDate }: { initialDate?: string }) {
   const seededDay = parseDayParam(initialDate);
   const [mode, setMode] = useState<Mode>(seededDay ? "target" : "duration");
   const [title, setTitle] = useState("");
-  const [durationType, setDurationType] = useState<DurationType>("days");
-  const [value, setValue] = useState("7");
+  const [durationType, setDurationType] = useState<DurationType>("hours");
+  const [value, setValue] = useState("24");
   const [targetInput, setTargetInput] = useState("");
   const [colorTag, setColorTag] = useState<string>(PALETTE.teal);
   const [category, setCategory] = useState<CountdownCategory>("other");
@@ -274,7 +273,7 @@ export function CreateCountdownForm({ initialDate }: { initialDate?: string }) {
         ) : (
           <>
             <span className="mb-2 block text-xs font-bold uppercase">Duration type</span>
-            <div className="mb-6 grid grid-cols-2 gap-2 sm:grid-cols-4">
+            <div className="mb-6 grid grid-cols-3 gap-2">
               {TYPES.map((t) => (
                 <button
                   key={t.key}
