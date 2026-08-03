@@ -27,6 +27,7 @@ export function CountdownCard({
 }) {
   const cardRef = useRef<HTMLElement | null>(null);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [editing, setEditing] = useState(false);
 
   const remaining = remainingMs(countdown, now);
   const lapsed = countdown.status === "lapsed" || (countdown.status === "running" && remaining <= 0);
