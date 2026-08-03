@@ -31,8 +31,8 @@ export function CreateCountdownForm({ initialDate }: { initialDate?: string }) {
   const seededDay = parseDayParam(initialDate);
   const [mode, setMode] = useState<Mode>(seededDay ? "target" : "duration");
   const [title, setTitle] = useState("");
-  const [durationType, setDurationType] = useState<DurationType>("days");
-  const [value, setValue] = useState("7");
+  const [durationType, setDurationType] = useState<DurationType>("hours");
+  const [value, setValue] = useState("24");
   const [targetInput, setTargetInput] = useState("");
   const [colorTag, setColorTag] = useState<string>(PALETTE.teal);
   const [category, setCategory] = useState<CountdownCategory>("other");
