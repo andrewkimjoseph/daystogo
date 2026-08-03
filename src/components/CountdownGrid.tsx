@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
 import { Link } from "@tanstack/react-router";
-import logoAsset from "@/assets/logo.svg.asset.json";
+import logoUrl from "@/assets/logo.svg";
 import { countdownsRepo } from "@/lib/countdownsRepo";
 import { CATEGORIES, categoryMeta, type CountdownCategory } from "@/lib/categories";
 import { PALETTE } from "@/lib/palette";
@@ -22,7 +22,7 @@ export function CountdownGrid() {
   if (countdowns.length === 0) {
     return (
       <div className="brut animate-pop-in mx-auto flex max-w-xl flex-col items-center gap-5 bg-card p-6 text-center sm:p-12">
-        <img src={logoAsset.url} alt="Days To Go" className="w-36 sm:w-48" />
+        <img src={logoUrl} alt="Days To Go" className="w-36 sm:w-48" />
         <h2 className="text-xl uppercase sm:text-2xl">No countdowns yet.</h2>
         <p className="max-w-sm font-bold text-muted-foreground">
           What are you waiting for? Pick something, put a clock on it, watch it sweat.
