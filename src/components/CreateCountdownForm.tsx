@@ -301,23 +301,7 @@ export function CreateCountdownForm() {
         )}
       </div>
 
-      <div className="lg:col-span-2">
-        {error && (
-          <p
-            className="brut-thin mb-4 px-3 py-2 text-sm font-bold uppercase"
-            style={{ backgroundColor: PALETTE.red, color: PALETTE.cream }}
-            role="alert"
-          >
-            {error}
-          </p>
-        )}
-        <button
-          type="submit"
-          className="brut brut-press w-full rounded-none bg-primary px-4 py-4 text-lg font-bold text-primary-foreground uppercase"
-        >
-          Start the clock
-        </button>
-      </div>
     </form>
+
   );
 }
