@@ -103,10 +103,16 @@ export function CreateCountdownForm({ initialDate }: { initialDate?: string }) {
       await countdownsRepo.create({ mode: "target", title, targetAt, colorTag, category });
     } else {
       const num = Number(value);
-      if (!Number.isFinite(num) || num <= 0) {
+      if (!Number.isFinite(num) || num <= 0 || !Number.isInteger(num)) {
         setError("That's not a number we can count down from.");
         return;
       }
+      if (num > activeType.max) {
+        setError(`Max is ${activeType.max} ${activeType.label.toLowerCase()} — use End time for longer.`);
+        setValue(String(activeType.max));
+        return;
+      }
+
       const problem = validateSeconds(toSeconds(durationType, num));
       if (problem) {
         setError(problem);
