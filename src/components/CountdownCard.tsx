@@ -56,7 +56,7 @@ export function CountdownCard({
 
 
   const tagColor = lapsed ? PALETTE.red : countdown.colorTag;
-  const badge = lapsed ? "🎉 Lapsed!" : countdown.status === "paused" ? "Paused" : "Running";
+  const badge = lapsed ? "🎉 Lapsed!" : "Running";
   const category = categoryMeta(countdown.category);
   const CategoryIcon = category.icon;
 
