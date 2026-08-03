@@ -33,7 +33,8 @@ function AboutPage() {
       <SiteHeader />
 
 
-      <main className="view-page mx-auto max-w-3xl px-4 py-10 sm:px-6">
+      <main className="view-page mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
+        <div className="max-w-3xl">
         <h1 className="hero-gradient text-4xl uppercase sm:text-5xl">About Days To Go</h1>
         <p className="mt-4 text-lg font-bold text-muted-foreground">
           A playful, brutalist countdown timer that lives right in your browser.
