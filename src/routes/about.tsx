@@ -87,7 +87,6 @@ function AboutPage() {
             Back to the timers
           </Link>
         </div>
-        </div>
       </main>
     </div>
   );
