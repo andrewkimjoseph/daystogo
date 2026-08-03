@@ -48,7 +48,7 @@ function CreateCountdownPage() {
           </Link>
         </div>
 
-        <CreateCountdownForm />
+        <CreateCountdownForm initialDate={date} />
       </main>
 
     </div>
