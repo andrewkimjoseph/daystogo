@@ -116,21 +116,8 @@ export function BrutalDateTimePicker({ value, onChange }: Props) {
     setPane((p) => (p === next ? "days" : next));
   }
 
-  function preset(kind: "tonight" | "tomorrow" | "week" | "year") {
-    const next = new Date();
-    next.setSeconds(0, 0);
-    if (kind === "tonight") next.setHours(18, 0);
-    if (kind === "tomorrow") {
-      next.setDate(next.getDate() + 1);
-      next.setHours(9, 0);
-    }
-    if (kind === "week") next.setDate(next.getDate() + 7);
-    if (kind === "year") next.setFullYear(next.getFullYear() + 1);
-    commit(next);
-    setDir(0);
-    setView({ y: next.getFullYear(), m: next.getMonth() });
-    setPane("days");
-  }
+
+
 
 
   const arrow = (label: string, dir: "l" | "r", onClick: () => void) => (
@@ -321,25 +308,6 @@ export function BrutalDateTimePicker({ value, onChange }: Props) {
         {stepper("Min", pad(selected.getMinutes()), "minutes", 1)}
       </div>
 
-      <div className="mt-3 flex flex-wrap gap-2">
-        {(
-          [
-            { key: "tonight", label: "Tonight 18:00" },
-            { key: "tomorrow", label: "Tomorrow 09:00" },
-            { key: "week", label: "+1 week" },
-            { key: "year", label: "+1 year" },
-          ] as const
-        ).map((p) => (
-          <button
-            key={p.key}
-            type="button"
-            onClick={() => preset(p.key)}
-            className="brut-thin brut-press basis-[calc(50%-0.25rem)] bg-cream px-2 py-2.5 text-[11px] font-bold uppercase sm:flex-1 sm:basis-auto"
-          >
-            {p.label}
-          </button>
-        ))}
-      </div>
     </div>
   );
 }
