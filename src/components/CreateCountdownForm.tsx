@@ -273,7 +273,7 @@ export function CreateCountdownForm({ initialDate }: { initialDate?: string }) {
         ) : (
           <>
             <span className="mb-2 block text-xs font-bold uppercase">Duration type</span>
-            <div className="mb-6 grid grid-cols-2 gap-2 sm:grid-cols-4">
+            <div className="mb-6 grid grid-cols-3 gap-2">
               {TYPES.map((t) => (
                 <button
                   key={t.key}
