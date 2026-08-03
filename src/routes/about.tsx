@@ -11,13 +11,13 @@ export const Route = createFileRoute("/about")({
       {
         name: "description",
         content:
-          "What Days To Go is: playful brutalist countdown timers, 3 seconds to 365 days, running locally in your browser with confetti and a chime at zero.",
+          "What Days To Go is: playful brutalist countdown timers, 3 seconds to years out, running locally in your browser with confetti and a chime at zero.",
       },
       { property: "og:title", content: "Days To Go — About" },
       {
         property: "og:description",
         content:
-          "Playful brutalist countdown timers, 3 seconds to 365 days, running locally in your browser.",
+          "Playful brutalist countdown timers, 3 seconds to years out, running locally in your browser.",
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "/about" },
@@ -43,8 +43,8 @@ function AboutPage() {
           <p className="text-base leading-relaxed">
             Days To Go lets you run as many countdowns as you like, from a quick{" "}
             <span className="font-bold">3 seconds</span> all the way out to{" "}
-            <span className="font-bold">365 days</span>. Everything ticks at once on one
-            shared clock, so you can keep an eye on the lot at a glance.
+            <span className="font-bold">years from now</span> — there’s no ceiling. Everything
+            ticks at once on one shared clock, down to the second, so you can watch time pass.
           </p>
           <p className="mt-4 text-base leading-relaxed">
             When a timer hits zero, it celebrates with a burst of{" "}

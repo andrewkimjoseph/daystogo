@@ -10,7 +10,7 @@ const TYPES: { key: DurationType; label: string; max: number }[] = [
   { key: "seconds", label: "Secs", max: 86400 },
   { key: "minutes", label: "Mins", max: 525600 },
   { key: "hours", label: "Hours", max: 8760 },
-  { key: "days", label: "Days", max: 365 },
+  { key: "days", label: "Days", max: 36500 },
 ];
 
 type Mode = "duration" | "target";

@@ -1,7 +1,8 @@
 import { getDb, type Countdown, type DurationType } from "./db";
 
 export const MIN_DURATION_SECONDS = 3;
-export const MAX_DURATION_SECONDS = 365 * 24 * 60 * 60; // 31,536,000
+/** Sanity bound, not a product limit: ~100 years keeps dates valid. */
+export const MAX_DURATION_SECONDS = 100 * 365 * 24 * 60 * 60;
 
 const MULTIPLIER: Record<DurationType, number> = {
   seconds: 1,
@@ -49,7 +50,7 @@ function describeSeconds(seconds: number): { type: DurationType; value: number }
 export function validateSeconds(seconds: number): string | null {
   if (!Number.isFinite(seconds)) return "That's not a number we can count down from.";
   if (seconds < MIN_DURATION_SECONDS) return "Give it at least 3 seconds to be a real countdown.";
-  if (seconds > MAX_DURATION_SECONDS) return "Whoa there — max is 365 days.";
+  if (seconds > MAX_DURATION_SECONDS) return "Forever isn\u2019t a thing \u2014 pick something this side of the next century.";
   return null;
 }
 

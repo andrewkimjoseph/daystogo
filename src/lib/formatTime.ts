@@ -13,10 +13,11 @@ export function formatRemaining(ms: number): Formatted {
   const minutes = Math.floor((total % 3600) / 60);
   const seconds = total % 60;
 
+  const clock = `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
   if (total === 0) return { text: "00:00:00", dramatic: true };
-  if (total < 60) return { text: `00:00:${pad(seconds)}`, dramatic: true };
-  if (days >= 1) return { text: `${days}d ${pad(hours)}h`, dramatic: false };
-  return { text: `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`, dramatic: false };
+  if (total < 60) return { text: clock, dramatic: true };
+  if (days >= 1) return { text: `${days}d ${clock}`, dramatic: false };
+  return { text: clock, dramatic: false };
 }
 
 export function progressPercent(startedAt: number, endsAt: number, remaining: number): number {
