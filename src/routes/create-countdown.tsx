@@ -19,9 +19,12 @@ export const Route = createFileRoute("/create-countdown")({
           "Pick a duration or an exact end time, name it, tag it, and watch it tick down to the second.",
       },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://daystogo.lovable.app/create-countdown" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "https://daystogo.lovable.app/create-countdown" }],
   }),
+
   component: CreateCountdownPage,
 });
 
