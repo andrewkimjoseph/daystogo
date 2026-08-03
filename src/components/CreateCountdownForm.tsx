@@ -3,6 +3,7 @@ import { useNavigate } from "@tanstack/react-router";
 import type { DurationType } from "@/lib/db";
 import { countdownsRepo, toSeconds, validateSeconds } from "@/lib/countdownsRepo";
 import { COLOR_TAGS, PALETTE, tagTextColor } from "@/lib/palette";
+import { CATEGORIES, type CountdownCategory } from "@/lib/categories";
 import { playSound } from "@/lib/soundManager";
 import { localInputValue, spanFromNow } from "@/lib/localTime";
 import { BrutalCalendar, BrutalTimeField } from "./BrutalDateTimePicker";
