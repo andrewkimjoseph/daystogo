@@ -78,7 +78,7 @@ export function CreateCountdownForm() {
         setError(problem);
         return;
       }
-      await countdownsRepo.create({ mode: "target", title, targetAt, colorTag });
+      await countdownsRepo.create({ mode: "target", title, targetAt, colorTag, category });
     } else {
       const num = Number(value);
       if (!Number.isFinite(num) || num <= 0) {
