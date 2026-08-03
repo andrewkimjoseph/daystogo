@@ -60,7 +60,11 @@ export function BrutalDateTimePicker({ value, onChange }: Props) {
   const [view, setView] = useState(() => ({ y: selected.getFullYear(), m: selected.getMonth() }));
   const [pane, setPane] = useState<Pane>("days");
   const [yearPage, setYearPage] = useState(() => selected.getFullYear() - 5);
+  /** Direction of the last navigation, for the slide animation. 0 = zoom swap. */
+  const [dir, setDir] = useState<-1 | 0 | 1>(0);
   const today = new Date();
+  const swapClass = dir === 1 ? "swap-right" : dir === -1 ? "swap-left" : "swap-zoom";
+
 
   const days = useMemo(() => monthGrid(view.y, view.m), [view]);
   const years = useMemo(
@@ -82,6 +86,7 @@ export function BrutalDateTimePicker({ value, onChange }: Props) {
   function moveTo(y: number, m: number) {
     const day = Math.min(selected.getDate(), daysInMonth(y, m));
     const next = new Date(y, m, day, selected.getHours(), selected.getMinutes(), 0, 0);
+    setDir(0);
     setView({ y, m });
     setPane("days");
     commit(next);
@@ -97,11 +102,18 @@ export function BrutalDateTimePicker({ value, onChange }: Props) {
 
   function shiftMonth(delta: number) {
     const d = new Date(view.y, view.m + delta, 1);
+    setDir(delta > 0 ? 1 : -1);
     setView({ y: d.getFullYear(), m: d.getMonth() });
   }
 
   function shiftYear(delta: number) {
+    setDir(delta > 0 ? 1 : -1);
     setView((v) => ({ ...v, y: v.y + delta }));
+  }
+
+  function togglePane(next: Pane) {
+    setDir(0);
+    setPane((p) => (p === next ? "days" : next));
   }
 
   function preset(kind: "tonight" | "tomorrow" | "week" | "year") {
@@ -115,9 +127,11 @@ export function BrutalDateTimePicker({ value, onChange }: Props) {
     if (kind === "week") next.setDate(next.getDate() + 7);
     if (kind === "year") next.setFullYear(next.getFullYear() + 1);
     commit(next);
+    setDir(0);
     setView({ y: next.getFullYear(), m: next.getMonth() });
     setPane("days");
   }
+
 
   const arrow = (label: string, dir: "l" | "r", onClick: () => void) => (
     <button
@@ -150,7 +164,12 @@ export function BrutalDateTimePicker({ value, onChange }: Props) {
       >
         <ChevronUp className="h-4 w-4" strokeWidth={3} />
       </button>
-      <span className="tick-numerals w-16 py-1 text-center text-2xl sm:w-14">{display}</span>
+      <span
+        key={display}
+        className="tick-numerals tick-bump w-16 py-1 text-center text-2xl sm:w-14"
+      >
+        {display}
+      </span>
       <button
         type="button"
         aria-label={`${label} down`}
@@ -171,12 +190,14 @@ export function BrutalDateTimePicker({ value, onChange }: Props) {
           type="button"
           onClick={() => {
             setYearPage(view.y - 5);
-            setPane((p) => (p === "years" ? "days" : "years"));
+            togglePane("years");
           }}
           aria-pressed={pane === "years"}
           className="brut-thin brut-press tick-numerals flex-1 bg-cream py-1 text-center text-lg"
         >
-          {view.y}
+          <span key={view.y} className="tick-bump inline-block">
+            {view.y}
+          </span>
         </button>
         {arrow("Next year", "r", () => shiftYear(1))}
       </div>
@@ -186,11 +207,13 @@ export function BrutalDateTimePicker({ value, onChange }: Props) {
         {arrow("Previous month", "l", () => shiftMonth(-1))}
         <button
           type="button"
-          onClick={() => setPane((p) => (p === "months" ? "days" : "months"))}
+          onClick={() => togglePane("months")}
           aria-pressed={pane === "months"}
           className="brut-thin brut-press flex-1 bg-cream py-1 text-center text-sm font-bold uppercase"
         >
-          {MONTHS[view.m]}
+          <span key={view.m} className="tick-bump inline-block">
+            {MONTHS[view.m]}
+          </span>
         </button>
         {arrow("Next month", "r", () => shiftMonth(1))}
       </div>
@@ -198,13 +221,19 @@ export function BrutalDateTimePicker({ value, onChange }: Props) {
       {pane === "years" && (
         <div>
           <div className="mb-2 flex items-center justify-between gap-2">
-            {arrow("Previous years", "l", () => setYearPage((y) => y - 12))}
+            {arrow("Previous years", "l", () => {
+              setDir(-1);
+              setYearPage((y) => y - 12);
+            })}
             <span className="tick-numerals flex-1 text-center text-xs">
               {years[0]} – {years[years.length - 1]}
             </span>
-            {arrow("Next years", "r", () => setYearPage((y) => y + 12))}
+            {arrow("Next years", "r", () => {
+              setDir(1);
+              setYearPage((y) => y + 12);
+            })}
           </div>
-          <div className="grid grid-cols-4 gap-1">
+          <div key={`years-${yearPage}`} className={`grid grid-cols-4 gap-1 ${swapClass}`}>
             {years.map((y) => {
               const isSelected = y === selected.getFullYear();
               return (
@@ -227,7 +256,7 @@ export function BrutalDateTimePicker({ value, onChange }: Props) {
       )}
 
       {pane === "months" && (
-        <div className="grid grid-cols-3 gap-1">
+        <div key={`months-${view.y}`} className={`grid grid-cols-3 gap-1 ${swapClass}`}>
           {MONTHS_SHORT.map((label, i) => {
             const isSelected = i === selected.getMonth() && view.y === selected.getFullYear();
             return (
@@ -249,7 +278,7 @@ export function BrutalDateTimePicker({ value, onChange }: Props) {
       )}
 
       {pane === "days" && (
-        <div className="grid grid-cols-7 gap-1">
+        <div key={`days-${view.y}-${view.m}`} className={`grid grid-cols-7 gap-1 ${swapClass}`}>
           {WEEKDAYS.map((w, i) => (
             <span
               key={i}
