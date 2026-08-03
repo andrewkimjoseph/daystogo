@@ -104,9 +104,9 @@ export function CreateCountdownForm() {
   }
 
   return (
-    <form onSubmit={submit} className="grid gap-6 lg:grid-cols-2 lg:items-start">
+    <form onSubmit={submit} className="grid gap-6 lg:grid-cols-2 lg:items-stretch">
       {/* Left column: the basics */}
-      <div className="brut bg-card p-4 sm:p-6">
+      <div className="brut h-full bg-card p-4 sm:p-6">
         <span className="mb-2 block text-xs font-bold uppercase">How do we count?</span>
         <div className="mb-6 grid grid-cols-2 gap-2">
           {(
