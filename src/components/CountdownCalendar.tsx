@@ -7,6 +7,7 @@ import { categoryMeta } from "@/lib/categories";
 import { PALETTE, tagTextColor } from "@/lib/palette";
 import { formatTargetLabel } from "@/lib/localTime";
 import type { Countdown } from "@/lib/db";
+import { useHydrated } from "@/hooks/useHydrated";
 
 const WEEKDAYS = ["M", "T", "W", "T", "F", "S", "S"];
 const MONTHS = [
