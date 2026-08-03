@@ -1,4 +1,5 @@
 import Dexie, { type Table } from "dexie";
+import type { CountdownCategory } from "./categories";
 
 export type DurationType = "seconds" | "minutes" | "hours" | "days";
 export type CountdownStatus = "running" | "paused" | "lapsed";
