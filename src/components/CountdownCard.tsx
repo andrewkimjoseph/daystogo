@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Pause, Play, RotateCcw, Trash2 } from "lucide-react";
+import { Pencil, RotateCcw, Trash2 } from "lucide-react";
 import type { Countdown } from "@/lib/db";
 import { countdownsRepo, remainingMs } from "@/lib/countdownsRepo";
 import { formatRemaining, progressPercent } from "@/lib/formatTime";
@@ -7,8 +7,8 @@ import { formatTargetLabel } from "@/lib/localTime";
 
 import { burstConfetti } from "@/lib/confetti";
 import { playSound } from "@/lib/soundManager";
-import { PALETTE, tagTextColor } from "@/lib/palette";
-import { categoryMeta } from "@/lib/categories";
+import { COLOR_TAGS, PALETTE, tagTextColor } from "@/lib/palette";
+import { CATEGORIES, categoryMeta, type CountdownCategory } from "@/lib/categories";
 import { Sparkle } from "./Sparkle";
 
 const SEGMENTS = 16;
@@ -27,6 +27,7 @@ export function CountdownCard({
 }) {
   const cardRef = useRef<HTMLElement | null>(null);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [editing, setEditing] = useState(false);
 
   const remaining = remainingMs(countdown, now);
   const lapsed = countdown.status === "lapsed" || (countdown.status === "running" && remaining <= 0);
@@ -55,7 +56,7 @@ export function CountdownCard({
 
 
   const tagColor = lapsed ? PALETTE.red : countdown.colorTag;
-  const badge = lapsed ? "🎉 Lapsed!" : countdown.status === "paused" ? "Paused" : "Running";
+  const badge = lapsed ? "🎉 Lapsed!" : "Running";
   const category = categoryMeta(countdown.category);
   const CategoryIcon = category.icon;
 
@@ -111,6 +112,69 @@ export function CountdownCard({
         {text}
       </p>
 
+      {editing && !lapsed && (
+        <div className="brut-thin animate-pop-in flex flex-col gap-3 bg-cream p-3">
+          <div>
+            <span className="mb-2 block text-[10px] font-bold uppercase">Colour tag</span>
+            <div className="flex flex-wrap gap-2">
+              {COLOR_TAGS.map((c) => (
+                <button
+                  key={c.hex}
+                  type="button"
+                  aria-label={c.label}
+                  aria-pressed={countdown.colorTag === c.hex}
+                  onClick={async () => {
+                    await countdownsRepo.updateTags(countdown.id, { colorTag: c.hex });
+                    onChanged();
+                  }}
+                  className="brut-thin brut-press h-8 w-8 rounded-none"
+                  style={{
+                    backgroundColor: c.hex,
+                    boxShadow:
+                      countdown.colorTag === c.hex ? "0 0 0 3px var(--ink) inset" : undefined,
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+          <div>
+            <span className="mb-2 block text-[10px] font-bold uppercase">Category</span>
+            <div className="grid grid-cols-4 gap-1">
+              {CATEGORIES.map((c) => {
+                const Icon = c.icon;
+                const on = categoryMeta(countdown.category).key === c.key;
+                return (
+                  <button
+                    key={c.key}
+                    type="button"
+                    title={c.label}
+                    aria-label={c.label}
+                    aria-pressed={on}
+                    onClick={async () => {
+                      await countdownsRepo.updateTags(countdown.id, {
+                        category: c.key as CountdownCategory,
+                      });
+                      onChanged();
+                    }}
+                    className="brut-thin brut-press flex h-9 items-center justify-center rounded-none"
+                    style={
+                      on
+                        ? { backgroundColor: PALETTE.mauve, color: PALETTE.cream }
+                        : { backgroundColor: "var(--card)" }
+                    }
+                  >
+                    <Icon className="h-4 w-4" strokeWidth={2.5} />
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+          <p className="text-[10px] font-bold uppercase text-muted-foreground">
+            Time can’t be edited — the clock is already running.
+          </p>
+        </div>
+      )}
+
 
       <div className="mt-auto flex gap-[3px]" aria-label={`${Math.round(pct)}% elapsed`}>
         {Array.from({ length: SEGMENTS }).map((_, i) => (
@@ -165,22 +229,11 @@ export function CountdownCard({
           ) : (
             <button
               type="button"
-              onClick={async () => {
-                if (countdown.status === "running") await countdownsRepo.pause(countdown.id);
-                else await countdownsRepo.resume(countdown.id);
-                onChanged();
-              }}
+              onClick={() => setEditing((v) => !v)}
+              aria-expanded={editing}
               className="brut-thin brut-press flex flex-1 items-center justify-center gap-2 rounded-none bg-primary px-3 py-2 text-sm font-bold text-primary-foreground uppercase"
             >
-              {countdown.status === "running" ? (
-                <>
-                  <Pause className="h-4 w-4" strokeWidth={3} /> Pause
-                </>
-              ) : (
-                <>
-                  <Play className="h-4 w-4" strokeWidth={3} /> Resume
-                </>
-              )}
+              <Pencil className="h-4 w-4" strokeWidth={3} /> {editing ? "Done" : "Edit tags"}
             </button>
           )}
           <button

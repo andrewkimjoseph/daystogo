@@ -90,30 +90,14 @@ export const countdownsRepo = {
     return row;
   },
 
-  async pause(id: string): Promise<void> {
-    const db = getDb();
-    const c = await db.countdowns.get(id);
-    if (!c || c.status !== "running") return;
-    const now = Date.now();
-    await db.countdowns.update(id, {
-      status: "paused",
-      pausedRemainingMs: Math.max(0, c.endsAt - now),
-      updatedAt: now,
-    });
+  /** Only the cosmetic fields are editable once a clock is running. */
+  async updateTags(
+    id: string,
+    patch: { colorTag?: string; category?: CountdownCategory },
+  ): Promise<void> {
+    await getDb().countdowns.update(id, { ...patch, updatedAt: Date.now() });
   },
 
-  async resume(id: string): Promise<void> {
-    const db = getDb();
-    const c = await db.countdowns.get(id);
-    if (!c || c.status !== "paused") return;
-    const now = Date.now();
-    await db.countdowns.update(id, {
-      status: "running",
-      endsAt: now + (c.pausedRemainingMs ?? 0),
-      pausedRemainingMs: undefined,
-      updatedAt: now,
-    });
-  },
 
   async markLapsed(id: string): Promise<void> {
     await getDb().countdowns.update(id, { status: "lapsed", updatedAt: Date.now() });
@@ -142,13 +126,28 @@ export const countdownsRepo = {
     await getDb().countdowns.delete(id);
   },
 
-  /** Never trust a stale `status`: reconcile against the wall clock on load. */
+  /**
+   * Never trust a stale `status`: reconcile against the wall clock on load.
+   * Legacy paused rows resume where they left off — pausing is no longer offered.
+   */
   async reconcile(): Promise<void> {
     const db = getDb();
     const now = Date.now();
     const rows = await db.countdowns.toArray();
-    const due = rows.filter((c) => c.status === "running" && c.endsAt <= now);
-    if (due.length === 0) return;
-    await db.countdowns.bulkPut(due.map((c) => ({ ...c, status: "lapsed", updatedAt: now })));
+    const patched = rows
+      .filter((c) => c.status === "paused")
+      .map((c) => ({
+        ...c,
+        status: "running" as const,
+        endsAt: now + Math.max(0, c.pausedRemainingMs ?? 0),
+        pausedRemainingMs: undefined,
+        updatedAt: now,
+      }));
+    const due = [...patched, ...rows.filter((c) => c.status === "running")]
+      .filter((c) => c.endsAt <= now)
+      .map((c) => ({ ...c, status: "lapsed" as const, updatedAt: now }));
+    const byId = new Map([...patched, ...due].map((c) => [c.id, c]));
+    if (byId.size === 0) return;
+    await db.countdowns.bulkPut([...byId.values()]);
   },
 };

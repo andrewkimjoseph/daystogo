@@ -105,7 +105,36 @@ export function CreateCountdownForm() {
 
   return (
     <form onSubmit={submit} className="grid gap-6 lg:grid-cols-2 lg:items-stretch">
+      {/* Heading row: the submit button rides along so it never needs scrolling to. */}
+      <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center lg:col-span-2">
+        <div className="min-w-0">
+          <h1 className="hero-gradient text-3xl uppercase sm:text-5xl">New countdown</h1>
+          <p className="mt-2 max-w-xl font-bold text-muted-foreground">
+            Count a stretch of time, or count to an exact moment. Either way it starts the second
+            you hit go.
+          </p>
+        </div>
+        <div className="flex flex-col gap-2 sm:items-end">
+          <button
+            type="submit"
+            className="brut brut-press w-full rounded-none bg-primary px-6 py-4 text-lg font-bold text-primary-foreground uppercase sm:w-auto"
+          >
+            Start the clock
+          </button>
+          {error && (
+            <p
+              className="brut-thin px-3 py-2 text-sm font-bold uppercase"
+              style={{ backgroundColor: PALETTE.red, color: PALETTE.cream }}
+              role="alert"
+            >
+              {error}
+            </p>
+          )}
+        </div>
+      </div>
+
       {/* Left column: the basics */}
+
       <div className="brut h-full bg-card p-4 sm:p-6">
         <span className="mb-2 block text-xs font-bold uppercase">How do we count?</span>
         <div className="mb-6 grid grid-cols-2 gap-2">
@@ -270,24 +299,6 @@ export function CreateCountdownForm() {
             </p>
           </>
         )}
-      </div>
-
-      <div className="lg:col-span-2">
-        {error && (
-          <p
-            className="brut-thin mb-4 px-3 py-2 text-sm font-bold uppercase"
-            style={{ backgroundColor: PALETTE.red, color: PALETTE.cream }}
-            role="alert"
-          >
-            {error}
-          </p>
-        )}
-        <button
-          type="submit"
-          className="brut brut-press w-full rounded-none bg-primary px-4 py-4 text-lg font-bold text-primary-foreground uppercase"
-        >
-          Start the clock
-        </button>
       </div>
     </form>
   );

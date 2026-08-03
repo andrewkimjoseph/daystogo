@@ -76,7 +76,7 @@ function AboutPage() {
             <span className="font-bold" style={{ color: PALETTE.red }}>
               confetti
             </span>{" "}
-            and a little chime. Pause, resume, or run it again — it's all yours.
+            and a little chime. Re-tag it, run it again, or bin it — it's all yours.
           </p>
           <p className="mt-4 text-base leading-relaxed">
             It's local-first: your timers are saved in your browser, so there's no
