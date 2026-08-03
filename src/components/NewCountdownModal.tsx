@@ -1,14 +1,10 @@
 import { useState } from "react";
 import { X } from "lucide-react";
 import type { DurationType } from "@/lib/db";
-import {
-  MAX_DURATION_SECONDS,
-  MIN_DURATION_SECONDS,
-  countdownsRepo,
-  toSeconds,
-} from "@/lib/countdownsRepo";
+import { countdownsRepo, toSeconds, validateSeconds } from "@/lib/countdownsRepo";
 import { COLOR_TAGS, PALETTE, tagTextColor } from "@/lib/palette";
 import { playSound } from "@/lib/soundManager";
+import { localInputValue, spanFromNow } from "@/lib/localTime";
 
 const TYPES: { key: DurationType; label: string; max: number }[] = [
   { key: "seconds", label: "Secs", max: 86400 },
@@ -17,6 +13,8 @@ const TYPES: { key: DurationType; label: string; max: number }[] = [
   { key: "days", label: "Days", max: 365 },
 ];
 
+type Mode = "duration" | "target";
+
 export function NewCountdownModal({
   onClose,
   onCreated,
@@ -24,13 +22,16 @@ export function NewCountdownModal({
   onClose: () => void;
   onCreated: () => void;
 }) {
+  const [mode, setMode] = useState<Mode>("duration");
   const [title, setTitle] = useState("");
   const [durationType, setDurationType] = useState<DurationType>("days");
   const [value, setValue] = useState("7");
+  const [targetInput, setTargetInput] = useState(() => localInputValue(Date.now() + 3600_000));
   const [colorTag, setColorTag] = useState<string>(PALETTE.teal);
   const [error, setError] = useState<string | null>(null);
 
   const activeType = TYPES.find((t) => t.key === durationType)!;
+  const targetPreview = spanFromNow(targetInput);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -38,25 +39,43 @@ export function NewCountdownModal({
       setError("Every countdown needs a name. Go on.");
       return;
     }
-    const num = Number(value);
-    if (!Number.isFinite(num) || num <= 0) {
-      setError("That's not a number we can count down from.");
-      return;
+
+    if (mode === "target") {
+      const targetAt = new Date(targetInput).getTime();
+      if (!Number.isFinite(targetAt)) {
+        setError("Pick a date and time we can actually count to.");
+        return;
+      }
+      const seconds = Math.round((targetAt - Date.now()) / 1000);
+      if (seconds <= 0) {
+        setError("That moment has already been and gone. Pick a future one.");
+        return;
+      }
+      const problem = validateSeconds(seconds);
+      if (problem) {
+        setError(problem);
+        return;
+      }
+      await countdownsRepo.create({ mode: "target", title, targetAt, colorTag });
+    } else {
+      const num = Number(value);
+      if (!Number.isFinite(num) || num <= 0) {
+        setError("That's not a number we can count down from.");
+        return;
+      }
+      const problem = validateSeconds(toSeconds(durationType, num));
+      if (problem) {
+        setError(problem);
+        return;
+      }
+      await countdownsRepo.create({ title, durationType, durationValue: num, colorTag });
     }
-    const seconds = toSeconds(durationType, num);
-    if (seconds < MIN_DURATION_SECONDS) {
-      setError("Give it at least 3 seconds to be a real countdown.");
-      return;
-    }
-    if (seconds > MAX_DURATION_SECONDS) {
-      setError("Whoa there — max is 365 days.");
-      return;
-    }
-    await countdownsRepo.create({ title, durationType, durationValue: num, colorTag });
+
     playSound("start");
     onCreated();
     onClose();
   }
+
 
   return (
     <div
