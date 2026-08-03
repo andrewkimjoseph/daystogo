@@ -5,7 +5,7 @@ import { countdownsRepo, toSeconds, validateSeconds } from "@/lib/countdownsRepo
 import { COLOR_TAGS, PALETTE, tagTextColor } from "@/lib/palette";
 import { playSound } from "@/lib/soundManager";
 import { localInputValue, spanFromNow } from "@/lib/localTime";
-import { BrutalDateTimePicker } from "./BrutalDateTimePicker";
+import { BrutalCalendar, BrutalTimeField } from "./BrutalDateTimePicker";
 import { useHydrated } from "@/hooks/useHydrated";
 
 const TYPES: { key: DurationType; label: string; max: number }[] = [
@@ -156,6 +156,28 @@ export function CreateCountdownForm() {
             />
           ))}
         </div>
+
+        {mode === "target" && (
+          <>
+            <span className="mt-6 mb-2 block text-xs font-bold uppercase">
+              Time (type it or tap)
+            </span>
+            {targetInput ? (
+              <BrutalTimeField
+                value={targetInput}
+                onChange={(next: string) => {
+                  setTargetInput(next);
+                  setError(null);
+                }}
+              />
+            ) : (
+              <div className="brut-thin h-[152px] bg-card" aria-hidden />
+            )}
+            <p className="mt-3 text-sm font-bold text-muted-foreground">
+              {targetPreview ?? "Pick a date and time."}
+            </p>
+          </>
+        )}
       </div>
 
       {/* Right column: how long */}
@@ -166,19 +188,16 @@ export function CreateCountdownForm() {
               End it at (your local time)
             </span>
             {targetInput ? (
-              <BrutalDateTimePicker
+              <BrutalCalendar
                 value={targetInput}
-                onChange={(next) => {
+                onChange={(next: string) => {
                   setTargetInput(next);
                   setError(null);
                 }}
               />
             ) : (
-              <div className="brut-thin h-[560px] bg-card" aria-hidden />
+              <div className="brut-thin h-[430px] bg-card" aria-hidden />
             )}
-            <p className="mt-3 text-sm font-bold text-muted-foreground">
-              {targetPreview ?? "Pick a date and time."}
-            </p>
           </>
         ) : (
           <>
