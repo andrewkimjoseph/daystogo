@@ -116,21 +116,8 @@ export function BrutalDateTimePicker({ value, onChange }: Props) {
     setPane((p) => (p === next ? "days" : next));
   }
 
-  function preset(kind: "tonight" | "tomorrow" | "week" | "year") {
-    const next = new Date();
-    next.setSeconds(0, 0);
-    if (kind === "tonight") next.setHours(18, 0);
-    if (kind === "tomorrow") {
-      next.setDate(next.getDate() + 1);
-      next.setHours(9, 0);
-    }
-    if (kind === "week") next.setDate(next.getDate() + 7);
-    if (kind === "year") next.setFullYear(next.getFullYear() + 1);
-    commit(next);
-    setDir(0);
-    setView({ y: next.getFullYear(), m: next.getMonth() });
-    setPane("days");
-  }
+
+
 
 
   const arrow = (label: string, dir: "l" | "r", onClick: () => void) => (
