@@ -318,7 +318,7 @@ export function BrutalDateTimePicker({ value, onChange }: Props) {
       <div className="mt-3 flex items-end justify-center gap-2 border-t-2 border-[var(--ink)] pt-3">
         {stepper("Hour", pad(selected.getHours()), "hours", 1)}
         <span className="tick-numerals pb-6 text-2xl">:</span>
-        {stepper("Min", pad(selected.getMinutes()), "minutes", 5)}
+        {stepper("Min", pad(selected.getMinutes()), "minutes", 1)}
       </div>
 
       <div className="mt-3 flex flex-wrap gap-2">
