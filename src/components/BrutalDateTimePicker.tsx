@@ -18,6 +18,7 @@ const MONTHS = [
   "November",
   "December",
 ];
+const MONTHS_SHORT = MONTHS.map((m) => m.slice(0, 3));
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
@@ -42,18 +43,30 @@ function monthGrid(year: number, month: number): Date[] {
   return Array.from({ length: 42 }, (_, i) => new Date(start.getFullYear(), start.getMonth(), start.getDate() + i));
 }
 
+function daysInMonth(year: number, month: number): number {
+  return new Date(year, month + 1, 0).getDate();
+}
+
 interface Props {
   /** `YYYY-MM-DDTHH:mm` in local time. */
   value: string;
   onChange: (next: string) => void;
 }
 
+type Pane = "days" | "months" | "years";
+
 export function BrutalDateTimePicker({ value, onChange }: Props) {
   const selected = useMemo(() => parse(value), [value]);
   const [view, setView] = useState(() => ({ y: selected.getFullYear(), m: selected.getMonth() }));
+  const [pane, setPane] = useState<Pane>("days");
+  const [yearPage, setYearPage] = useState(() => selected.getFullYear() - 5);
   const today = new Date();
 
   const days = useMemo(() => monthGrid(view.y, view.m), [view]);
+  const years = useMemo(
+    () => Array.from({ length: 12 }, (_, i) => yearPage + i),
+    [yearPage],
+  );
 
   function commit(d: Date) {
     onChange(localInputValue(d.getTime()));
@@ -62,6 +75,15 @@ export function BrutalDateTimePicker({ value, onChange }: Props) {
   function pickDay(d: Date) {
     const next = new Date(d);
     next.setHours(selected.getHours(), selected.getMinutes(), 0, 0);
+    commit(next);
+  }
+
+  /** Move the selected date into the given year/month, clamping the day. */
+  function moveTo(y: number, m: number) {
+    const day = Math.min(selected.getDate(), daysInMonth(y, m));
+    const next = new Date(y, m, day, selected.getHours(), selected.getMinutes(), 0, 0);
+    setView({ y, m });
+    setPane("days");
     commit(next);
   }
 
@@ -74,13 +96,15 @@ export function BrutalDateTimePicker({ value, onChange }: Props) {
   }
 
   function shiftMonth(delta: number) {
-    setView((v) => {
-      const d = new Date(v.y, v.m + delta, 1);
-      return { y: d.getFullYear(), m: d.getMonth() };
-    });
+    const d = new Date(view.y, view.m + delta, 1);
+    setView({ y: d.getFullYear(), m: d.getMonth() });
   }
 
-  function preset(kind: "tonight" | "tomorrow" | "week") {
+  function shiftYear(delta: number) {
+    setView((v) => ({ ...v, y: v.y + delta }));
+  }
+
+  function preset(kind: "tonight" | "tomorrow" | "week" | "year") {
     const next = new Date();
     next.setSeconds(0, 0);
     if (kind === "tonight") next.setHours(18, 0);
@@ -89,9 +113,26 @@ export function BrutalDateTimePicker({ value, onChange }: Props) {
       next.setHours(9, 0);
     }
     if (kind === "week") next.setDate(next.getDate() + 7);
+    if (kind === "year") next.setFullYear(next.getFullYear() + 1);
     commit(next);
     setView({ y: next.getFullYear(), m: next.getMonth() });
+    setPane("days");
   }
+
+  const arrow = (label: string, dir: "l" | "r", onClick: () => void) => (
+    <button
+      type="button"
+      aria-label={label}
+      onClick={onClick}
+      className="brut-thin brut-press flex h-8 w-8 shrink-0 items-center justify-center bg-cream"
+    >
+      {dir === "l" ? (
+        <ChevronLeft className="h-4 w-4" strokeWidth={3} />
+      ) : (
+        <ChevronRight className="h-4 w-4" strokeWidth={3} />
+      )}
+    </button>
+  );
 
   const stepper = (
     label: string,
@@ -123,63 +164,127 @@ export function BrutalDateTimePicker({ value, onChange }: Props) {
 
   return (
     <div className="brut-thin bg-card p-3">
+      {/* Year row */}
       <div className="mb-2 flex items-center justify-between gap-2">
+        {arrow("Previous year", "l", () => shiftYear(-1))}
         <button
           type="button"
-          aria-label="Previous month"
-          onClick={() => shiftMonth(-1)}
-          className="brut-thin brut-press flex h-8 w-8 items-center justify-center bg-cream"
+          onClick={() => {
+            setYearPage(view.y - 5);
+            setPane((p) => (p === "years" ? "days" : "years"));
+          }}
+          aria-pressed={pane === "years"}
+          className="brut-thin brut-press tick-numerals flex-1 bg-cream py-1 text-center text-lg"
         >
-          <ChevronLeft className="h-4 w-4" strokeWidth={3} />
+          {view.y}
         </button>
-        <span className="text-sm font-bold uppercase">
-          {MONTHS[view.m]} {view.y}
-        </span>
-        <button
-          type="button"
-          aria-label="Next month"
-          onClick={() => shiftMonth(1)}
-          className="brut-thin brut-press flex h-8 w-8 items-center justify-center bg-cream"
-        >
-          <ChevronRight className="h-4 w-4" strokeWidth={3} />
-        </button>
+        {arrow("Next year", "r", () => shiftYear(1))}
       </div>
 
-      <div className="grid grid-cols-7 gap-1">
-        {WEEKDAYS.map((w, i) => (
-          <span
-            key={i}
-            className="pb-1 text-center text-[10px] font-bold uppercase text-muted-foreground"
-          >
-            {w}
-          </span>
-        ))}
-        {days.map((d) => {
-          const isSelected = sameDay(d, selected);
-          const isToday = sameDay(d, today);
-          const outside = d.getMonth() !== view.m;
-          return (
-            <button
-              key={d.getTime()}
-              type="button"
-              onClick={() => pickDay(d)}
-              aria-pressed={isSelected}
-              className={`tick-numerals h-9 text-sm ${isSelected ? "brut-thin" : ""} ${
-                outside && !isSelected ? "opacity-35" : ""
-              }`}
-              style={
-                isSelected
-                  ? { backgroundColor: PALETTE.teal, color: PALETTE.cream }
-                  : isToday
-                    ? { boxShadow: "0 0 0 2px var(--ink) inset" }
-                    : undefined
-              }
-            >
-              {d.getDate()}
-            </button>
-          );
-        })}
+      {/* Month row */}
+      <div className="mb-2 flex items-center justify-between gap-2">
+        {arrow("Previous month", "l", () => shiftMonth(-1))}
+        <button
+          type="button"
+          onClick={() => setPane((p) => (p === "months" ? "days" : "months"))}
+          aria-pressed={pane === "months"}
+          className="brut-thin brut-press flex-1 bg-cream py-1 text-center text-sm font-bold uppercase"
+        >
+          {MONTHS[view.m]}
+        </button>
+        {arrow("Next month", "r", () => shiftMonth(1))}
       </div>
+
+      {pane === "years" && (
+        <div>
+          <div className="mb-2 flex items-center justify-between gap-2">
+            {arrow("Previous years", "l", () => setYearPage((y) => y - 12))}
+            <span className="tick-numerals flex-1 text-center text-xs">
+              {years[0]} – {years[years.length - 1]}
+            </span>
+            {arrow("Next years", "r", () => setYearPage((y) => y + 12))}
+          </div>
+          <div className="grid grid-cols-4 gap-1">
+            {years.map((y) => {
+              const isSelected = y === selected.getFullYear();
+              return (
+                <button
+                  key={y}
+                  type="button"
+                  onClick={() => moveTo(y, view.m)}
+                  aria-pressed={isSelected}
+                  className={`tick-numerals h-9 text-sm ${isSelected ? "brut-thin" : ""}`}
+                  style={
+                    isSelected ? { backgroundColor: PALETTE.teal, color: PALETTE.cream } : undefined
+                  }
+                >
+                  {y}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {pane === "months" && (
+        <div className="grid grid-cols-3 gap-1">
+          {MONTHS_SHORT.map((label, i) => {
+            const isSelected = i === selected.getMonth() && view.y === selected.getFullYear();
+            return (
+              <button
+                key={label}
+                type="button"
+                onClick={() => moveTo(view.y, i)}
+                aria-pressed={isSelected}
+                className={`h-9 text-xs font-bold uppercase ${isSelected ? "brut-thin" : ""}`}
+                style={
+                  isSelected ? { backgroundColor: PALETTE.teal, color: PALETTE.cream } : undefined
+                }
+              >
+                {label}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {pane === "days" && (
+        <div className="grid grid-cols-7 gap-1">
+          {WEEKDAYS.map((w, i) => (
+            <span
+              key={i}
+              className="pb-1 text-center text-[10px] font-bold uppercase text-muted-foreground"
+            >
+              {w}
+            </span>
+          ))}
+          {days.map((d) => {
+            const isSelected = sameDay(d, selected);
+            const isToday = sameDay(d, today);
+            const outside = d.getMonth() !== view.m;
+            return (
+              <button
+                key={d.getTime()}
+                type="button"
+                onClick={() => pickDay(d)}
+                aria-pressed={isSelected}
+                className={`tick-numerals h-9 text-sm ${isSelected ? "brut-thin" : ""} ${
+                  outside && !isSelected ? "opacity-35" : ""
+                }`}
+                style={
+                  isSelected
+                    ? { backgroundColor: PALETTE.teal, color: PALETTE.cream }
+                    : isToday
+                      ? { boxShadow: "0 0 0 2px var(--ink) inset" }
+                      : undefined
+                }
+              >
+                {d.getDate()}
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       <div className="mt-3 flex items-end justify-center gap-2 border-t-2 border-[var(--ink)] pt-3">
         {stepper("Hour", pad(selected.getHours()), "hours", 1)}
@@ -193,6 +298,7 @@ export function BrutalDateTimePicker({ value, onChange }: Props) {
             { key: "tonight", label: "Tonight 18:00" },
             { key: "tomorrow", label: "Tomorrow 09:00" },
             { key: "week", label: "+1 week" },
+            { key: "year", label: "+1 year" },
           ] as const
         ).map((p) => (
           <button
