@@ -206,3 +206,124 @@
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.03em;
 }
+
+/* --- Motion: view transitions & panel swaps --- */
+
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-group(root) {
+  animation-duration: 0.24s;
+  animation-timing-function: var(--ease-bounce);
+}
+
+::view-transition-old(page) {
+  animation: page-out 0.16s ease-in both;
+}
+
+::view-transition-new(page) {
+  animation: page-in 0.26s var(--ease-bounce) both;
+}
+
+/* The header stays put across navigations. */
+::view-transition-group(site-header) {
+  animation-duration: 0.2s;
+}
+
+@keyframes page-out {
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+@keyframes swap-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(14px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes swap-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-14px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes swap-in-zoom {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes tick-bump {
+  0% {
+    transform: translateY(-4px) scale(0.94);
+    opacity: 0.4;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@utility view-page {
+  view-transition-name: page;
+}
+
+@utility view-header {
+  view-transition-name: site-header;
+}
+
+@utility swap-right {
+  animation: swap-in-right 0.2s var(--ease-bounce) both;
+}
+
+@utility swap-left {
+  animation: swap-in-left 0.2s var(--ease-bounce) both;
+}
+
+@utility swap-zoom {
+  animation: swap-in-zoom 0.18s var(--ease-bounce) both;
+}
+
+@utility tick-bump {
+  animation: tick-bump 0.16s var(--ease-bounce) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+
+  .swap-right,
+  .swap-left,
+  .swap-zoom,
+  .tick-bump {
+    animation: none !important;
+  }
+}
