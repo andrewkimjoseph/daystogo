@@ -8,6 +8,7 @@ import { formatTargetLabel } from "@/lib/localTime";
 import { burstConfetti } from "@/lib/confetti";
 import { playSound } from "@/lib/soundManager";
 import { PALETTE, tagTextColor } from "@/lib/palette";
+import { categoryMeta } from "@/lib/categories";
 import { Sparkle } from "./Sparkle";
 
 const SEGMENTS = 16;
