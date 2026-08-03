@@ -81,6 +81,7 @@ export const countdownsRepo = {
       endsAt: now + durationSeconds * 1000,
       status: "running",
       colorTag: input.colorTag,
+      category: input.category ?? "other",
       hasCelebrated: false,
       createdAt: now,
       updatedAt: now,
