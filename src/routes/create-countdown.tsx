@@ -30,7 +30,7 @@ function CreateCountdownPage() {
     <div className="min-h-screen">
       <SiteHeader />
 
-      <main className="view-page mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-10">
+      <main className="view-page mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
         <h1 className="hero-gradient text-3xl uppercase sm:text-5xl">New countdown</h1>
         <p className="mt-2 mb-6 max-w-xl font-bold text-muted-foreground">
           Count a stretch of time, or count to an exact moment. Either way it starts the second you
