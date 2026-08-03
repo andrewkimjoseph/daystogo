@@ -17,6 +17,14 @@ const TYPES: { key: DurationType; label: string; max: number }[] = [
 
 type Mode = "duration" | "target";
 
+/** Keep a typed duration inside 1..max, falling back to 1 for junk input. */
+function clampValue(raw: string, max: number): number {
+  const num = Math.floor(Number(raw));
+  if (!Number.isFinite(num) || num < 1) return 1;
+  return Math.min(num, max);
+}
+
+
 /** `YYYY-MM-DD` -> local start of that day, or null when unusable. */
 function parseDayParam(raw: string | undefined): Date | null {
   if (!raw) return null;
@@ -95,10 +103,16 @@ export function CreateCountdownForm({ initialDate }: { initialDate?: string }) {
       await countdownsRepo.create({ mode: "target", title, targetAt, colorTag, category });
     } else {
       const num = Number(value);
-      if (!Number.isFinite(num) || num <= 0) {
+      if (!Number.isFinite(num) || num <= 0 || !Number.isInteger(num)) {
         setError("That's not a number we can count down from.");
         return;
       }
+      if (num > activeType.max) {
+        setError(`Max is ${activeType.max} ${activeType.label.toLowerCase()} — use End time for longer.`);
+        setValue(String(activeType.max));
+        return;
+      }
+
       const problem = validateSeconds(toSeconds(durationType, num));
       if (problem) {
         setError(problem);
@@ -278,7 +292,12 @@ export function CreateCountdownForm({ initialDate }: { initialDate?: string }) {
                 <button
                   key={t.key}
                   type="button"
-                  onClick={() => setDurationType(t.key)}
+                  onClick={() => {
+                    setDurationType(t.key);
+                    setValue(String(clampValue(value, t.max)));
+                    setError(null);
+                  }}
+
                   aria-pressed={durationType === t.key}
                   className="brut-thin brut-press rounded-none px-3 py-3 text-sm font-bold uppercase"
                   style={
@@ -306,8 +325,10 @@ export function CreateCountdownForm({ initialDate }: { initialDate?: string }) {
                 setValue(e.target.value);
                 setError(null);
               }}
+              onBlur={() => setValue(String(clampValue(value, activeType.max)))}
               className="tick-numerals brut-thin w-full bg-cream px-3 py-3 text-2xl outline-none focus:ring-4 focus:ring-primary"
             />
+
             <p className="mt-3 text-sm font-bold text-muted-foreground">
               {durationPreview ? `Lands on ${durationPreview}.` : "Pick a number above zero."}
             </p>
