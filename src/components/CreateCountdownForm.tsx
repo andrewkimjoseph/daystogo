@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import type { DurationType } from "@/lib/db";
 import { countdownsRepo, toSeconds, validateSeconds } from "@/lib/countdownsRepo";
@@ -6,6 +6,7 @@ import { COLOR_TAGS, PALETTE, tagTextColor } from "@/lib/palette";
 import { playSound } from "@/lib/soundManager";
 import { localInputValue, spanFromNow } from "@/lib/localTime";
 import { BrutalDateTimePicker } from "./BrutalDateTimePicker";
+import { useHydrated } from "@/hooks/useHydrated";
 
 const TYPES: { key: DurationType; label: string; max: number }[] = [
   { key: "seconds", label: "Secs", max: 86400 },
@@ -22,13 +23,21 @@ export function CreateCountdownForm() {
   const [title, setTitle] = useState("");
   const [durationType, setDurationType] = useState<DurationType>("days");
   const [value, setValue] = useState("7");
-  const [targetInput, setTargetInput] = useState(() => localInputValue(Date.now() + 3600_000));
+  const [targetInput, setTargetInput] = useState("");
   const [colorTag, setColorTag] = useState<string>(PALETTE.teal);
   const [error, setError] = useState<string | null>(null);
 
+  // The viewer's clock and locale are unknown during SSR, so anything derived
+  // from them waits for hydration.
+  const hydrated = useHydrated();
+  useEffect(() => {
+    setTargetInput((prev) => prev || localInputValue(Date.now() + 3600_000));
+  }, []);
+
   const activeType = TYPES.find((t) => t.key === durationType)!;
-  const targetPreview = spanFromNow(targetInput);
+  const targetPreview = targetInput ? spanFromNow(targetInput) : null;
   const durationPreview = (() => {
+    if (!hydrated) return null;
     const num = Number(value);
     if (!Number.isFinite(num) || num <= 0) return null;
     const seconds = toSeconds(durationType, num);
@@ -156,13 +165,17 @@ export function CreateCountdownForm() {
             <span className="mb-2 block text-xs font-bold uppercase">
               End it at (your local time)
             </span>
-            <BrutalDateTimePicker
-              value={targetInput}
-              onChange={(next) => {
-                setTargetInput(next);
-                setError(null);
-              }}
-            />
+            {targetInput ? (
+              <BrutalDateTimePicker
+                value={targetInput}
+                onChange={(next) => {
+                  setTargetInput(next);
+                  setError(null);
+                }}
+              />
+            ) : (
+              <div className="brut-thin h-[420px] bg-card" aria-hidden />
+            )}
             <p className="mt-3 text-sm font-bold text-muted-foreground">
               {targetPreview ?? "Pick a date and time."}
             </p>
