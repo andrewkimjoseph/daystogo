@@ -8,6 +8,7 @@ import { formatTargetLabel } from "@/lib/localTime";
 import { burstConfetti } from "@/lib/confetti";
 import { playSound } from "@/lib/soundManager";
 import { PALETTE, tagTextColor } from "@/lib/palette";
+import { categoryMeta } from "@/lib/categories";
 import { Sparkle } from "./Sparkle";
 
 const SEGMENTS = 16;
@@ -55,6 +56,8 @@ export function CountdownCard({
 
   const tagColor = lapsed ? PALETTE.red : countdown.colorTag;
   const badge = lapsed ? "🎉 Lapsed!" : countdown.status === "paused" ? "Paused" : "Running";
+  const category = categoryMeta(countdown.category);
+  const CategoryIcon = category.icon;
 
   return (
     <article
@@ -71,6 +74,13 @@ export function CountdownCard({
 
       <header className="flex items-start justify-between gap-3">
         <div className="min-w-0">
+          <p
+            className="mb-1 flex items-center gap-1.5 text-[10px] font-bold uppercase"
+            style={{ color: lapsed ? PALETTE.cream : "var(--muted-foreground)" }}
+          >
+            <CategoryIcon className="h-3 w-3 shrink-0" strokeWidth={3} />
+            <span className="truncate">{category.label}</span>
+          </p>
           <h2
             className="text-lg leading-tight break-words uppercase"
             style={lapsed ? { color: PALETTE.cream } : undefined}

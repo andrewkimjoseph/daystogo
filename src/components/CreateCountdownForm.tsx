@@ -3,6 +3,7 @@ import { useNavigate } from "@tanstack/react-router";
 import type { DurationType } from "@/lib/db";
 import { countdownsRepo, toSeconds, validateSeconds } from "@/lib/countdownsRepo";
 import { COLOR_TAGS, PALETTE, tagTextColor } from "@/lib/palette";
+import { CATEGORIES, type CountdownCategory } from "@/lib/categories";
 import { playSound } from "@/lib/soundManager";
 import { localInputValue, spanFromNow } from "@/lib/localTime";
 import { BrutalCalendar, BrutalTimeField } from "./BrutalDateTimePicker";
@@ -25,6 +26,7 @@ export function CreateCountdownForm() {
   const [value, setValue] = useState("7");
   const [targetInput, setTargetInput] = useState("");
   const [colorTag, setColorTag] = useState<string>(PALETTE.teal);
+  const [category, setCategory] = useState<CountdownCategory>("other");
   const [error, setError] = useState<string | null>(null);
 
   // The viewer's clock and locale are unknown during SSR, so anything derived
@@ -35,6 +37,7 @@ export function CreateCountdownForm() {
   }, []);
 
   const activeType = TYPES.find((t) => t.key === durationType)!;
+  const activeCategory = CATEGORIES.find((c) => c.key === category)!;
   const targetPreview = targetInput ? spanFromNow(targetInput) : null;
   const durationPreview = (() => {
     if (!hydrated) return null;
@@ -75,7 +78,7 @@ export function CreateCountdownForm() {
         setError(problem);
         return;
       }
-      await countdownsRepo.create({ mode: "target", title, targetAt, colorTag });
+      await countdownsRepo.create({ mode: "target", title, targetAt, colorTag, category });
     } else {
       const num = Number(value);
       if (!Number.isFinite(num) || num <= 0) {
@@ -87,7 +90,13 @@ export function CreateCountdownForm() {
         setError(problem);
         return;
       }
-      await countdownsRepo.create({ title, durationType, durationValue: num, colorTag });
+      await countdownsRepo.create({
+        title,
+        durationType,
+        durationValue: num,
+        colorTag,
+        category,
+      });
     }
 
     playSound("start");
@@ -139,7 +148,7 @@ export function CreateCountdownForm() {
         />
 
         <span className="mb-2 block text-xs font-bold uppercase">Colour tag</span>
-        <div className="flex flex-wrap gap-2">
+        <div className="mb-6 flex flex-wrap gap-2">
           {COLOR_TAGS.map((c) => (
             <button
               key={c.hex}
@@ -157,27 +166,31 @@ export function CreateCountdownForm() {
           ))}
         </div>
 
-        {mode === "target" && (
-          <>
-            <span className="mt-6 mb-2 block text-xs font-bold uppercase">
-              Time (type it or tap)
-            </span>
-            {targetInput ? (
-              <BrutalTimeField
-                value={targetInput}
-                onChange={(next: string) => {
-                  setTargetInput(next);
-                  setError(null);
-                }}
-              />
-            ) : (
-              <div className="brut-thin h-[152px] bg-card" aria-hidden />
-            )}
-            <p className="mt-3 text-sm font-bold text-muted-foreground">
-              {targetPreview ?? "Pick a date and time."}
-            </p>
-          </>
-        )}
+        <span className="mb-2 block text-xs font-bold uppercase">Category</span>
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+          {CATEGORIES.map((c) => {
+            const Icon = c.icon;
+            const on = category === c.key;
+            return (
+              <button
+                key={c.key}
+                type="button"
+                onClick={() => setCategory(c.key)}
+                aria-pressed={on}
+                className="brut-thin brut-press flex min-h-[56px] items-center gap-2 rounded-none px-2 py-2 text-left text-[11px] font-bold uppercase"
+                style={
+                  on
+                    ? { backgroundColor: PALETTE.mauve, color: PALETTE.cream }
+                    : { backgroundColor: "var(--cream)" }
+                }
+              >
+                <Icon className="h-4 w-4 shrink-0" strokeWidth={2.5} />
+                <span className="min-w-0 break-words">{c.label}</span>
+              </button>
+            );
+          })}
+        </div>
+        <p className="mt-3 text-sm font-bold text-muted-foreground">{activeCategory.hint}</p>
       </div>
 
       {/* Right column: how long */}
@@ -188,15 +201,30 @@ export function CreateCountdownForm() {
               End it at (your local time)
             </span>
             {targetInput ? (
-              <BrutalCalendar
-                value={targetInput}
-                onChange={(next: string) => {
-                  setTargetInput(next);
-                  setError(null);
-                }}
-              />
+              <>
+                <BrutalCalendar
+                  value={targetInput}
+                  onChange={(next: string) => {
+                    setTargetInput(next);
+                    setError(null);
+                  }}
+                />
+                <span className="mt-6 mb-2 block text-xs font-bold uppercase">
+                  Time (type it or tap)
+                </span>
+                <BrutalTimeField
+                  value={targetInput}
+                  onChange={(next: string) => {
+                    setTargetInput(next);
+                    setError(null);
+                  }}
+                />
+                <p className="mt-3 text-sm font-bold text-muted-foreground">
+                  {targetPreview ?? "Pick a date and time."}
+                </p>
+              </>
             ) : (
-              <div className="brut-thin h-[430px] bg-card" aria-hidden />
+              <div className="brut-thin h-[620px] bg-card" aria-hidden />
             )}
           </>
         ) : (

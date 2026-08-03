@@ -1,4 +1,5 @@
 import Dexie, { type Table } from "dexie";
+import type { CountdownCategory } from "./categories";
 
 export type DurationType = "seconds" | "minutes" | "hours" | "days";
 export type CountdownStatus = "running" | "paused" | "lapsed";
@@ -23,6 +24,8 @@ export interface Countdown {
   status: CountdownStatus;
   pausedRemainingMs?: number | undefined;
   colorTag: string;
+  /** Absent on rows created before categories existed — treat as "other". */
+  category?: CountdownCategory | undefined;
   hasCelebrated: boolean;
   createdAt: number;
   updatedAt: number;
@@ -38,6 +41,9 @@ class DaysToGoDB extends Dexie {
     });
     this.version(2).stores({
       countdowns: "id, status, endsAt, createdAt, targetAt",
+    });
+    this.version(3).stores({
+      countdowns: "id, status, endsAt, createdAt, targetAt, category",
     });
   }
 }
