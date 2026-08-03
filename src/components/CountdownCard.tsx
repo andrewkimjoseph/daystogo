@@ -112,6 +112,69 @@ export function CountdownCard({
         {text}
       </p>
 
+      {editing && !lapsed && (
+        <div className="brut-thin animate-pop-in flex flex-col gap-3 bg-cream p-3">
+          <div>
+            <span className="mb-2 block text-[10px] font-bold uppercase">Colour tag</span>
+            <div className="flex flex-wrap gap-2">
+              {COLOR_TAGS.map((c) => (
+                <button
+                  key={c.hex}
+                  type="button"
+                  aria-label={c.label}
+                  aria-pressed={countdown.colorTag === c.hex}
+                  onClick={async () => {
+                    await countdownsRepo.updateTags(countdown.id, { colorTag: c.hex });
+                    onChanged();
+                  }}
+                  className="brut-thin brut-press h-8 w-8 rounded-none"
+                  style={{
+                    backgroundColor: c.hex,
+                    boxShadow:
+                      countdown.colorTag === c.hex ? "0 0 0 3px var(--ink) inset" : undefined,
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+          <div>
+            <span className="mb-2 block text-[10px] font-bold uppercase">Category</span>
+            <div className="grid grid-cols-4 gap-1">
+              {CATEGORIES.map((c) => {
+                const Icon = c.icon;
+                const on = categoryMeta(countdown.category).key === c.key;
+                return (
+                  <button
+                    key={c.key}
+                    type="button"
+                    title={c.label}
+                    aria-label={c.label}
+                    aria-pressed={on}
+                    onClick={async () => {
+                      await countdownsRepo.updateTags(countdown.id, {
+                        category: c.key as CountdownCategory,
+                      });
+                      onChanged();
+                    }}
+                    className="brut-thin brut-press flex h-9 items-center justify-center rounded-none"
+                    style={
+                      on
+                        ? { backgroundColor: PALETTE.mauve, color: PALETTE.cream }
+                        : { backgroundColor: "var(--card)" }
+                    }
+                  >
+                    <Icon className="h-4 w-4" strokeWidth={2.5} />
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+          <p className="text-[10px] font-bold uppercase text-muted-foreground">
+            Time can’t be edited — the clock is already running.
+          </p>
+        </div>
+      )}
+
 
       <div className="mt-auto flex gap-[3px]" aria-label={`${Math.round(pct)}% elapsed`}>
         {Array.from({ length: SEGMENTS }).map((_, i) => (
