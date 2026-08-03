@@ -77,13 +77,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Days To Go" },
+      { title: "Days To Go — Playful Countdown Timers" },
       { name: "description", content: "Playful brutalist countdown timers, right in your browser." },
-      { property: "og:title", content: "Days To Go" },
+      { property: "og:title", content: "Days To Go — Playful Countdown Timers" },
       {
         property: "og:description",
         content: "Playful brutalist countdown timers, right in your browser.",
       },
+      { property: "og:site_name", content: "Days To Go" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -98,7 +99,20 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "icon", type: "image/png", href: "/favicon.png" },
       { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
     ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: "Days To Go",
+          url: "https://daystogo.lovable.app",
+          description: "Playful brutalist countdown timers, right in your browser.",
+        }),
+      },
+    ],
   }),
+
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
