@@ -33,12 +33,15 @@ export function spanFromNow(inputValue: string): string | null {
   return `That's ${parts.slice(0, 2).join(", ")} from now.`;
 }
 
-/** Short local label for a card, e.g. "Mon 3 Aug, 18:30". */
+/** Short local label for a card, e.g. "Mon 3 Aug, 18:30" (adds year if not this year). */
 export function formatTargetLabel(ms: number): string {
-  return new Date(ms).toLocaleString(undefined, {
+  const target = new Date(ms);
+  const sameYear = target.getFullYear() === new Date().getFullYear();
+  return target.toLocaleString(undefined, {
     weekday: "short",
     day: "numeric",
     month: "short",
+    ...(sameYear ? {} : { year: "numeric" }),
     hour: "2-digit",
     minute: "2-digit",
   });
