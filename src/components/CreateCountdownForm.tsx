@@ -195,15 +195,30 @@ export function CreateCountdownForm() {
               End it at (your local time)
             </span>
             {targetInput ? (
-              <BrutalCalendar
-                value={targetInput}
-                onChange={(next: string) => {
-                  setTargetInput(next);
-                  setError(null);
-                }}
-              />
+              <>
+                <BrutalCalendar
+                  value={targetInput}
+                  onChange={(next: string) => {
+                    setTargetInput(next);
+                    setError(null);
+                  }}
+                />
+                <span className="mt-6 mb-2 block text-xs font-bold uppercase">
+                  Time (type it or tap)
+                </span>
+                <BrutalTimeField
+                  value={targetInput}
+                  onChange={(next: string) => {
+                    setTargetInput(next);
+                    setError(null);
+                  }}
+                />
+                <p className="mt-3 text-sm font-bold text-muted-foreground">
+                  {targetPreview ?? "Pick a date and time."}
+                </p>
+              </>
             ) : (
-              <div className="brut-thin h-[430px] bg-card" aria-hidden />
+              <div className="brut-thin h-[620px] bg-card" aria-hidden />
             )}
           </>
         ) : (
