@@ -30,22 +30,8 @@ export const Route = createFileRoute("/about")({
 function AboutPage() {
   return (
     <div className="min-h-screen">
-      <header className="border-b-4 border-ink bg-cream">
-        <div className="mx-auto flex max-w-3xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
-          <Link to="/" className="inline-flex items-center gap-2">
-            <img src={logoAsset.url} alt="Days To Go" className="h-14 w-auto sm:h-16" />
-          </Link>
-          <div className="flex items-center gap-3">
-            <Link
-              to="/"
-              className="brut brut-press hidden rounded-none bg-cream px-4 py-2 text-sm font-bold uppercase text-ink sm:inline-flex"
-            >
-              Home
-            </Link>
-            <MuteToggle />
-          </div>
-        </div>
-      </header>
+      <SiteHeader />
+
 
       <main className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
         <h1 className="hero-gradient text-4xl uppercase sm:text-5xl">About Days To Go</h1>
