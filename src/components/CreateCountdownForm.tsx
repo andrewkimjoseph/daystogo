@@ -306,8 +306,10 @@ export function CreateCountdownForm({ initialDate }: { initialDate?: string }) {
                 setValue(e.target.value);
                 setError(null);
               }}
+              onBlur={() => setValue(String(clampValue(value, activeType.max)))}
               className="tick-numerals brut-thin w-full bg-cream px-3 py-3 text-2xl outline-none focus:ring-4 focus:ring-primary"
             />
+
             <p className="mt-3 text-sm font-bold text-muted-foreground">
               {durationPreview ? `Lands on ${durationPreview}.` : "Pick a number above zero."}
             </p>
