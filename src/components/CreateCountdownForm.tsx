@@ -286,7 +286,12 @@ export function CreateCountdownForm({ initialDate }: { initialDate?: string }) {
                 <button
                   key={t.key}
                   type="button"
-                  onClick={() => setDurationType(t.key)}
+                  onClick={() => {
+                    setDurationType(t.key);
+                    setValue(String(clampValue(value, t.max)));
+                    setError(null);
+                  }}
+
                   aria-pressed={durationType === t.key}
                   className="brut-thin brut-press rounded-none px-3 py-3 text-sm font-bold uppercase"
                   style={
