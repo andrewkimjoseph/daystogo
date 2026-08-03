@@ -27,6 +27,7 @@ export interface NewDurationInput {
   durationType: DurationType;
   durationValue: number;
   colorTag: string;
+  category?: CountdownCategory;
 }
 
 export interface NewTargetInput {
@@ -35,6 +36,7 @@ export interface NewTargetInput {
   /** Epoch ms of the exact local moment the countdown should lapse. */
   targetAt: number;
   colorTag: string;
+  category?: CountdownCategory;
 }
 
 export type NewCountdownInput = NewDurationInput | NewTargetInput;
