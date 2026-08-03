@@ -17,6 +17,14 @@ const TYPES: { key: DurationType; label: string; max: number }[] = [
 
 type Mode = "duration" | "target";
 
+/** Keep a typed duration inside 1..max, falling back to 1 for junk input. */
+function clampValue(raw: string, max: number): number {
+  const num = Math.floor(Number(raw));
+  if (!Number.isFinite(num) || num < 1) return 1;
+  return Math.min(num, max);
+}
+
+
 /** `YYYY-MM-DD` -> local start of that day, or null when unusable. */
 function parseDayParam(raw: string | undefined): Date | null {
   if (!raw) return null;
