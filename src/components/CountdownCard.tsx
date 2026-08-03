@@ -3,6 +3,8 @@ import { Pause, Play, RotateCcw, Trash2 } from "lucide-react";
 import type { Countdown } from "@/lib/db";
 import { countdownsRepo, remainingMs } from "@/lib/countdownsRepo";
 import { formatRemaining, progressPercent } from "@/lib/formatTime";
+import { formatTargetLabel } from "@/lib/localTime";
+
 import { burstConfetti } from "@/lib/confetti";
 import { playSound } from "@/lib/soundManager";
 import { PALETTE, tagTextColor } from "@/lib/palette";
@@ -91,6 +93,13 @@ export function CountdownCard({
           {badge}
         </span>
       </header>
+
+      <p
+        className={`tick-numerals ${dramatic ? "text-5xl sm:text-6xl" : "text-4xl"} ${urgent ? "animate-pulse-hard" : ""}`}
+        style={{ color: lapsed ? PALETTE.cream : urgent ? PALETTE.red : "var(--ink)" }}
+      >
+        {text}
+      </p>
 
 
       <div className="flex gap-[3px]" aria-label={`${Math.round(pct)}% elapsed`}>
