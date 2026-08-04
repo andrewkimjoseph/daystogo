@@ -136,14 +136,14 @@ export function CountdownCard({
       </header>
 
       <p
-        className={`tick-numerals ${dramatic ? "text-5xl sm:text-6xl" : text.length > 9 ? "text-2xl sm:text-3xl" : "text-4xl"} ${urgent ? "animate-pulse-hard" : ""}`}
+        className={`tick-numerals ${dramatic ? "text-4xl sm:text-6xl" : text.length > 9 ? "text-xl sm:text-3xl" : "text-3xl sm:text-4xl"} ${urgent ? "animate-pulse-hard" : ""}`}
         style={{ color: lapsed ? PALETTE.cream : urgent ? PALETTE.red : "var(--ink)" }}
       >
         {text}
       </p>
 
       {editing && !lapsed && (
-        <div ref={panelRef} className="absolute inset-x-5 top-32 z-10 flex flex-col gap-3 bg-cream p-3 brut-thin animate-pop-in">
+        <div ref={panelRef} className="brut-thin animate-pop-in absolute inset-3 z-10 flex flex-col gap-3 overflow-y-auto bg-cream p-3 sm:inset-x-5 sm:top-32 sm:bottom-5">
           <div>
             <label htmlFor={`title-${countdown.id}`} className="mb-2 block text-[10px] font-bold uppercase">
               Name
