@@ -59,7 +59,7 @@ export function validateSeconds(seconds: number): string | null {
 
 export const countdownsRepo = {
   async all(): Promise<Countdown[]> {
-    return getDb().countdowns.orderBy("createdAt").reverse().toArray();
+    return getDb().countdowns.orderBy("endsAt").toArray();
   },
 
   async create(input: NewCountdownInput): Promise<Countdown> {

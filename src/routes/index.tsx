@@ -18,9 +18,9 @@ export const Route = createFileRoute("/")({
           "Run as many countdowns as you like, from 3 seconds to years out, ticking down to the second, with confetti when the clock hits zero.",
       },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "https://www.daystogo.xyz/" },
+      { property: "og:url", content: "https://app.daystogo.xyz/" },
     ],
-    links: [{ rel: "canonical", href: "https://www.daystogo.xyz/" }],
+    links: [{ rel: "canonical", href: "https://app.daystogo.xyz/" }],
   }),
 
   component: Index,
