@@ -142,8 +142,17 @@ export function CountdownCard({
         {text}
       </p>
 
-      {editing && !lapsed && (
-        <div ref={panelRef} className="brut-thin animate-pop-in relative z-10 flex flex-col gap-3 bg-cream p-3">
+      <div
+        aria-hidden={!editing || lapsed}
+        className={`grid transition-[grid-template-rows,opacity] duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
+          editing && !lapsed
+            ? "grid-rows-[1fr] opacity-100"
+            : "pointer-events-none -mb-3 grid-rows-[0fr] opacity-0 sm:-mb-4"
+        }`}
+      >
+        <div className="overflow-hidden">
+        <div ref={panelRef} className="brut-thin relative z-10 flex flex-col gap-3 bg-cream p-3">
+
           <div>
             <label htmlFor={`title-${countdown.id}`} className="mb-2 block text-[10px] font-bold uppercase">
               Name
@@ -234,24 +243,10 @@ export function CountdownCard({
           <p className="text-[10px] font-bold uppercase text-muted-foreground">
             Only the name, colour and category can change — the clock keeps running.
           </p>
-          <button
-            type="button"
-            onClick={async () => {
-              const trimmed = draftTitle.trim();
-              if (trimmed && trimmed !== countdown.title) {
-                await countdownsRepo.updateTags(countdown.id, { title: trimmed });
-                onChanged();
-              } else if (!trimmed) {
-                setDraftTitle(countdown.title);
-              }
-              setEditing(false);
-            }}
-            className="brut-thin brut-press flex items-center justify-center gap-2 rounded-none bg-primary px-3 py-2 text-sm font-bold text-primary-foreground uppercase"
-          >
-            <Pencil className="h-4 w-4" strokeWidth={3} /> Done
-          </button>
+          </div>
         </div>
-      )}
+      </div>
+
 
 
       <div className="mt-auto flex gap-[3px]" aria-label={`${Math.round(pct)}% elapsed`}>
