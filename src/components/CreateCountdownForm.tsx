@@ -49,7 +49,7 @@ export function CreateCountdownForm({ initialDate }: { initialDate?: string }) {
   // The viewer's clock and locale are unknown during SSR, so anything derived
   // from them waits for hydration.
   const hydrated = useHydrated();
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     // A day picked in the calendar seeds 09:00 local; fall back to an hour out
     // whenever that moment has already passed (or no date came along).
     const soon = Date.now() + 3600_000;
