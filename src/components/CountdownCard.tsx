@@ -303,6 +303,7 @@ export function CountdownCard({
             </button>
           ) : (
             <button
+              ref={toggleRef}
               type="button"
               onClick={() => setEditing((v) => !v)}
               aria-expanded={editing}
