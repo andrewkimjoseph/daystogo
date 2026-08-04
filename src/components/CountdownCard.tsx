@@ -129,7 +129,7 @@ export function CountdownCard({
               id={`title-${countdown.id}`}
               type="text"
               value={draftTitle}
-              onChange={(e) => setDraftTitle(e.target.value)}
+              onChange={(e) => setDraftTitle(e.target.value.toUpperCase())}
               onBlur={async () => {
                 const trimmed = draftTitle.trim();
                 if (trimmed && trimmed !== countdown.title) {
@@ -141,7 +141,7 @@ export function CountdownCard({
               }}
               maxLength={120}
               className="brut-thin w-full rounded-none border-ink bg-card px-2 py-1.5 text-sm font-bold uppercase focus:outline-none focus:ring-2 focus:ring-ink"
-              placeholder="Countdown name"
+              placeholder="COUNTDOWN NAME"
             />
           </div>
           <div>
