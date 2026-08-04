@@ -126,15 +126,27 @@ function CalendarBody() {
 
   const selectedList = buckets.get(dayKey(selected)) ?? [];
 
+  // The past is not bookable: navigation floors at the current month.
+  const minY = today.getFullYear();
+  const minM = today.getMonth();
+  const atFloor = view.y === minY && view.m === minM;
+  const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+  const clamp = (y: number, m: number) =>
+    y < minY || (y === minY && m < minM) ? { y: minY, m: minM } : { y, m };
+
   function shiftMonth(delta: number) {
     const d = new Date(view.y, view.m + delta, 1);
+    const next = clamp(d.getFullYear(), d.getMonth());
+    if (next.y === view.y && next.m === view.m) return;
     setDir(delta > 0 ? 1 : -1);
-    setView({ y: d.getFullYear(), m: d.getMonth() });
+    setView(next);
   }
 
   function shiftYear(delta: number) {
+    const next = clamp(view.y + delta, view.m);
+    if (next.y === view.y && next.m === view.m) return;
     setDir(delta > 0 ? 1 : -1);
-    setView((v) => ({ ...v, y: v.y + delta }));
+    setView(next);
   }
 
   function togglePane(next: Pane) {
@@ -144,16 +156,17 @@ function CalendarBody() {
 
   function jumpTo(y: number, m: number) {
     setDir(0);
-    setView({ y, m });
+    setView(clamp(y, m));
     setPane("days");
   }
 
-  const arrow = (label: string, side: "l" | "r", onClick: () => void) => (
+  const arrow = (label: string, side: "l" | "r", onClick: () => void, disabled = false) => (
     <button
       type="button"
       aria-label={label}
       onClick={onClick}
-      className="brut-thin brut-press flex h-9 w-9 shrink-0 items-center justify-center bg-cream"
+      disabled={disabled}
+      className="brut-thin brut-press flex h-9 w-9 shrink-0 items-center justify-center bg-cream disabled:pointer-events-none disabled:opacity-35"
     >
       {side === "l" ? (
         <ChevronLeft className="h-4 w-4" strokeWidth={3} />
@@ -168,7 +181,8 @@ function CalendarBody() {
       <div className="brut bg-card p-3 sm:p-4">
         {/* Year row */}
         <div className="mb-2 flex items-center justify-between gap-2">
-          {arrow("Previous year", "l", () => shiftYear(-1))}
+          {arrow("Previous year", "l", () => shiftYear(-1), view.y <= minY)}
+
           <button
             type="button"
             onClick={() => {
