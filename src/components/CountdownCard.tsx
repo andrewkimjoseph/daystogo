@@ -116,6 +116,29 @@ export function CountdownCard({
       {editing && !lapsed && (
         <div className="absolute inset-x-5 top-32 z-10 flex flex-col gap-3 bg-cream p-3 brut-thin animate-pop-in">
           <div>
+            <label htmlFor={`title-${countdown.id}`} className="mb-2 block text-[10px] font-bold uppercase">
+              Name
+            </label>
+            <input
+              id={`title-${countdown.id}`}
+              type="text"
+              value={draftTitle}
+              onChange={(e) => setDraftTitle(e.target.value)}
+              onBlur={async () => {
+                const trimmed = draftTitle.trim();
+                if (trimmed && trimmed !== countdown.title) {
+                  await countdownsRepo.updateTags(countdown.id, { title: trimmed });
+                  onChanged();
+                } else if (!trimmed) {
+                  setDraftTitle(countdown.title);
+                }
+              }}
+              maxLength={120}
+              className="brut-thin w-full rounded-none border-ink bg-card px-2 py-1.5 text-sm font-bold uppercase focus:outline-none focus:ring-2 focus:ring-ink"
+              placeholder="Countdown name"
+            />
+          </div>
+          <div>
             <span className="mb-2 block text-[10px] font-bold uppercase">Colour tag</span>
             <div className="flex flex-wrap gap-2">
               {COLOR_TAGS.map((c) => (
