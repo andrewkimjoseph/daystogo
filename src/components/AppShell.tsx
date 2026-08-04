@@ -2,6 +2,8 @@ import { Plus } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { SiteHeader } from "./SiteHeader";
 import { Sparkle } from "./Sparkle";
+import { TodayClock } from "./TodayClock";
+
 import { PALETTE } from "@/lib/palette";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
