@@ -265,7 +265,7 @@ export function CountdownCard({
       </div>
 
       {confirmingDelete ? (
-        <div className="brut-thin flex items-center justify-between gap-2 bg-destructive p-2">
+        <div className="brut-thin flex flex-wrap items-center justify-between gap-2 bg-destructive p-2">
           <span className="text-sm font-bold text-destructive-foreground uppercase">
             Nuke this countdown?
           </span>
