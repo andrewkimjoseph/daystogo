@@ -141,7 +141,7 @@ export function CreateCountdownForm({ initialDate }: { initialDate?: string }) {
   }
 
   return (
-    <form onSubmit={submit} className="grid gap-6 lg:grid-cols-2 lg:items-stretch">
+    <form onSubmit={submit} className="grid gap-4 sm:gap-6 lg:grid-cols-2 lg:items-stretch">
       {/* Heading row: the submit button rides along so it never needs scrolling to. */}
       <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center lg:col-span-2">
         <div className="min-w-0">
@@ -154,7 +154,7 @@ export function CreateCountdownForm({ initialDate }: { initialDate?: string }) {
         <div className="flex flex-col gap-2 sm:items-end">
           <button
             type="submit"
-            className="brut brut-press w-full rounded-none bg-primary px-6 py-4 text-lg font-bold text-primary-foreground uppercase sm:w-auto"
+            className="brut brut-press w-full rounded-none bg-primary px-6 py-3 text-base font-bold text-primary-foreground uppercase sm:w-auto sm:py-4 sm:text-lg"
           >
             Start the clock
           </button>
@@ -174,7 +174,7 @@ export function CreateCountdownForm({ initialDate }: { initialDate?: string }) {
 
       <div className="brut h-full bg-card p-4 sm:p-6">
         <span className="mb-2 block text-xs font-bold uppercase">How do we count?</span>
-        <div className="mb-6 grid grid-cols-2 gap-2">
+        <div className="mb-5 grid grid-cols-2 gap-2 sm:mb-6">
           {(
             [
               { key: "duration", label: "Duration" },
@@ -210,11 +210,11 @@ export function CreateCountdownForm({ initialDate }: { initialDate?: string }) {
           onChange={(e) => setTitle(e.target.value)}
           maxLength={80}
           placeholder="Ship the launch"
-          className="brut-thin mb-6 w-full bg-cream px-3 py-3 font-bold outline-none focus:ring-4 focus:ring-primary"
+          className="brut-thin mb-5 w-full bg-cream sm:mb-6 px-3 py-3 font-bold outline-none focus:ring-4 focus:ring-primary"
         />
 
         <span className="mb-2 block text-xs font-bold uppercase">Colour tag</span>
-        <div className="mb-6 flex flex-wrap gap-2">
+        <div className="mb-5 flex flex-wrap gap-2 sm:mb-6">
           {COLOR_TAGS.map((c) => (
             <button
               key={c.hex}
@@ -290,13 +290,13 @@ export function CreateCountdownForm({ initialDate }: { initialDate?: string }) {
                 </p>
               </>
             ) : (
-              <div className="brut-thin h-[620px] bg-card" aria-hidden />
+              <div className="brut-thin h-[520px] bg-card sm:h-[620px]" aria-hidden />
             )}
           </>
         ) : (
           <>
             <span className="mb-2 block text-xs font-bold uppercase">Duration type</span>
-            <div className="mb-6 grid grid-cols-3 gap-2">
+            <div className="mb-5 grid grid-cols-3 gap-2 sm:mb-6">
               {TYPES.map((t) => (
                 <button
                   key={t.key}

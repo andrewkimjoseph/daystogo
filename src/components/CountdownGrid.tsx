@@ -70,7 +70,7 @@ export function CountdownGrid() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
+      <div className="grid grid-cols-1 items-start gap-6 sm:grid-cols-2 xl:grid-cols-3">
         {visible.map((c) => (
           <CountdownCard key={c.id} countdown={c} now={now} onChanged={() => {}} />
         ))}

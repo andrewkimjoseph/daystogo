@@ -93,7 +93,7 @@ export function CountdownCard({
   return (
     <article
       ref={cardRef}
-      className={`brut animate-pop-in relative flex h-full flex-col gap-4 bg-card p-5 ${editing && !lapsed ? "z-20" : "z-0"}`}
+      className={`brut animate-pop-in relative flex flex-col gap-3 bg-card p-4 sm:gap-4 sm:p-5 ${editing && !lapsed ? "z-20" : "z-0"}`}
       style={lapsed ? { backgroundImage: `linear-gradient(140deg, ${PALETTE.mauve}, ${PALETTE.red})` } : undefined}
     >
       {lapsed && (
@@ -113,7 +113,7 @@ export function CountdownCard({
             <span className="truncate">{category.label}</span>
           </p>
           <h2
-            className="text-lg leading-tight break-words uppercase"
+            className="text-base leading-tight break-words uppercase sm:text-lg"
             style={lapsed ? { color: PALETTE.cream } : undefined}
           >
             {countdown.title}
@@ -136,14 +136,14 @@ export function CountdownCard({
       </header>
 
       <p
-        className={`tick-numerals ${dramatic ? "text-5xl sm:text-6xl" : text.length > 9 ? "text-2xl sm:text-3xl" : "text-4xl"} ${urgent ? "animate-pulse-hard" : ""}`}
+        className={`tick-numerals ${dramatic ? "text-4xl sm:text-6xl" : text.length > 9 ? "text-xl sm:text-3xl" : "text-3xl sm:text-4xl"} ${urgent ? "animate-pulse-hard" : ""}`}
         style={{ color: lapsed ? PALETTE.cream : urgent ? PALETTE.red : "var(--ink)" }}
       >
         {text}
       </p>
 
       {editing && !lapsed && (
-        <div ref={panelRef} className="absolute inset-x-5 top-32 z-10 flex flex-col gap-3 bg-cream p-3 brut-thin animate-pop-in">
+        <div ref={panelRef} className="brut-thin animate-pop-in relative z-10 flex flex-col gap-3 bg-cream p-3">
           <div>
             <label htmlFor={`title-${countdown.id}`} className="mb-2 block text-[10px] font-bold uppercase">
               Name
@@ -181,7 +181,7 @@ export function CountdownCard({
                       await countdownsRepo.updateTags(countdown.id, { colorTag: c.hex });
                       onChanged();
                     }}
-                    className="brut-thin brut-press h-8 w-8 rounded-none"
+                    className="brut-thin brut-press h-10 w-10 rounded-none sm:h-8 sm:w-8"
                     style={{
                       backgroundColor: c.hex,
                       boxShadow:
@@ -214,7 +214,7 @@ export function CountdownCard({
                         });
                         onChanged();
                       }}
-                      className="brut-thin brut-press flex h-9 w-full items-center justify-center rounded-none"
+                      className="brut-thin brut-press flex h-11 w-full items-center justify-center rounded-none sm:h-9"
                       style={
                         on
                           ? { backgroundColor: PALETTE.mauve, color: PALETTE.cream }
@@ -265,7 +265,7 @@ export function CountdownCard({
       </div>
 
       {confirmingDelete ? (
-        <div className="brut-thin flex items-center justify-between gap-2 bg-destructive p-2">
+        <div className="brut-thin flex flex-wrap items-center justify-between gap-2 bg-destructive p-2">
           <span className="text-sm font-bold text-destructive-foreground uppercase">
             Nuke this countdown?
           </span>
@@ -300,7 +300,7 @@ export function CountdownCard({
                 playSound("start");
                 onChanged();
               }}
-              className="brut-thin brut-press flex flex-1 items-center justify-center gap-2 rounded-none bg-cream px-3 py-2 text-sm font-bold uppercase"
+              className="brut-thin brut-press flex min-h-11 flex-1 items-center justify-center gap-2 rounded-none bg-cream px-3 py-2 text-sm font-bold uppercase"
             >
               <RotateCcw className="h-4 w-4" strokeWidth={3} /> Run again
             </button>
@@ -310,7 +310,7 @@ export function CountdownCard({
               type="button"
               onClick={() => setEditing((v) => !v)}
               aria-expanded={editing}
-              className="brut-thin brut-press flex flex-1 items-center justify-center gap-2 rounded-none bg-primary px-3 py-2 text-sm font-bold text-primary-foreground uppercase"
+              className="brut-thin brut-press flex min-h-11 flex-1 items-center justify-center gap-2 rounded-none bg-primary px-3 py-2 text-sm font-bold text-primary-foreground uppercase"
             >
               <Pencil className="h-4 w-4" strokeWidth={3} /> {editing ? "Done" : "Edit tags"}
             </button>
@@ -319,7 +319,7 @@ export function CountdownCard({
             type="button"
             onClick={() => setConfirmingDelete(true)}
             aria-label="Delete countdown"
-            className="brut-thin brut-press flex h-10 w-10 items-center justify-center rounded-none bg-card"
+            className="brut-thin brut-press flex h-11 w-11 shrink-0 items-center justify-center rounded-none bg-card"
           >
             <Trash2 className="h-4 w-4" strokeWidth={3} />
           </button>

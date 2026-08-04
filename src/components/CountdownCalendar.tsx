@@ -2,12 +2,14 @@ import { useEffect, useMemo, useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
 import { Link } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { countdownsRepo } from "@/lib/countdownsRepo";
+import { countdownsRepo, remainingMs } from "@/lib/countdownsRepo";
 import { categoryMeta } from "@/lib/categories";
 import { PALETTE, tagTextColor } from "@/lib/palette";
 import { formatTargetLabel } from "@/lib/localTime";
+import { formatRemaining } from "@/lib/formatTime";
 import type { Countdown } from "@/lib/db";
 import { useHydrated } from "@/hooks/useHydrated";
+import { useCountdownTick } from "@/hooks/useCountdownTick";
 
 const WEEKDAYS = ["M", "T", "W", "T", "F", "S", "S"];
 const MONTHS = [
@@ -85,7 +87,7 @@ function CalendarSkeleton() {
         <div className="mb-2 h-9 bg-cream/60" />
         <div className="grid grid-cols-7 gap-1">
           {Array.from({ length: 42 }, (_, i) => (
-            <div key={i} className="h-14 bg-cream/40 sm:h-16" />
+            <div key={i} className="h-12 bg-cream/40 sm:h-16" />
           ))}
         </div>
       </div>
@@ -281,7 +283,7 @@ function CalendarBody() {
                   onClick={() => setSelected(new Date(d))}
                   aria-pressed={isSelected}
                   aria-label={`${d.toDateString()}${marks.length ? `, ${marks.length} countdown${marks.length === 1 ? "" : "s"}` : ""}`}
-                  className={`tick-numerals relative flex h-14 flex-col items-center justify-center gap-1 text-base sm:h-16 ${
+                  className={`tick-numerals relative flex h-12 flex-col items-center justify-center gap-1 text-sm sm:h-16 sm:text-base ${
                     isSelected ? "brut-thin" : ""
                   } ${outside && !isSelected ? "opacity-35" : ""}`}
                   style={
@@ -361,35 +363,50 @@ function DayPanel({ date, items }: { date: Date; items: Countdown[] }) {
           <div className="flex">{newCountdownLink}</div>
 
         <ul className="flex flex-col gap-2">
-          {items.map((c) => {
-            const meta = categoryMeta(c.category);
-            const Icon = meta.icon;
-            return (
-              <li key={c.id}>
-                <Link
-                  to="/"
-                  viewTransition
-                  className="brut-thin brut-press flex items-center gap-3 bg-cream p-3"
-                >
-                  <span
-                    className="flex h-9 w-9 shrink-0 items-center justify-center border-2 border-ink"
-                    style={{ backgroundColor: c.colorTag, color: tagTextColor(c.colorTag) }}
-                  >
-                    <Icon className="h-4 w-4" strokeWidth={3} />
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-bold uppercase">{c.title}</span>
-                    <span className="block text-xs font-bold text-muted-foreground">
-                      {formatTargetLabel(endMoment(c))} · {STATUS_LABEL[c.status]}
-                    </span>
-                  </span>
-                </Link>
-              </li>
-            );
-          })}
+          {items.map((c) => (
+            <li key={c.id}>
+              <DayPanelRow countdown={c} />
+            </li>
+          ))}
         </ul>
+
         </>
       )}
     </div>
   );
 }
+
+/** One row in the day panel: static landing moment plus a live to-the-second ticker. */
+function DayPanelRow({ countdown }: { countdown: Countdown }) {
+  const now = useCountdownTick();
+  const meta = categoryMeta(countdown.category);
+  const Icon = meta.icon;
+  const remaining = remainingMs(countdown, now);
+  const lapsed = countdown.status === "lapsed" || remaining <= 0;
+  const { text } = formatRemaining(remaining);
+
+  return (
+    <Link
+      to="/"
+      viewTransition
+      className="brut-thin brut-press flex items-start gap-3 bg-cream p-3"
+    >
+      <span
+        className="flex h-9 w-9 shrink-0 items-center justify-center border-2 border-ink"
+        style={{ backgroundColor: countdown.colorTag, color: tagTextColor(countdown.colorTag) }}
+      >
+        <Icon className="h-4 w-4" strokeWidth={3} />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block text-sm font-bold uppercase break-words">{countdown.title}</span>
+        <span className="block text-xs font-bold text-muted-foreground">
+          {formatTargetLabel(endMoment(countdown))} · {STATUS_LABEL[countdown.status]}
+        </span>
+        <span className="tick-numerals mt-1 block text-sm font-bold">
+          {lapsed ? "Lapsed" : `${text} to go`}
+        </span>
+      </span>
+    </Link>
+  );
+}
+
