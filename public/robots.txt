@@ -13,4 +13,4 @@ Allow: /
 User-agent: *
 Allow: /
 
-Sitemap: https://www.daystogo.xyz/sitemap.xml
+Sitemap: https://app.daystogo.xyz/sitemap.xml

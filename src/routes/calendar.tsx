@@ -19,10 +19,10 @@ export const Route = createFileRoute("/calendar")({
           "Flip through months and years and see exactly which days your countdowns land on.",
       },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "https://www.daystogo.xyz/calendar" },
+      { property: "og:url", content: "https://app.daystogo.xyz/calendar" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [{ rel: "canonical", href: "https://www.daystogo.xyz/calendar" }],
+    links: [{ rel: "canonical", href: "https://app.daystogo.xyz/calendar" }],
   }),
 
   component: CalendarPage,
