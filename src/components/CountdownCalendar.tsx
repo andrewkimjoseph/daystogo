@@ -261,13 +261,15 @@ function CalendarBody() {
           <div key={`months-${view.y}`} className={`grid grid-cols-3 gap-1 ${swapClass}`}>
             {MONTHS_SHORT.map((label, i) => {
               const on = i === view.m;
+              const past = view.y === minY && i < minM;
               return (
                 <button
                   key={label}
                   type="button"
                   onClick={() => jumpTo(view.y, i)}
+                  disabled={past}
                   aria-pressed={on}
-                  className={`h-11 text-xs font-bold uppercase ${on ? "brut-thin" : ""}`}
+                  className={`h-11 text-xs font-bold uppercase ${on ? "brut-thin" : ""} ${past ? "pointer-events-none opacity-30" : ""}`}
                   style={on ? { backgroundColor: PALETTE.teal, color: PALETTE.cream } : undefined}
                 >
                   {label}
