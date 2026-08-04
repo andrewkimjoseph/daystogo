@@ -88,8 +88,7 @@ function AboutPage() {
         <section className="mt-8">
           <h2 className="text-2xl uppercase">Built by</h2>
           <p className="mt-2 text-base text-muted-foreground">
-            Days To Go is a project by Andrew Kim Joseph. Peek at the code, file an
-            issue, or say hi:
+            Days To Go is a project by Andrew Kim Joseph. Say hi:
           </p>
           <a
             href="https://github.com/andrewkimjoseph"
