@@ -51,7 +51,7 @@ function AboutPage() {
           <Link
             to="/"
             viewTransition
-            className="brut brut-press inline-flex items-center gap-2 rounded-none bg-cream px-5 py-3 text-sm font-bold uppercase text-ink"
+            className="brut brut-press inline-flex items-center gap-2 rounded-none bg-cream px-3 py-2.5 text-xs font-bold uppercase text-ink sm:px-5 sm:py-3 sm:text-sm"
           >
             <ArrowLeft className="h-4 w-4" strokeWidth={3} />
             Back to the timers
@@ -64,7 +64,7 @@ function AboutPage() {
           A playful, brutalist countdown timer that lives right in your browser.
         </p>
 
-        <div className="brut mt-8 bg-card p-6 text-foreground">
+        <div className="brut mt-6 bg-card p-4 text-foreground sm:mt-8 sm:p-6">
           <p className="text-base leading-relaxed">
             Days To Go lets you run as many countdowns as you like, from a quick{" "}
             <span className="font-bold">3 seconds</span> all the way out to{" "}
