@@ -1,8 +1,9 @@
 {
-  "name": "tanstack_start_ts",
+  "name": "daystogo_app",
   "private": true,
   "sideEffects": false,
   "type": "module",
+  "version": "0.1.0",
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
