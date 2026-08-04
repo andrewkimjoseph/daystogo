@@ -19,9 +19,11 @@ export function SiteHeader() {
             <Link
               to="/create-countdown"
               viewTransition
-              className="brut brut-press hidden rounded-none bg-primary px-3 py-2 text-sm font-bold text-primary-foreground uppercase sm:inline-flex"
+              aria-label="New countdown"
+              className="brut brut-press inline-flex h-10 items-center gap-1.5 rounded-none bg-primary px-2.5 text-xs font-bold text-primary-foreground uppercase sm:h-auto sm:px-3 sm:py-2 sm:text-sm"
             >
-              New
+              <Plus className="h-4 w-4 shrink-0" strokeWidth={3} />
+              <span className="hidden xs:inline">New</span>
             </Link>
           )}
           <Link
