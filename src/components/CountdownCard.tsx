@@ -143,7 +143,7 @@ export function CountdownCard({
       </p>
 
       {editing && !lapsed && (
-        <div ref={panelRef} className="brut-thin animate-pop-in relative z-10 flex flex-col gap-3 bg-cream p-3 sm:absolute sm:inset-x-5 sm:top-32 sm:bottom-5 sm:overflow-y-auto">
+        <div ref={panelRef} className="brut-thin animate-pop-in relative z-10 flex flex-col gap-3 bg-cream p-3">
           <div>
             <label htmlFor={`title-${countdown.id}`} className="mb-2 block text-[10px] font-bold uppercase">
               Name
