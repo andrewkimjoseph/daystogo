@@ -34,11 +34,11 @@ function CalendarPage() {
       <SiteHeader />
 
       <main className="view-page mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
-        <div className="mb-6 flex justify-end">
+        <div className="mb-4 flex justify-end sm:mb-6">
           <Link
             to="/"
             viewTransition
-            className="brut brut-press inline-flex items-center gap-2 rounded-none bg-cream px-4 py-3 text-sm font-bold text-ink uppercase"
+            className="brut brut-press inline-flex items-center gap-2 rounded-none bg-cream px-3 py-2.5 text-xs font-bold text-ink uppercase sm:px-4 sm:py-3 sm:text-sm"
           >
             <ArrowLeft className="h-4 w-4" strokeWidth={3} /> Back to the timers
           </Link>
