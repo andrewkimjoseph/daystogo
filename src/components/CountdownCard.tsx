@@ -38,6 +38,8 @@ export function CountdownCard({
   const urgent = !lapsed && countdown.status === "running" && remaining <= 60_000;
 
   const panelRef = useRef<HTMLDivElement | null>(null);
+  const toggleRef = useRef<HTMLButtonElement | null>(null);
+
 
   // Keep the draft title in sync with the stored title whenever the editor opens.
   useEffect(() => {
