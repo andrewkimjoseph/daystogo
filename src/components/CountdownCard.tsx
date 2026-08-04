@@ -113,7 +113,7 @@ export function CountdownCard({
             <span className="truncate">{category.label}</span>
           </p>
           <h2
-            className="text-lg leading-tight break-words uppercase"
+            className="text-base leading-tight break-words uppercase sm:text-lg"
             style={lapsed ? { color: PALETTE.cream } : undefined}
           >
             {countdown.title}
