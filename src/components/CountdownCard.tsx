@@ -234,24 +234,10 @@ export function CountdownCard({
           <p className="text-[10px] font-bold uppercase text-muted-foreground">
             Only the name, colour and category can change — the clock keeps running.
           </p>
-          <button
-            type="button"
-            onClick={async () => {
-              const trimmed = draftTitle.trim();
-              if (trimmed && trimmed !== countdown.title) {
-                await countdownsRepo.updateTags(countdown.id, { title: trimmed });
-                onChanged();
-              } else if (!trimmed) {
-                setDraftTitle(countdown.title);
-              }
-              setEditing(false);
-            }}
-            className="brut-thin brut-press flex items-center justify-center gap-2 rounded-none bg-primary px-3 py-2 text-sm font-bold text-primary-foreground uppercase"
-          >
-            <Pencil className="h-4 w-4" strokeWidth={3} /> Done
-          </button>
+          </div>
         </div>
-      )}
+      </div>
+
 
 
       <div className="mt-auto flex gap-[3px]" aria-label={`${Math.round(pct)}% elapsed`}>
