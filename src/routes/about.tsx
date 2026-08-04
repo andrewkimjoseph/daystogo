@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Github, ArrowLeft } from "lucide-react";
+import logoUrl from "@/assets/logo.png";
 import { SiteHeader } from "@/components/SiteHeader";
 import { PALETTE } from "@/lib/palette";
 
@@ -58,7 +59,10 @@ function AboutPage() {
           </Link>
         </div>
 
-        <h1 className="hero-gradient text-3xl uppercase sm:text-5xl">About Days To Go</h1>
+        <h1 className="flex flex-wrap items-center gap-3 text-3xl uppercase sm:gap-4 sm:text-5xl">
+          <span className="hero-gradient">About</span>
+          <img src={logoUrl} alt="Days To Go" className="h-10 w-auto sm:h-14" />
+        </h1>
 
         <p className="mt-4 text-lg font-bold text-muted-foreground">
           A playful, brutalist countdown timer that lives right in your browser.
