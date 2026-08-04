@@ -2,6 +2,8 @@ import { Plus } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { SiteHeader } from "./SiteHeader";
 import { Sparkle } from "./Sparkle";
+import { TodayClock } from "./TodayClock";
+
 import { PALETTE } from "@/lib/palette";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -10,13 +12,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <SiteHeader />
 
       <main className="view-page mx-auto max-w-6xl px-4 py-8 pb-28 sm:px-6 sm:py-10">
-        <div className="relative mb-8">
-          <Sparkle color={PALETTE.red} size={26} className="absolute -top-4 left-0 hidden sm:block" />
-          <h1 className="hero-gradient text-3xl uppercase sm:text-5xl">Put a clock on it.</h1>
-          <p className="mt-2 max-w-xl font-bold text-muted-foreground">
-            Three seconds to forever (well — forever isn’t a thing, but we’ll get close). Everything ticks at once.
-          </p>
+        <div className="relative mb-8 grid grid-cols-[minmax(0,1fr)_auto] items-start gap-4">
+          <div className="min-w-0">
+            <Sparkle color={PALETTE.red} size={26} className="absolute -top-4 left-0 hidden sm:block" />
+            <h1 className="hero-gradient text-3xl uppercase sm:text-5xl">Put a clock on it.</h1>
+            <p className="mt-2 max-w-xl font-bold text-muted-foreground">
+              Three seconds to forever (well — forever isn’t a thing, but we’ll get close). Everything ticks at once.
+            </p>
+          </div>
+          <TodayClock />
         </div>
+
 
         {children}
       </main>
