@@ -218,10 +218,15 @@ function CalendarBody() {
         {pane === "years" && (
           <div>
             <div className="mb-2 flex items-center justify-between gap-2">
-              {arrow("Previous years", "l", () => {
-                setDir(-1);
-                setYearPage((y) => y - 12);
-              })}
+              {arrow(
+                "Previous years",
+                "l",
+                () => {
+                  setDir(-1);
+                  setYearPage((y) => Math.max(minY, y - 12));
+                },
+                yearPage <= minY,
+              )}
               <span className="tick-numerals flex-1 text-center text-xs">
                 {years[0]} – {years[years.length - 1]}
               </span>
@@ -233,13 +238,15 @@ function CalendarBody() {
             <div key={`years-${yearPage}`} className={`grid grid-cols-4 gap-1 ${swapClass}`}>
               {years.map((y) => {
                 const on = y === view.y;
+                const past = y < minY;
                 return (
                   <button
                     key={y}
                     type="button"
                     onClick={() => jumpTo(y, view.m)}
+                    disabled={past}
                     aria-pressed={on}
-                    className={`tick-numerals h-11 text-base ${on ? "brut-thin" : ""}`}
+                    className={`tick-numerals h-11 text-base ${on ? "brut-thin" : ""} ${past ? "pointer-events-none opacity-30" : ""}`}
                     style={on ? { backgroundColor: PALETTE.teal, color: PALETTE.cream } : undefined}
                   >
                     {y}
