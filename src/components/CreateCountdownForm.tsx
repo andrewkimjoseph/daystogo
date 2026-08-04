@@ -7,7 +7,7 @@ import { CATEGORIES, type CountdownCategory } from "@/lib/categories";
 import { playSound } from "@/lib/soundManager";
 import { localInputValue, spanFromNow } from "@/lib/localTime";
 import { BrutalCalendar, BrutalTimeField } from "./BrutalDateTimePicker";
-import { useHydrated } from "@/hooks/useHydrated";
+import { useHydrated, useIsomorphicLayoutEffect } from "@/hooks/useHydrated";
 
 const TYPES: { key: DurationType; label: string; max: number }[] = [
   { key: "seconds", label: "Secs", max: 60 },
