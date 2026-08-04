@@ -145,7 +145,9 @@ export function CountdownCard({
       <div
         aria-hidden={!editing || lapsed}
         className={`grid transition-[grid-template-rows,opacity] duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
-          editing && !lapsed ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+          editing && !lapsed
+            ? "grid-rows-[1fr] opacity-100"
+            : "pointer-events-none -mb-3 grid-rows-[0fr] opacity-0 sm:-mb-4"
         }`}
       >
         <div className="overflow-hidden">
