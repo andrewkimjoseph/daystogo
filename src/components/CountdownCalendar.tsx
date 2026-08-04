@@ -87,7 +87,7 @@ function CalendarSkeleton() {
         <div className="mb-2 h-9 bg-cream/60" />
         <div className="grid grid-cols-7 gap-1">
           {Array.from({ length: 42 }, (_, i) => (
-            <div key={i} className="h-14 bg-cream/40 sm:h-16" />
+            <div key={i} className="h-12 bg-cream/40 sm:h-16" />
           ))}
         </div>
       </div>
@@ -283,7 +283,7 @@ function CalendarBody() {
                   onClick={() => setSelected(new Date(d))}
                   aria-pressed={isSelected}
                   aria-label={`${d.toDateString()}${marks.length ? `, ${marks.length} countdown${marks.length === 1 ? "" : "s"}` : ""}`}
-                  className={`tick-numerals relative flex h-14 flex-col items-center justify-center gap-1 text-base sm:h-16 ${
+                  className={`tick-numerals relative flex h-12 flex-col items-center justify-center gap-1 text-sm sm:h-16 sm:text-base ${
                     isSelected ? "brut-thin" : ""
                   } ${outside && !isSelected ? "opacity-35" : ""}`}
                   style={
