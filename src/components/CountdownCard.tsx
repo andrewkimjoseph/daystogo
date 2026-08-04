@@ -214,7 +214,7 @@ export function CountdownCard({
                         });
                         onChanged();
                       }}
-                      className="brut-thin brut-press flex h-9 w-full items-center justify-center rounded-none"
+                      className="brut-thin brut-press flex h-11 w-full items-center justify-center rounded-none sm:h-9"
                       style={
                         on
                           ? { backgroundColor: PALETTE.mauve, color: PALETTE.cream }
