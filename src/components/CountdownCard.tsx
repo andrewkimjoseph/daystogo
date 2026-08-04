@@ -142,8 +142,15 @@ export function CountdownCard({
         {text}
       </p>
 
-      {editing && !lapsed && (
-        <div ref={panelRef} className="brut-thin animate-pop-in relative z-10 flex flex-col gap-3 bg-cream p-3">
+      <div
+        aria-hidden={!editing || lapsed}
+        className={`grid transition-[grid-template-rows,opacity] duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
+          editing && !lapsed ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+        }`}
+      >
+        <div className="overflow-hidden">
+        <div ref={panelRef} className="brut-thin relative z-10 flex flex-col gap-3 bg-cream p-3">
+
           <div>
             <label htmlFor={`title-${countdown.id}`} className="mb-2 block text-[10px] font-bold uppercase">
               Name
