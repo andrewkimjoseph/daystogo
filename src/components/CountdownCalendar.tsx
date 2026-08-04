@@ -373,3 +373,38 @@ function DayPanel({ date, items }: { date: Date; items: Countdown[] }) {
     </div>
   );
 }
+
+/** One row in the day panel: static landing moment plus a live to-the-second ticker. */
+function DayPanelRow({ countdown }: { countdown: Countdown }) {
+  const now = useCountdownTick();
+  const meta = categoryMeta(countdown.category);
+  const Icon = meta.icon;
+  const remaining = remainingMs(countdown, now);
+  const lapsed = countdown.status === "lapsed" || remaining <= 0;
+  const { text } = formatRemaining(remaining);
+
+  return (
+    <Link
+      to="/"
+      viewTransition
+      className="brut-thin brut-press flex items-start gap-3 bg-cream p-3"
+    >
+      <span
+        className="flex h-9 w-9 shrink-0 items-center justify-center border-2 border-ink"
+        style={{ backgroundColor: countdown.colorTag, color: tagTextColor(countdown.colorTag) }}
+      >
+        <Icon className="h-4 w-4" strokeWidth={3} />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block text-sm font-bold uppercase break-words">{countdown.title}</span>
+        <span className="block text-xs font-bold text-muted-foreground">
+          {formatTargetLabel(endMoment(countdown))} · {STATUS_LABEL[countdown.status]}
+        </span>
+        <span className="tick-numerals mt-1 block text-sm font-bold">
+          {lapsed ? "Lapsed" : `${text} to go`}
+        </span>
+      </span>
+    </Link>
+  );
+}
+
