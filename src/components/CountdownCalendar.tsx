@@ -99,7 +99,7 @@ function CalendarBody() {
   const [selected, setSelected] = useState(() => new Date());
   const [view, setView] = useState(() => ({ y: today.getFullYear(), m: today.getMonth() }));
   const [pane, setPane] = useState<Pane>("days");
-  const [yearPage, setYearPage] = useState(() => today.getFullYear() - 5);
+  const [yearPage, setYearPage] = useState(() => today.getFullYear());
   const [dir, setDir] = useState<-1 | 0 | 1>(0);
   const swapClass = dir === 1 ? "swap-right" : dir === -1 ? "swap-left" : "swap-zoom";
 
@@ -126,15 +126,27 @@ function CalendarBody() {
 
   const selectedList = buckets.get(dayKey(selected)) ?? [];
 
+  // The past is not bookable: navigation floors at the current month.
+  const minY = today.getFullYear();
+  const minM = today.getMonth();
+  const atFloor = view.y === minY && view.m === minM;
+  const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+  const clamp = (y: number, m: number) =>
+    y < minY || (y === minY && m < minM) ? { y: minY, m: minM } : { y, m };
+
   function shiftMonth(delta: number) {
     const d = new Date(view.y, view.m + delta, 1);
+    const next = clamp(d.getFullYear(), d.getMonth());
+    if (next.y === view.y && next.m === view.m) return;
     setDir(delta > 0 ? 1 : -1);
-    setView({ y: d.getFullYear(), m: d.getMonth() });
+    setView(next);
   }
 
   function shiftYear(delta: number) {
+    const next = clamp(view.y + delta, view.m);
+    if (next.y === view.y && next.m === view.m) return;
     setDir(delta > 0 ? 1 : -1);
-    setView((v) => ({ ...v, y: v.y + delta }));
+    setView(next);
   }
 
   function togglePane(next: Pane) {
@@ -144,16 +156,17 @@ function CalendarBody() {
 
   function jumpTo(y: number, m: number) {
     setDir(0);
-    setView({ y, m });
+    setView(clamp(y, m));
     setPane("days");
   }
 
-  const arrow = (label: string, side: "l" | "r", onClick: () => void) => (
+  const arrow = (label: string, side: "l" | "r", onClick: () => void, disabled = false) => (
     <button
       type="button"
       aria-label={label}
       onClick={onClick}
-      className="brut-thin brut-press flex h-9 w-9 shrink-0 items-center justify-center bg-cream"
+      disabled={disabled}
+      className="brut-thin brut-press flex h-9 w-9 shrink-0 items-center justify-center bg-cream disabled:pointer-events-none disabled:opacity-35"
     >
       {side === "l" ? (
         <ChevronLeft className="h-4 w-4" strokeWidth={3} />
@@ -168,7 +181,8 @@ function CalendarBody() {
       <div className="brut bg-card p-3 sm:p-4">
         {/* Year row */}
         <div className="mb-2 flex items-center justify-between gap-2">
-          {arrow("Previous year", "l", () => shiftYear(-1))}
+          {arrow("Previous year", "l", () => shiftYear(-1), view.y <= minY)}
+
           <button
             type="button"
             onClick={() => {
@@ -187,7 +201,7 @@ function CalendarBody() {
 
         {/* Month row */}
         <div className="mb-2 flex items-center justify-between gap-2">
-          {arrow("Previous month", "l", () => shiftMonth(-1))}
+          {arrow("Previous month", "l", () => shiftMonth(-1), atFloor)}
           <button
             type="button"
             onClick={() => togglePane("months")}
@@ -204,10 +218,15 @@ function CalendarBody() {
         {pane === "years" && (
           <div>
             <div className="mb-2 flex items-center justify-between gap-2">
-              {arrow("Previous years", "l", () => {
-                setDir(-1);
-                setYearPage((y) => y - 12);
-              })}
+              {arrow(
+                "Previous years",
+                "l",
+                () => {
+                  setDir(-1);
+                  setYearPage((y) => Math.max(minY, y - 12));
+                },
+                yearPage <= minY,
+              )}
               <span className="tick-numerals flex-1 text-center text-xs">
                 {years[0]} – {years[years.length - 1]}
               </span>
@@ -219,13 +238,15 @@ function CalendarBody() {
             <div key={`years-${yearPage}`} className={`grid grid-cols-4 gap-1 ${swapClass}`}>
               {years.map((y) => {
                 const on = y === view.y;
+                const past = y < minY;
                 return (
                   <button
                     key={y}
                     type="button"
                     onClick={() => jumpTo(y, view.m)}
+                    disabled={past}
                     aria-pressed={on}
-                    className={`tick-numerals h-11 text-base ${on ? "brut-thin" : ""}`}
+                    className={`tick-numerals h-11 text-base ${on ? "brut-thin" : ""} ${past ? "pointer-events-none opacity-30" : ""}`}
                     style={on ? { backgroundColor: PALETTE.teal, color: PALETTE.cream } : undefined}
                   >
                     {y}
@@ -240,13 +261,15 @@ function CalendarBody() {
           <div key={`months-${view.y}`} className={`grid grid-cols-3 gap-1 ${swapClass}`}>
             {MONTHS_SHORT.map((label, i) => {
               const on = i === view.m;
+              const past = view.y === minY && i < minM;
               return (
                 <button
                   key={label}
                   type="button"
                   onClick={() => jumpTo(view.y, i)}
+                  disabled={past}
                   aria-pressed={on}
-                  className={`h-11 text-xs font-bold uppercase ${on ? "brut-thin" : ""}`}
+                  className={`h-11 text-xs font-bold uppercase ${on ? "brut-thin" : ""} ${past ? "pointer-events-none opacity-30" : ""}`}
                   style={on ? { backgroundColor: PALETTE.teal, color: PALETTE.cream } : undefined}
                 >
                   {label}
@@ -271,16 +294,18 @@ function CalendarBody() {
               const isSelected = sameDay(d, selected);
               const isToday = sameDay(d, today);
               const outside = d.getMonth() !== view.m;
+              const past = d.getTime() < todayStart;
               return (
                 <button
                   key={d.getTime()}
                   type="button"
                   onClick={() => setSelected(new Date(d))}
+                  disabled={past}
                   aria-pressed={isSelected}
                   aria-label={`${d.toDateString()}${marks.length ? `, ${marks.length} countdown${marks.length === 1 ? "" : "s"}` : ""}`}
                   className={`tick-numerals relative flex h-12 flex-col items-center justify-center gap-1 text-sm sm:h-16 sm:text-base ${
                     isSelected ? "brut-thin" : ""
-                  } ${outside && !isSelected ? "opacity-35" : ""}`}
+                  } ${past ? "pointer-events-none opacity-25" : outside && !isSelected ? "opacity-35" : ""}`}
                   style={
                     isSelected
                       ? { backgroundColor: PALETTE.teal, color: PALETTE.cream }
