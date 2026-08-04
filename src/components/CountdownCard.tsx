@@ -93,7 +93,7 @@ export function CountdownCard({
   return (
     <article
       ref={cardRef}
-      className={`brut animate-pop-in relative flex h-full flex-col gap-3 bg-card p-4 sm:gap-4 sm:p-5 ${editing && !lapsed ? "z-20" : "z-0"}`}
+      className={`brut animate-pop-in relative flex flex-col gap-3 bg-card p-4 sm:gap-4 sm:p-5 ${editing && !lapsed ? "z-20" : "z-0"}`}
       style={lapsed ? { backgroundImage: `linear-gradient(140deg, ${PALETTE.mauve}, ${PALETTE.red})` } : undefined}
     >
       {lapsed && (
