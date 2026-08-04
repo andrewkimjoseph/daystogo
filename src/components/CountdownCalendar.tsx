@@ -61,11 +61,6 @@ function endMoment(c: Countdown): number {
   return c.endsAt;
 }
 
-const STATUS_LABEL: Record<Countdown["status"], string> = {
-  running: "Running",
-  paused: "Paused",
-  lapsed: "Lapsed",
-};
 
 /**
  * The calendar depends entirely on the viewer's clock and timezone, which the
