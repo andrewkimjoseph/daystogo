@@ -294,16 +294,18 @@ function CalendarBody() {
               const isSelected = sameDay(d, selected);
               const isToday = sameDay(d, today);
               const outside = d.getMonth() !== view.m;
+              const past = d.getTime() < todayStart;
               return (
                 <button
                   key={d.getTime()}
                   type="button"
                   onClick={() => setSelected(new Date(d))}
+                  disabled={past}
                   aria-pressed={isSelected}
                   aria-label={`${d.toDateString()}${marks.length ? `, ${marks.length} countdown${marks.length === 1 ? "" : "s"}` : ""}`}
                   className={`tick-numerals relative flex h-12 flex-col items-center justify-center gap-1 text-sm sm:h-16 sm:text-base ${
                     isSelected ? "brut-thin" : ""
-                  } ${outside && !isSelected ? "opacity-35" : ""}`}
+                  } ${past ? "pointer-events-none opacity-25" : outside && !isSelected ? "opacity-35" : ""}`}
                   style={
                     isSelected
                       ? { backgroundColor: PALETTE.teal, color: PALETTE.cream }
