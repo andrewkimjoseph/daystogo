@@ -37,6 +37,12 @@ export function CountdownCard({
   const filled = Math.round((pct / 100) * SEGMENTS);
   const urgent = !lapsed && countdown.status === "running" && remaining <= 60_000;
 
+  // Keep the draft title in sync with the stored title whenever the editor opens.
+  useEffect(() => {
+    if (editing) setDraftTitle(countdown.title);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editing]);
+
   // Lapse detection + one-time celebration, driven by the shared tick.
   // Celebrate synchronously and guard with a module-level set: the DB writes
   // below re-render this card, which would otherwise cancel the effect midway.
