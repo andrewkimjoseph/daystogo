@@ -53,7 +53,7 @@ export function CountdownCard({
     const onPointerDown = async (e: PointerEvent) => {
       if (panelRef.current?.contains(e.target as Node)) return;
       if (toggleRef.current?.contains(e.target as Node)) return;
-      const trimmed = draftTitle.trim();
+      const trimmed = draftTitle.trim().toUpperCase();
       if (trimmed && trimmed !== countdown.title) {
         await countdownsRepo.updateTags(countdown.id, { title: trimmed });
         onChanged();
@@ -167,11 +167,14 @@ export function CountdownCard({
               id={`title-${countdown.id}`}
               type="text"
               value={draftTitle}
-              onChange={(e) => setDraftTitle(e.target.value.toUpperCase())}
+              // Keep the raw keystrokes in state — uppercasing here would reset
+              // the caret to the end on every mid-word edit. CSS handles the look.
+              onChange={(e) => setDraftTitle(e.target.value)}
               onBlur={async () => {
-                const trimmed = draftTitle.trim();
+                const trimmed = draftTitle.trim().toUpperCase();
                 if (trimmed && trimmed !== countdown.title) {
                   await countdownsRepo.updateTags(countdown.id, { title: trimmed });
+                  setDraftTitle(trimmed);
                   onChanged();
                 } else if (!trimmed) {
                   setDraftTitle(countdown.title);
