@@ -144,14 +144,20 @@ export function CountdownCard({
 
       <div
         aria-hidden={!editing || lapsed}
-        className={`grid transition-[grid-template-rows,opacity] duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
+        className={`grid transition-[grid-template-rows,opacity,margin] duration-[420ms] ease-[cubic-bezier(0.22,0.61,0.36,1)] motion-reduce:transition-none ${
           editing && !lapsed
             ? "grid-rows-[1fr] opacity-100"
             : "pointer-events-none -mb-3 grid-rows-[0fr] opacity-0 sm:-mb-4"
         }`}
       >
         <div className="overflow-hidden">
-        <div ref={panelRef} className="brut-thin relative z-10 flex flex-col gap-3 bg-cream p-3">
+        <div
+          ref={panelRef}
+          className={`brut-thin relative z-10 flex flex-col gap-3 bg-cream p-3 transition-transform duration-[420ms] ease-[cubic-bezier(0.22,0.61,0.36,1)] motion-reduce:transition-none ${
+            editing && !lapsed ? "translate-y-0" : "-translate-y-1"
+          }`}
+        >
+
 
           <div>
             <label htmlFor={`title-${countdown.id}`} className="mb-2 block text-[10px] font-bold uppercase">
