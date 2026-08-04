@@ -37,11 +37,31 @@ export function CountdownCard({
   const filled = Math.round((pct / 100) * SEGMENTS);
   const urgent = !lapsed && countdown.status === "running" && remaining <= 60_000;
 
+  const panelRef = useRef<HTMLDivElement | null>(null);
+
   // Keep the draft title in sync with the stored title whenever the editor opens.
   useEffect(() => {
     if (editing) setDraftTitle(countdown.title);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editing]);
+
+  // Close the tag editor when clicking anywhere outside it, committing the name.
+  useEffect(() => {
+    if (!editing) return;
+    const onPointerDown = async (e: PointerEvent) => {
+      if (panelRef.current?.contains(e.target as Node)) return;
+      const trimmed = draftTitle.trim();
+      if (trimmed && trimmed !== countdown.title) {
+        await countdownsRepo.updateTags(countdown.id, { title: trimmed });
+        onChanged();
+      }
+      setEditing(false);
+    };
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => document.removeEventListener("pointerdown", onPointerDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editing, draftTitle, countdown.title, countdown.id]);
+
 
   // Lapse detection + one-time celebration, driven by the shared tick.
   // Celebrate synchronously and guard with a module-level set: the DB writes
