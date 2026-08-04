@@ -318,16 +318,14 @@ function CalendarBody() {
 }
 
 function DayPanel({ date, items }: { date: Date; items: Countdown[] }) {
-  // Locale formatting differs between server and browser, so wait for hydration.
-  const hydrated = useHydrated();
-  const heading = hydrated
-    ? date.toLocaleDateString(undefined, {
-        weekday: "long",
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      })
-    : `${date.getDate()} ${MONTHS[date.getMonth()]} ${date.getFullYear()}`;
+  // Only ever rendered after hydration, so viewer-locale formatting is safe here.
+  const heading = date.toLocaleDateString(undefined, {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+
 
   const newCountdownLink = (
     <Link
