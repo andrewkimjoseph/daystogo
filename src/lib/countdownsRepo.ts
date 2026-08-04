@@ -78,7 +78,8 @@ export const countdownsRepo = {
       durationValue: isTarget ? described.value : input.durationValue,
       durationSeconds,
       startedAt: now,
-      endsAt: now + durationSeconds * 1000,
+      // Target mode lands on the exact chosen moment; rounding durationSeconds must not shave ms off it.
+      endsAt: isTarget ? input.targetAt : now + durationSeconds * 1000,
       status: "running",
       colorTag: input.colorTag,
       category: input.category ?? "other",
