@@ -399,13 +399,9 @@ function DayPanelRow({ countdown }: { countdown: Countdown }) {
       </span>
       <span className="min-w-0 flex-1">
         <span className="block text-sm font-bold uppercase break-words">{countdown.title}</span>
-        <span className="block text-xs font-bold text-muted-foreground">
-          {STATUS_LABEL[countdown.status]}
-        </span>
-        <span className="tick-numerals mt-1 block text-sm font-bold text-muted-foreground">
+        <span className="tick-numerals block text-xs text-muted-foreground">
           {lapsed ? "Lapsed" : `${text} to go`}
         </span>
-
       </span>
     </Link>
   );
