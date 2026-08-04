@@ -80,7 +80,7 @@ function AboutPage() {
           </p>
           <p className="mt-4 text-base leading-relaxed">
             It's local-first: your timers are saved in your browser, so there's no
-            account to make and no server to trust. Open the tab, set a clock, and put
+            account to make and no server to trust. Open the tab, set a countdown, and put
             a clock on it.
           </p>
         </div>
