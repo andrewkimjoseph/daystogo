@@ -65,15 +65,47 @@ const STATUS_LABEL: Record<Countdown["status"], string> = {
   lapsed: "Lapsed",
 };
 
+/**
+ * The calendar depends entirely on the viewer's clock and timezone, which the
+ * server cannot know. Rendering a neutral shell on the server and mounting the
+ * real grid only after hydration keeps the first client render byte-identical
+ * to the server HTML, so React never has to throw the page away and re-mount.
+ */
 export function CountdownCalendar() {
+  const hydrated = useHydrated();
+  if (!hydrated) return <CalendarSkeleton />;
+  return <CalendarBody />;
+}
+
+function CalendarSkeleton() {
+  return (
+    <div className="grid gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
+      <div className="brut bg-card p-3 sm:p-4">
+        <div className="mb-2 h-9 bg-cream/60" />
+        <div className="mb-2 h-9 bg-cream/60" />
+        <div className="grid grid-cols-7 gap-1">
+          {Array.from({ length: 42 }, (_, i) => (
+            <div key={i} className="h-14 bg-cream/40 sm:h-16" />
+          ))}
+        </div>
+      </div>
+      <div className="brut bg-card p-4">
+        <div className="h-6 w-2/3 bg-cream/60" />
+      </div>
+    </div>
+  );
+}
+
+function CalendarBody() {
   const countdowns = useLiveQuery(() => countdownsRepo.all(), [], undefined);
-  const today = new Date();
+  const [today] = useState(() => new Date());
   const [selected, setSelected] = useState(() => new Date());
   const [view, setView] = useState(() => ({ y: today.getFullYear(), m: today.getMonth() }));
   const [pane, setPane] = useState<Pane>("days");
   const [yearPage, setYearPage] = useState(() => today.getFullYear() - 5);
   const [dir, setDir] = useState<-1 | 0 | 1>(0);
   const swapClass = dir === 1 ? "swap-right" : dir === -1 ? "swap-left" : "swap-zoom";
+
 
   useEffect(() => {
     void countdownsRepo.reconcile();
