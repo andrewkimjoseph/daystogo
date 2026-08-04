@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
 import { Link } from "@tanstack/react-router";
-import logoUrl from "@/assets/logo.svg";
+import logoUrl from "@/assets/logo.png";
 import { countdownsRepo } from "@/lib/countdownsRepo";
 import { CATEGORIES, categoryMeta, type CountdownCategory } from "@/lib/categories";
 import { PALETTE } from "@/lib/palette";

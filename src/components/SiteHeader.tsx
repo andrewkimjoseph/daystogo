@@ -1,6 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Plus } from "lucide-react";
-import logoUrl from "@/assets/logo.svg";
+import logoUrl from "@/assets/logo.png";
 import { MuteToggle } from "./MuteToggle";
 
 export function SiteHeader() {
