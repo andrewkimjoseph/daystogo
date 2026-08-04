@@ -300,7 +300,7 @@ export function CountdownCard({
                 playSound("start");
                 onChanged();
               }}
-              className="brut-thin brut-press flex flex-1 items-center justify-center gap-2 rounded-none bg-cream px-3 py-2 text-sm font-bold uppercase"
+              className="brut-thin brut-press flex min-h-11 flex-1 items-center justify-center gap-2 rounded-none bg-cream px-3 py-2 text-sm font-bold uppercase"
             >
               <RotateCcw className="h-4 w-4" strokeWidth={3} /> Run again
             </button>
@@ -310,7 +310,7 @@ export function CountdownCard({
               type="button"
               onClick={() => setEditing((v) => !v)}
               aria-expanded={editing}
-              className="brut-thin brut-press flex flex-1 items-center justify-center gap-2 rounded-none bg-primary px-3 py-2 text-sm font-bold text-primary-foreground uppercase"
+              className="brut-thin brut-press flex min-h-11 flex-1 items-center justify-center gap-2 rounded-none bg-primary px-3 py-2 text-sm font-bold text-primary-foreground uppercase"
             >
               <Pencil className="h-4 w-4" strokeWidth={3} /> {editing ? "Done" : "Edit tags"}
             </button>
@@ -319,7 +319,7 @@ export function CountdownCard({
             type="button"
             onClick={() => setConfirmingDelete(true)}
             aria-label="Delete countdown"
-            className="brut-thin brut-press flex h-10 w-10 items-center justify-center rounded-none bg-card"
+            className="brut-thin brut-press flex h-11 w-11 shrink-0 items-center justify-center rounded-none bg-card"
           >
             <Trash2 className="h-4 w-4" strokeWidth={3} />
           </button>
