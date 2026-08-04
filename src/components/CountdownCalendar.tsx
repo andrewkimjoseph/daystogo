@@ -2,12 +2,14 @@ import { useEffect, useMemo, useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
 import { Link } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { countdownsRepo } from "@/lib/countdownsRepo";
+import { countdownsRepo, remainingMs } from "@/lib/countdownsRepo";
 import { categoryMeta } from "@/lib/categories";
 import { PALETTE, tagTextColor } from "@/lib/palette";
 import { formatTargetLabel } from "@/lib/localTime";
+import { formatRemaining } from "@/lib/formatTime";
 import type { Countdown } from "@/lib/db";
 import { useHydrated } from "@/hooks/useHydrated";
+import { useCountdownTick } from "@/hooks/useCountdownTick";
 
 const WEEKDAYS = ["M", "T", "W", "T", "F", "S", "S"];
 const MONTHS = [
