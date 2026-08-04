@@ -99,7 +99,7 @@ function CalendarBody() {
   const [selected, setSelected] = useState(() => new Date());
   const [view, setView] = useState(() => ({ y: today.getFullYear(), m: today.getMonth() }));
   const [pane, setPane] = useState<Pane>("days");
-  const [yearPage, setYearPage] = useState(() => today.getFullYear() - 5);
+  const [yearPage, setYearPage] = useState(() => today.getFullYear());
   const [dir, setDir] = useState<-1 | 0 | 1>(0);
   const swapClass = dir === 1 ? "swap-right" : dir === -1 ? "swap-left" : "swap-zoom";
 
