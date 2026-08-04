@@ -93,7 +93,7 @@ export const countdownsRepo = {
   /** Only the cosmetic fields are editable once a clock is running. */
   async updateTags(
     id: string,
-    patch: { colorTag?: string; category?: CountdownCategory },
+    patch: { title?: string; colorTag?: string; category?: CountdownCategory },
   ): Promise<void> {
     await getDb().countdowns.update(id, { ...patch, updatedAt: Date.now() });
   },

@@ -28,6 +28,7 @@ export function CountdownCard({
   const cardRef = useRef<HTMLElement | null>(null);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [draftTitle, setDraftTitle] = useState(countdown.title);
 
   const remaining = remainingMs(countdown, now);
   const lapsed = countdown.status === "lapsed" || (countdown.status === "running" && remaining <= 0);
@@ -35,6 +36,12 @@ export function CountdownCard({
   const pct = lapsed ? 100 : progressPercent(countdown.startedAt, countdown.endsAt, remaining);
   const filled = Math.round((pct / 100) * SEGMENTS);
   const urgent = !lapsed && countdown.status === "running" && remaining <= 60_000;
+
+  // Keep the draft title in sync with the stored title whenever the editor opens.
+  useEffect(() => {
+    if (editing) setDraftTitle(countdown.title);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editing]);
 
   // Lapse detection + one-time celebration, driven by the shared tick.
   // Celebrate synchronously and guard with a module-level set: the DB writes
@@ -115,6 +122,29 @@ export function CountdownCard({
       {editing && !lapsed && (
         <div className="absolute inset-x-5 top-32 z-10 flex flex-col gap-3 bg-cream p-3 brut-thin animate-pop-in">
           <div>
+            <label htmlFor={`title-${countdown.id}`} className="mb-2 block text-[10px] font-bold uppercase">
+              Name
+            </label>
+            <input
+              id={`title-${countdown.id}`}
+              type="text"
+              value={draftTitle}
+              onChange={(e) => setDraftTitle(e.target.value)}
+              onBlur={async () => {
+                const trimmed = draftTitle.trim();
+                if (trimmed && trimmed !== countdown.title) {
+                  await countdownsRepo.updateTags(countdown.id, { title: trimmed });
+                  onChanged();
+                } else if (!trimmed) {
+                  setDraftTitle(countdown.title);
+                }
+              }}
+              maxLength={120}
+              className="brut-thin w-full rounded-none border-ink bg-card px-2 py-1.5 text-sm font-bold uppercase focus:outline-none focus:ring-2 focus:ring-ink"
+              placeholder="Countdown name"
+            />
+          </div>
+          <div>
             <span className="mb-2 block text-[10px] font-bold uppercase">Colour tag</span>
             <div className="flex flex-wrap gap-2">
               {COLOR_TAGS.map((c) => (
@@ -179,11 +209,20 @@ export function CountdownCard({
             </div>
           </div>
           <p className="text-[10px] font-bold uppercase text-muted-foreground">
-            Time can’t be edited — the clock is already running.
+            Only the name, colour and category can change — the clock keeps running.
           </p>
           <button
             type="button"
-            onClick={() => setEditing(false)}
+            onClick={async () => {
+              const trimmed = draftTitle.trim();
+              if (trimmed && trimmed !== countdown.title) {
+                await countdownsRepo.updateTags(countdown.id, { title: trimmed });
+                onChanged();
+              } else if (!trimmed) {
+                setDraftTitle(countdown.title);
+              }
+              setEditing(false);
+            }}
             className="brut-thin brut-press flex items-center justify-center gap-2 rounded-none bg-primary px-3 py-2 text-sm font-bold text-primary-foreground uppercase"
           >
             <Pencil className="h-4 w-4" strokeWidth={3} /> Done
