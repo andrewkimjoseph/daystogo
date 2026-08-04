@@ -361,33 +361,13 @@ function DayPanel({ date, items }: { date: Date; items: Countdown[] }) {
           <div className="flex">{newCountdownLink}</div>
 
         <ul className="flex flex-col gap-2">
-          {items.map((c) => {
-            const meta = categoryMeta(c.category);
-            const Icon = meta.icon;
-            return (
-              <li key={c.id}>
-                <Link
-                  to="/"
-                  viewTransition
-                  className="brut-thin brut-press flex items-center gap-3 bg-cream p-3"
-                >
-                  <span
-                    className="flex h-9 w-9 shrink-0 items-center justify-center border-2 border-ink"
-                    style={{ backgroundColor: c.colorTag, color: tagTextColor(c.colorTag) }}
-                  >
-                    <Icon className="h-4 w-4" strokeWidth={3} />
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-bold uppercase">{c.title}</span>
-                    <span className="block text-xs font-bold text-muted-foreground">
-                      {formatTargetLabel(endMoment(c))} · {STATUS_LABEL[c.status]}
-                    </span>
-                  </span>
-                </Link>
-              </li>
-            );
-          })}
+          {items.map((c) => (
+            <li key={c.id}>
+              <DayPanelRow countdown={c} />
+            </li>
+          ))}
         </ul>
+
         </>
       )}
     </div>
