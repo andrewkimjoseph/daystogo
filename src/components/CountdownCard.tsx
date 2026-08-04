@@ -181,7 +181,7 @@ export function CountdownCard({
                       await countdownsRepo.updateTags(countdown.id, { colorTag: c.hex });
                       onChanged();
                     }}
-                    className="brut-thin brut-press h-8 w-8 rounded-none"
+                    className="brut-thin brut-press h-10 w-10 rounded-none sm:h-8 sm:w-8"
                     style={{
                       backgroundColor: c.hex,
                       boxShadow:
