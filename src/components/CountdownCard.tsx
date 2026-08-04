@@ -53,7 +53,7 @@ export function CountdownCard({
     const onPointerDown = async (e: PointerEvent) => {
       if (panelRef.current?.contains(e.target as Node)) return;
       if (toggleRef.current?.contains(e.target as Node)) return;
-      const trimmed = draftTitle.trim();
+      const trimmed = draftTitle.trim().toUpperCase();
       if (trimmed && trimmed !== countdown.title) {
         await countdownsRepo.updateTags(countdown.id, { title: trimmed });
         onChanged();
