@@ -36,7 +36,8 @@ export function spanFromNow(inputValue: string): string | null {
 
 /** Short local label for a card, e.g. "Mon 3 Aug, 18:30:00" (adds year if not this year). */
 export function formatTargetLabel(ms: number): string {
-  const target = new Date(ms);
+  // Snap to the nearest second so sub-second drift never renders as 13:44:59 for a 13:45:00 target.
+  const target = new Date(Math.round(ms / 1000) * 1000);
   const sameYear = target.getFullYear() === new Date().getFullYear();
   return target.toLocaleString(undefined, {
     weekday: "short",
