@@ -201,7 +201,7 @@ function CalendarBody() {
 
         {/* Month row */}
         <div className="mb-2 flex items-center justify-between gap-2">
-          {arrow("Previous month", "l", () => shiftMonth(-1))}
+          {arrow("Previous month", "l", () => shiftMonth(-1), atFloor)}
           <button
             type="button"
             onClick={() => togglePane("months")}
