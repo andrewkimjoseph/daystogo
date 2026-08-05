@@ -404,6 +404,10 @@ function DayPanelRow({ countdown }: { countdown: Countdown }) {
   const remaining = remainingMs(countdown, now);
   const lapsed = countdown.status === "lapsed" || remaining <= 0;
   const { text } = formatRemaining(remaining);
+  const landing = new Date(Math.round(endMoment(countdown) / 1000) * 1000).toLocaleTimeString(
+    undefined,
+    { hour: "2-digit", minute: "2-digit", second: "2-digit" },
+  );
 
   return (
     <Link
@@ -420,10 +424,11 @@ function DayPanelRow({ countdown }: { countdown: Countdown }) {
       <span className="min-w-0 flex-1">
         <span className="block text-sm font-bold uppercase break-words">{countdown.title}</span>
         <span className="block text-xs tabular-nums text-muted-foreground">
-          {lapsed ? "Lapsed" : `${text} to go`}
+          {lapsed ? "Lapsed" : `${landing} · ${text} to go`}
         </span>
       </span>
     </Link>
   );
 }
+
 
