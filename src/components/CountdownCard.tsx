@@ -311,10 +311,12 @@ export function CountdownCard({
             type="button"
             onClick={() => setConfirmingDelete(true)}
             aria-label="Delete countdown"
-            className="brut-thin brut-press flex h-11 w-11 shrink-0 items-center justify-center rounded-none bg-card"
+            className={`brut-thin brut-press flex h-11 items-center justify-center gap-2 rounded-none bg-card ${lapsed ? "flex-1 px-3 text-sm font-bold uppercase" : "w-11 shrink-0"}`}
           >
             <Trash2 className="h-4 w-4" strokeWidth={3} />
+            {lapsed && <span>Delete</span>}
           </button>
+
         </div>
       )}
     </article>
