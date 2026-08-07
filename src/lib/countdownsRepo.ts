@@ -108,20 +108,8 @@ export const countdownsRepo = {
     await getDb().countdowns.update(id, { hasCelebrated: true, updatedAt: Date.now() });
   },
 
-  async restart(id: string): Promise<void> {
-    const db = getDb();
-    const c = await db.countdowns.get(id);
-    if (!c) return;
-    const now = Date.now();
-    await db.countdowns.update(id, {
-      status: "running",
-      startedAt: now,
-      endsAt: now + c.durationSeconds * 1000,
-      pausedRemainingMs: undefined,
-      hasCelebrated: false,
-      updatedAt: now,
-    });
-  },
+
+
 
   async remove(id: string): Promise<void> {
     await getDb().countdowns.delete(id);
