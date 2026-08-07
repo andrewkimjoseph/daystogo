@@ -410,11 +410,7 @@ function DayPanelRow({ countdown }: { countdown: Countdown }) {
   );
 
   return (
-    <Link
-      to="/"
-      viewTransition
-      className="brut-thin brut-press flex items-start gap-3 bg-cream p-3"
-    >
+    <div className="brut-thin flex items-start gap-3 bg-cream p-3">
       <span
         className="flex h-9 w-9 shrink-0 items-center justify-center border-2 border-ink"
         style={{ backgroundColor: countdown.colorTag, color: tagTextColor(countdown.colorTag) }}
