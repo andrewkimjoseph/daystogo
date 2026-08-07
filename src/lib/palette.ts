@@ -28,3 +28,15 @@ export const INK = "#111318";
 export function tagTextColor(hex: string): string {
   return hex.toUpperCase() === PALETTE.cream ? INK : PALETTE.cream;
 }
+
+/** Reverse map: new-palette hex → old-palette hex. One-time rollback after revert. */
+export const NEW_TO_OLD_COLOR_MAP: Record<string, string> = {
+  "#1D6FA5": PALETTE.teal,
+  "#C4DB3E": PALETTE.mauve,
+  "#E63E82": PALETTE.red,
+  "#1B1B2F": PALETTE.slate,
+};
+
+export function rollbackColorTag(hex: string): string {
+  return NEW_TO_OLD_COLOR_MAP[hex.toUpperCase()] ?? hex;
+}

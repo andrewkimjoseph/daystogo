@@ -1,5 +1,6 @@
 import { getDb, type Countdown, type DurationType } from "./db";
 import type { CountdownCategory } from "./categories";
+import { rollbackColorTag } from "./palette";
 
 export const MIN_DURATION_SECONDS = 3;
 /** Sanity bound, not a product limit: ~100 years keeps dates valid. */
@@ -123,19 +124,35 @@ export const countdownsRepo = {
     const db = getDb();
     const now = Date.now();
     const rows = await db.countdowns.toArray();
+    const byId = new Map<string, Countdown>();
+
+    for (const c of rows) {
+      const colorTag = rollbackColorTag(c.colorTag);
+      if (colorTag !== c.colorTag) {
+        byId.set(c.id, { ...c, colorTag, updatedAt: now });
+      }
+    }
+
+    const get = (c: Countdown) => byId.get(c.id) ?? c;
+
     const patched = rows
       .filter((c) => c.status === "paused")
-      .map((c) => ({
-        ...c,
-        status: "running" as const,
-        endsAt: now + Math.max(0, c.pausedRemainingMs ?? 0),
-        pausedRemainingMs: undefined,
-        updatedAt: now,
-      }));
-    const due = [...patched, ...rows.filter((c) => c.status === "running")]
+      .map((c) => {
+        const base = get(c);
+        return {
+          ...base,
+          status: "running" as const,
+          endsAt: now + Math.max(0, base.pausedRemainingMs ?? 0),
+          pausedRemainingMs: undefined,
+          updatedAt: now,
+        };
+      });
+    const due = [...patched, ...rows.filter((c) => c.status === "running").map(get)]
       .filter((c) => c.endsAt <= now)
       .map((c) => ({ ...c, status: "lapsed" as const, updatedAt: now }));
-    const byId = new Map([...patched, ...due].map((c) => [c.id, c]));
+
+    for (const c of [...patched, ...due]) byId.set(c.id, c);
+
     if (byId.size === 0) return;
     await db.countdowns.bulkPut([...byId.values()]);
   },
