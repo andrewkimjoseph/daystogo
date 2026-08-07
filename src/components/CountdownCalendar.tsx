@@ -423,7 +423,7 @@ function DayPanelRow({ countdown }: { countdown: Countdown }) {
           {lapsed ? "Lapsed" : `${landing} · ${text} to go`}
         </span>
       </span>
-    </Link>
+    </div>
   );
 }
 
