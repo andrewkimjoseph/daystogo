@@ -295,20 +295,7 @@ export function CountdownCard({
         </div>
       ) : (
         <div className="flex gap-2">
-          {lapsed ? (
-            <button
-              type="button"
-              onClick={async () => {
-                celebrated.delete(countdown.id);
-                await countdownsRepo.restart(countdown.id);
-                playSound("start");
-                onChanged();
-              }}
-              className="brut-thin brut-press flex min-h-11 flex-1 items-center justify-center gap-2 rounded-none bg-cream px-3 py-2 text-sm font-bold uppercase"
-            >
-              <RotateCcw className="h-4 w-4" strokeWidth={3} /> Run again
-            </button>
-          ) : (
+          {!lapsed && (
             <button
               ref={toggleRef}
               type="button"
@@ -319,6 +306,7 @@ export function CountdownCard({
               <Pencil className="h-4 w-4" strokeWidth={3} /> {editing ? "Done" : "Edit tags"}
             </button>
           )}
+
           <button
             type="button"
             onClick={() => setConfirmingDelete(true)}
