@@ -103,13 +103,7 @@ export function CountdownCard({
         </>
       )}
 
-      <header className="flex flex-col gap-2">
-        <span
-          className="brut-thin w-fit shrink-0 rounded-none px-3 py-1 text-xs font-bold whitespace-nowrap uppercase"
-          style={{ backgroundColor: tagColor, color: tagTextColor(tagColor) }}
-        >
-          {badge}
-        </span>
+      <header className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p
             className="mb-1 flex items-center gap-1.5 text-[10px] font-bold uppercase"
@@ -133,7 +127,14 @@ export function CountdownCard({
             </p>
           )}
         </div>
+        <span
+          className="brut-thin shrink-0 rounded-none px-3 py-1 text-xs font-bold whitespace-nowrap uppercase"
+          style={{ backgroundColor: tagColor, color: tagTextColor(tagColor) }}
+        >
+          {badge}
+        </span>
       </header>
+
 
 
       <p
