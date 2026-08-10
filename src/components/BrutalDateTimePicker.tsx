@@ -233,14 +233,22 @@ export function BrutalCalendar({ value, onChange }: Props) {
             const isSelected = sameDay(d, selected);
             const isToday = sameDay(d, today);
             const outside = d.getMonth() !== view.m;
+            const isPast = !isToday && d.getTime() < new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
             return (
               <button
                 key={d.getTime()}
                 type="button"
-                onClick={() => pickDay(d)}
+                disabled={isPast}
+                onClick={() => {
+                  if (!isPast) pickDay(d);
+                }}
                 aria-pressed={isSelected}
                 className={`tick-numerals h-11 text-base sm:h-9 sm:text-sm ${isSelected ? "brut-thin" : ""} ${
-                  outside && !isSelected ? "opacity-35" : ""
+                  isPast
+                    ? "cursor-not-allowed text-muted-foreground opacity-40"
+                    : outside && !isSelected
+                      ? "opacity-35"
+                      : ""
                 }`}
                 style={
                   isSelected
@@ -254,6 +262,7 @@ export function BrutalCalendar({ value, onChange }: Props) {
               </button>
             );
           })}
+
         </div>
       )}
     </div>
