@@ -11,7 +11,6 @@ export const COLOR_TAGS: { hex: string; label: string }[] = [
   { hex: PALETTE.mauve, label: "Mauve" },
   { hex: PALETTE.red, label: "Red" },
   { hex: PALETTE.slate, label: "Slate" },
-  { hex: PALETTE.cream, label: "Cream" },
 ];
 
 export const CONFETTI_COLORS = [
