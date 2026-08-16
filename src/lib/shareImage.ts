@@ -168,7 +168,9 @@ export async function renderCountdownShareImage(
     y += 52;
     ctx.fillStyle = muted;
     ctx.font = `28px ${SANS}`;
-    ctx.fillText(`ENDS ${formatTargetLabel(countdown.targetAt).toUpperCase()}`, left, y);
+    const verb = lapsed ? "ENDED" : "ENDS";
+    ctx.fillText(`${verb} ${formatTargetLabel(countdown.targetAt).toUpperCase()}`, left, y);
+
   }
 
   // Big remaining figure, optically centred in the space left between label and strip.
