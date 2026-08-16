@@ -232,12 +232,18 @@ export function slugify(title: string): string {
   );
 }
 
+function timestampSuffix(): string {
+  const d = new Date();
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`;
+}
+
 export async function downloadCountdownImage(countdown: Countdown, now = Date.now()) {
   const blob = await renderCountdownShareImage(countdown, now);
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `days-to-go-${slugify(countdown.title)}.png`;
+  a.download = `days-to-go-${slugify(countdown.title)}-${timestampSuffix()}.png`;
   document.body.appendChild(a);
   a.click();
   a.remove();
