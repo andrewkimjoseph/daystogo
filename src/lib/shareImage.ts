@@ -171,13 +171,15 @@ export async function renderCountdownShareImage(
     ctx.fillText(`ENDS ${formatTargetLabel(countdown.targetAt).toUpperCase()}`, left, y);
   }
 
-  // Big remaining figure, anchored above the progress strip.
+  // Big remaining figure, optically centred in the space left between label and strip.
   const stripH = 46;
   const stripY = panelY + panelH - 88;
-  const clock = fitLines(ctx, lapsed ? "00:00:00" : text, contentW, 1, 140, 60, DISPLAY);
+  const clock = fitLines(ctx, lapsed ? "00:00:00" : text, contentW, 1, 150, 60, DISPLAY);
+  const midY = (y + 24 + (stripY - 40)) / 2;
   ctx.fillStyle = lapsed ? PALETTE.cream : INK;
   ctx.font = `${clock.size}px ${DISPLAY}`;
-  ctx.fillText(clock.lines[0]!, left, stripY - 64);
+  ctx.fillText(clock.lines[0]!, left, midY + clock.size * 0.36);
+
 
   // Progress segments.
   const gap = 8;
