@@ -7,7 +7,10 @@ import { categoryMeta } from "./categories";
 import { INK, PALETTE, tagTextColor } from "./palette";
 
 const SIZE = 1080;
+/** Supersample factor: all drawing stays in 1080-space, output is SIZE * SCALE px. */
+const SCALE = 2;
 const SEGMENTS = 16;
+
 const DISPLAY = '"Archivo Black", "Arial Black", system-ui, sans-serif';
 const SANS = '"Space Grotesk", ui-sans-serif, system-ui, sans-serif';
 
