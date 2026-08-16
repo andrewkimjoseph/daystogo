@@ -194,17 +194,18 @@ export async function renderCountdownShareImage(
   }
 
   // Footer: logo + URL.
-  const footY = panelY + panelH + 34;
+  const footY = panelY + panelH + 26;
+  const footH = 62;
   if (logo) {
-    const h = 46;
-    const w = (logo.width / logo.height) * h;
-    ctx.drawImage(logo, M, footY, w, h);
+    const w = (logo.width / logo.height) * footH;
+    ctx.drawImage(logo, M, footY, w, footH);
   }
   ctx.fillStyle = PALETTE.slate;
-  ctx.font = `26px ${SANS}`;
+  ctx.font = `28px ${SANS}`;
   ctx.textAlign = "right";
-  ctx.fillText("APP.DAYSTOGO.XYZ", SIZE - M, footY + 32);
+  ctx.fillText("APP.DAYSTOGO.XYZ", SIZE - M, footY + footH / 2 + 10);
   ctx.textAlign = "left";
+
 
   const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/png"));
   if (!blob) throw new Error("Could not encode the image.");
