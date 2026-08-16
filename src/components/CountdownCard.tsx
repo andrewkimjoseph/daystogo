@@ -317,6 +317,29 @@ export function CountdownCard({
 
           <button
             type="button"
+            disabled={saving}
+            onClick={async () => {
+              setSaving(true);
+              try {
+                await downloadCountdownImage(countdown, now);
+                toast.success("Share image downloaded");
+              } catch {
+                toast.error("Couldn't make the image. Try again.");
+              } finally {
+                setSaving(false);
+              }
+            }}
+            aria-label="Download countdown as PNG"
+            title="Download as PNG"
+            className={`brut-thin brut-press flex h-11 shrink-0 items-center justify-center gap-2 rounded-none bg-cream disabled:opacity-60 ${lapsed ? "flex-1 px-3 text-sm font-bold uppercase" : "w-11"}`}
+          >
+            <Download className="h-4 w-4" strokeWidth={3} />
+            {lapsed && <span>Save PNG</span>}
+          </button>
+
+
+          <button
+            type="button"
             onClick={() => setConfirmingDelete(true)}
             aria-label="Delete countdown"
             className={`brut-thin brut-press flex h-11 items-center justify-center gap-2 rounded-none bg-card ${lapsed ? "flex-1 px-3 text-sm font-bold uppercase" : "w-11 shrink-0"}`}
