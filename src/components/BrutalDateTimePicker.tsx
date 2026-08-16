@@ -63,7 +63,11 @@ export function BrutalCalendar({ value, onChange }: Props) {
   const [yearPage, setYearPage] = useState(() => selected.getFullYear() - 5);
   /** Direction of the last navigation, for the slide animation. 0 = zoom swap. */
   const [dir, setDir] = useState<-1 | 0 | 1>(0);
-  const today = new Date();
+  const [today] = useState(() => new Date());
+  const todayStart = useMemo(
+    () => new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime(),
+    [today],
+  );
   const swapClass = dir === 1 ? "swap-right" : dir === -1 ? "swap-left" : "swap-zoom";
 
   const days = useMemo(() => monthGrid(view.y, view.m), [view]);
@@ -233,7 +237,7 @@ export function BrutalCalendar({ value, onChange }: Props) {
             const isSelected = sameDay(d, selected);
             const isToday = sameDay(d, today);
             const outside = d.getMonth() !== view.m;
-            const isPast = !isToday && d.getTime() < new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+            const isPast = !isToday && d.getTime() < todayStart;
             return (
               <button
                 key={d.getTime()}

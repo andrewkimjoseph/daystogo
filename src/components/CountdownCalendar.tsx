@@ -353,7 +353,6 @@ function DayPanel({ date, items }: { date: Date; items: Countdown[] }) {
     <Link
       to="/create-countdown"
       search={{ date: dayKey(date) }}
-      viewTransition
       className="brut-thin brut-press bg-primary px-4 py-2 text-xs font-bold text-primary-foreground uppercase"
     >
       New countdown

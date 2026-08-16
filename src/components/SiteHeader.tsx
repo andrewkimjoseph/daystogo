@@ -19,7 +19,6 @@ export function SiteHeader() {
           {!onCreate && (
             <Link
               to="/create-countdown"
-              viewTransition
               aria-label="New countdown"
               className="brut brut-press inline-flex h-10 items-center gap-1.5 rounded-none bg-primary px-2.5 text-xs font-bold text-primary-foreground uppercase sm:h-auto sm:px-3 sm:py-2 sm:text-sm"
             >

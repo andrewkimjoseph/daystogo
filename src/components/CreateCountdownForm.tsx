@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { countdownsRepo, validateSeconds } from "@/lib/countdownsRepo";
 import { COLOR_TAGS, PALETTE, tagTextColor } from "@/lib/palette";
@@ -6,7 +6,7 @@ import { CATEGORIES, type CountdownCategory } from "@/lib/categories";
 import { playSound } from "@/lib/soundManager";
 import { localInputValue, spanFromNow } from "@/lib/localTime";
 import { BrutalCalendar, BrutalTimeField } from "./BrutalDateTimePicker";
-import { useHydrated, useIsomorphicLayoutEffect } from "@/hooks/useHydrated";
+import { useHydrated } from "@/hooks/useHydrated";
 
 /** `YYYY-MM-DD` -> local start of that day, or null when unusable. */
 function parseDayParam(raw: string | undefined): Date | null {
@@ -17,37 +17,77 @@ function parseDayParam(raw: string | undefined): Date | null {
   return Number.isFinite(d.getTime()) ? d : null;
 }
 
+/** Default end time: seeded day at 09:00 local, or an hour from now. */
+function seedTargetInput(initialDate?: string): string {
+  const seededDay = parseDayParam(initialDate);
+  const soon = Date.now() + 3600_000;
+  const seeded = seededDay && seededDay.getTime() > Date.now() ? seededDay.getTime() : soon;
+  return localInputValue(seeded);
+}
+
+function PickerSkeleton() {
+  return <div className="brut-thin h-[520px] bg-card sm:h-[620px]" aria-hidden />;
+}
+
+/**
+ * Date/time picker — only mounted after hydration so the server HTML and the
+ * first client render stay byte-identical (skeleton only).
+ */
+function HydratedDateTimePicker({
+  initialDate,
+  onTargetChange,
+  onClearError,
+}: {
+  initialDate?: string;
+  onTargetChange: (value: string) => void;
+  onClearError: () => void;
+}) {
+  const [targetInput, setTargetInput] = useState(() => seedTargetInput(initialDate));
+
+  useLayoutEffect(() => {
+    onTargetChange(targetInput);
+  }, [onTargetChange, targetInput]);
+
+  useEffect(() => {
+    setTargetInput(seedTargetInput(initialDate));
+  }, [initialDate]);
+
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    const id = window.setInterval(() => setTick((t) => t + 1), 1000);
+    return () => window.clearInterval(id);
+  }, []);
+
+  const targetPreview = spanFromNow(targetInput);
+
+  function handleChange(next: string) {
+    setTargetInput(next);
+    onTargetChange(next);
+    onClearError();
+  }
+
+  return (
+    <>
+      <BrutalCalendar value={targetInput} onChange={handleChange} />
+      <span className="mt-6 mb-2 block text-xs font-bold uppercase">Time (type it or tap)</span>
+      <BrutalTimeField value={targetInput} onChange={handleChange} />
+      <p className="mt-3 text-sm font-bold text-muted-foreground">
+        {targetPreview ?? "Pick a date and time."}
+      </p>
+    </>
+  );
+}
+
 export function CreateCountdownForm({ initialDate }: { initialDate?: string }) {
   const navigate = useNavigate();
-  const seededDay = parseDayParam(initialDate);
+  const hydrated = useHydrated();
   const [title, setTitle] = useState("");
   const [targetInput, setTargetInput] = useState("");
   const [colorTag, setColorTag] = useState<string>(PALETTE.teal);
   const [category, setCategory] = useState<CountdownCategory>("other");
   const [error, setError] = useState<string | null>(null);
 
-  // The viewer's clock and locale are unknown during SSR, so anything derived
-  // from them waits for hydration.
-  const hydrated = useHydrated();
-  useIsomorphicLayoutEffect(() => {
-    // A day picked in the calendar seeds 09:00 local; fall back to an hour out
-    // whenever that moment has already passed (or no date came along).
-    const soon = Date.now() + 3600_000;
-    const seeded = seededDay && seededDay.getTime() > Date.now() ? seededDay.getTime() : soon;
-    setTargetInput((prev) => prev || localInputValue(seeded));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialDate]);
-
-  // Previews now quote seconds, so they have to re-render every second.
-  const [, setTick] = useState(0);
-  useEffect(() => {
-    if (!hydrated) return;
-    const id = window.setInterval(() => setTick((t) => t + 1), 1000);
-    return () => window.clearInterval(id);
-  }, [hydrated]);
-
   const activeCategory = CATEGORIES.find((c) => c.key === category)!;
-  const targetPreview = targetInput && hydrated ? spanFromNow(targetInput) : null;
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -169,34 +209,15 @@ export function CreateCountdownForm({ initialDate }: { initialDate?: string }) {
 
       {/* Right column: when it lands */}
       <div className="brut h-full bg-card p-4 sm:p-6">
-        <span className="mb-2 block text-xs font-bold uppercase">
-          End it at (your local time)
-        </span>
-        {targetInput ? (
-          <>
-            <BrutalCalendar
-              value={targetInput}
-              onChange={(next: string) => {
-                setTargetInput(next);
-                setError(null);
-              }}
-            />
-            <span className="mt-6 mb-2 block text-xs font-bold uppercase">
-              Time (type it or tap)
-            </span>
-            <BrutalTimeField
-              value={targetInput}
-              onChange={(next: string) => {
-                setTargetInput(next);
-                setError(null);
-              }}
-            />
-            <p className="mt-3 text-sm font-bold text-muted-foreground">
-              {targetPreview ?? "Pick a date and time."}
-            </p>
-          </>
+        <span className="mb-2 block text-xs font-bold uppercase">End it at (your local time)</span>
+        {hydrated ? (
+          <HydratedDateTimePicker
+            initialDate={initialDate}
+            onTargetChange={setTargetInput}
+            onClearError={() => setError(null)}
+          />
         ) : (
-          <div className="brut-thin h-[520px] bg-card sm:h-[620px]" aria-hidden />
+          <PickerSkeleton />
         )}
       </div>
     </form>

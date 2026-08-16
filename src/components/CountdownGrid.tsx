@@ -29,7 +29,6 @@ export function CountdownGrid() {
         </p>
         <Link
           to="/create-countdown"
-          viewTransition
           className="brut-thin brut-press rounded-none bg-primary px-5 py-3 font-bold text-primary-foreground uppercase"
         >
           Start one now
