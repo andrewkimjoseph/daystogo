@@ -7,7 +7,10 @@ import { categoryMeta } from "./categories";
 import { INK, PALETTE, tagTextColor } from "./palette";
 
 const SIZE = 1080;
+/** Supersample factor: all drawing stays in 1080-space, output is SIZE * SCALE px. */
+const SCALE = 2;
 const SEGMENTS = 16;
+
 const DISPLAY = '"Archivo Black", "Arial Black", system-ui, sans-serif';
 const SANS = '"Space Grotesk", ui-sans-serif, system-ui, sans-serif';
 
@@ -96,10 +99,15 @@ export async function renderCountdownShareImage(
   const logo = await loadImage(logoUrl);
 
   const canvas = document.createElement("canvas");
-  canvas.width = SIZE;
-  canvas.height = SIZE;
+  canvas.width = SIZE * SCALE;
+  canvas.height = SIZE * SCALE;
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("Canvas is unavailable in this browser.");
+  // Draw everything at 1x coordinates, rasterised at SCALE for crisp type and edges.
+  ctx.scale(SCALE, SCALE);
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = "high";
+
 
   const remaining = remainingMs(countdown, now);
   const lapsed = countdown.status === "lapsed" || remaining <= 0;
