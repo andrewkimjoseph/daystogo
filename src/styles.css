@@ -201,6 +201,81 @@
   color: transparent;
 }
 
+/* --- Sonner toast brutalist override --- */
+
+[data-sonner-toast] {
+  --normal-bg: var(--cream);
+  --normal-text: var(--ink);
+  --normal-border: var(--ink);
+  border-radius: 0 !important;
+  border: 3px solid var(--ink) !important;
+  box-shadow: 4px 4px 0 0 var(--ink) !important;
+  font-family: var(--font-sans) !important;
+  text-transform: uppercase !important;
+  font-weight: 700 !important;
+}
+
+[data-sonner-toast][data-type="success"] {
+  --normal-bg: var(--teal);
+  --normal-text: var(--cream);
+}
+
+[data-sonner-toast][data-type="error"] {
+  --normal-bg: var(--red);
+  --normal-text: var(--cream);
+}
+
+[data-sonner-toast] [data-title] {
+  font-family: var(--font-display) !important;
+  font-size: 0.875rem !important;
+  text-transform: uppercase !important;
+  line-height: 1.25 !important;
+}
+
+[data-sonner-toast] [data-description] {
+  font-size: 0.75rem !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  color: var(--slate) !important;
+}
+
+[data-sonner-toast][data-type="success"] [data-description],
+[data-sonner-toast][data-type="error"] [data-description] {
+  color: var(--cream) !important;
+  opacity: 0.9;
+}
+
+[data-sonner-toast] [data-button] {
+  border-radius: 0 !important;
+  border: 3px solid var(--ink) !important;
+  text-transform: uppercase !important;
+  font-size: 0.75rem !important;
+  font-weight: 700 !important;
+  box-shadow: 2px 2px 0 0 var(--ink) !important;
+  transition:
+    transform 0.14s var(--ease-bounce),
+    box-shadow 0.14s var(--ease-bounce) !important;
+}
+
+[data-sonner-toast] [data-button]:hover {
+  transform: translate(2px, 2px) !important;
+  box-shadow: 0 0 0 0 var(--ink) !important;
+}
+
+[data-sonner-toast] [data-button]:active {
+  transform: translate(4px, 4px) !important;
+}
+
+[data-sonner-toast] [data-close-button] {
+  border-radius: 0 !important;
+  color: var(--ink) !important;
+}
+
+[data-sonner-toast] [data-close-button]:hover {
+  background: var(--ink) !important;
+  color: var(--cream) !important;
+}
+
 @utility tick-numerals {
   font-family: var(--font-display);
   font-variant-numeric: tabular-nums;
