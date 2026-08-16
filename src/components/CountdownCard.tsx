@@ -1,15 +1,18 @@
 import { useEffect, useRef, useState } from "react";
-import { Pencil, Trash2 } from "lucide-react";
+import { Download, Pencil, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 import type { Countdown } from "@/lib/db";
 import { countdownsRepo, remainingMs } from "@/lib/countdownsRepo";
 import { formatRemaining, progressPercent } from "@/lib/formatTime";
 import { formatTargetLabel } from "@/lib/localTime";
+import { downloadCountdownImage } from "@/lib/shareImage";
 
 import { burstConfetti } from "@/lib/confetti";
 import { playSound } from "@/lib/soundManager";
 import { COLOR_TAGS, PALETTE, tagTextColor } from "@/lib/palette";
 import { CATEGORIES, categoryMeta, type CountdownCategory } from "@/lib/categories";
 import { Sparkle } from "./Sparkle";
+
 
 const SEGMENTS = 16;
 
@@ -29,6 +32,9 @@ export function CountdownCard({
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [editing, setEditing] = useState(false);
   const [draftTitle, setDraftTitle] = useState(countdown.title);
+  const [saving, setSaving] = useState(false);
+
+
 
   const remaining = remainingMs(countdown, now);
   const lapsed = countdown.status === "lapsed" || (countdown.status === "running" && remaining <= 0);
@@ -308,6 +314,29 @@ export function CountdownCard({
               <Pencil className="h-4 w-4" strokeWidth={3} /> {editing ? "Done" : "Edit tags"}
             </button>
           )}
+
+          <button
+            type="button"
+            disabled={saving}
+            onClick={async () => {
+              setSaving(true);
+              try {
+                await downloadCountdownImage(countdown, now);
+                toast.success("Share image downloaded");
+              } catch {
+                toast.error("Couldn't make the image. Try again.");
+              } finally {
+                setSaving(false);
+              }
+            }}
+            aria-label="Download countdown as PNG"
+            title="Download as PNG"
+            className={`brut-thin brut-press flex h-11 shrink-0 items-center justify-center gap-2 rounded-none bg-cream disabled:opacity-60 ${lapsed ? "flex-1 px-3 text-sm font-bold uppercase" : "w-11"}`}
+          >
+            <Download className="h-4 w-4" strokeWidth={3} />
+            {lapsed && <span>Save PNG</span>}
+          </button>
+
 
           <button
             type="button"
