@@ -207,9 +207,9 @@
   --normal-bg: var(--cream);
   --normal-text: var(--ink);
   --normal-border: var(--ink);
-  --normal-shadow: 4px 4px 0 0 var(--ink);
   border-radius: 0 !important;
   border: 3px solid var(--ink) !important;
+  box-shadow: 4px 4px 0 0 var(--ink) !important;
   font-family: var(--font-sans) !important;
   text-transform: uppercase !important;
   font-weight: 700 !important;
