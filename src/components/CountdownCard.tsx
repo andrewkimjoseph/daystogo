@@ -32,6 +32,9 @@ export function CountdownCard({
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [editing, setEditing] = useState(false);
   const [draftTitle, setDraftTitle] = useState(countdown.title);
+  const [saving, setSaving] = useState(false);
+
+
 
   const remaining = remainingMs(countdown, now);
   const lapsed = countdown.status === "lapsed" || (countdown.status === "running" && remaining <= 0);
