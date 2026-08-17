@@ -11,7 +11,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen">
       <SiteHeader />
 
-      <main className="view-page mx-auto max-w-6xl px-4 py-8 pb-28 sm:px-6 sm:py-10">
+      <main className="view-page mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
         <div className="relative mb-8 grid grid-cols-[minmax(0,1fr)_auto] items-start gap-4">
           <div className="min-w-0">
             <Sparkle color={PALETTE.red} size={26} className="absolute -top-4 left-0 hidden sm:block" />
@@ -23,9 +23,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <TodayClock />
         </div>
 
-
         {children}
+        <div className="h-20 sm:h-24" aria-hidden="true" />
       </main>
+
 
       <Link
         to="/create-countdown"
