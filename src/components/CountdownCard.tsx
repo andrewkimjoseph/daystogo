@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Download, Pencil, Trash2 } from "lucide-react";
+import { Check, Download, Pencil, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import type { Countdown } from "@/lib/db";
 import { countdownsRepo, remainingMs } from "@/lib/countdownsRepo";
@@ -288,16 +288,20 @@ export function CountdownCard({
                 await countdownsRepo.remove(countdown.id);
                 onChanged();
               }}
-              className="brut-thin brut-press rounded-none bg-card px-3 py-1 text-xs font-bold uppercase"
+              aria-label="Confirm delete"
+              title="Do it"
+              className="brut-thin brut-press flex h-9 w-9 items-center justify-center rounded-none bg-card"
             >
-              Do it
+              <Check className="h-4 w-4" strokeWidth={3} />
             </button>
             <button
               type="button"
               onClick={() => setConfirmingDelete(false)}
-              className="brut-thin brut-press rounded-none bg-cream px-3 py-1 text-xs font-bold uppercase"
+              aria-label="Cancel delete"
+              title="Nope"
+              className="brut-thin brut-press flex h-9 w-9 items-center justify-center rounded-none bg-cream"
             >
-              Nope
+              <X className="h-4 w-4" strokeWidth={3} />
             </button>
           </div>
         </div>
