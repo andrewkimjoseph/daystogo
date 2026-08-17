@@ -176,8 +176,7 @@ export async function renderCountdownShareImage(
     y += 52;
     ctx.fillStyle = muted;
     ctx.font = `28px ${SANS}`;
-    const verb = lapsed ? "ENDED" : "ENDS";
-    ctx.fillText(`${verb} ${formatTargetLabel(countdown.targetAt).toUpperCase()}`, left, y);
+    ctx.fillText(formatTargetLabel(countdown.targetAt).toUpperCase(), left, y);
 
   }
 
