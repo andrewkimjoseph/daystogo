@@ -203,8 +203,8 @@ export async function renderCountdownShareImage(
   }
 
   // Footer: logo + URL.
-  const footY = panelY + panelH + 18;
-  const footH = 96;
+  const footY = panelY + panelH + 30;
+  const footH = 130;
   if (logo) {
     const w = (logo.width / logo.height) * footH;
     ctx.drawImage(logo, M, footY, w, footH);
