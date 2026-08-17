@@ -38,7 +38,7 @@ function HydratedDateTimePicker({
   onTargetChange,
   onClearError,
 }: {
-  initialDate?: string;
+  initialDate?: string | undefined;
   onTargetChange: (value: string) => void;
   onClearError: () => void;
 }) {
