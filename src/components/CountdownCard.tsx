@@ -129,7 +129,7 @@ export function CountdownCard({
               className="mt-1 text-xs font-bold uppercase"
               style={{ color: lapsed ? PALETTE.cream : "var(--muted-foreground)" }}
             >
-              Ends {formatTargetLabel(countdown.targetAt)}
+              {formatTargetLabel(countdown.targetAt)}
             </p>
           )}
         </div>
