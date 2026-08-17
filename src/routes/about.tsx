@@ -52,7 +52,7 @@ function AboutPage() {
           <Link
             to="/"
             viewTransition
-            className="brut brut-press inline-flex items-center gap-2 rounded-none bg-cream px-3 py-2.5 text-xs font-bold uppercase text-ink sm:px-5 sm:py-3 sm:text-sm"
+            className="brut brut-press inline-flex items-center gap-2 rounded-none bg-cream px-3 py-2.5 text-xs font-bold uppercase text-ink sm:px-4 sm:py-3 sm:text-sm"
           >
             <ArrowLeft className="h-4 w-4" strokeWidth={3} />
             Back to the timers
