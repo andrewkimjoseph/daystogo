@@ -184,10 +184,17 @@ export async function renderCountdownShareImage(
 
   // Category row.
   let y = panelY + 92;
+  const iconPx = 28;
+  const icon = await loadCategoryIcon(category.icon, muted, iconPx);
+  if (icon) {
+    ctx.drawImage(icon, left, y - iconPx + 4, iconPx, iconPx);
+  } else {
+    ctx.fillStyle = muted;
+    ctx.fillRect(left, y - 18, 20, 20);
+  }
   ctx.fillStyle = muted;
-  ctx.fillRect(left, y - 16, 18, 18);
   ctx.font = `24px ${SANS}`;
-  ctx.fillText(category.label.toUpperCase(), left + 30, y);
+  ctx.fillText(category.label.toUpperCase(), left + iconPx + 14, y);
 
   // Title.
   const maxTitleW = contentW - badgeW - 40;
