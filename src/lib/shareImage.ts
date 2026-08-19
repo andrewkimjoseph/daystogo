@@ -1,3 +1,5 @@
+import { createElement } from "react";
+import type { LucideIcon } from "lucide-react";
 import logoUrl from "@/assets/logo.png";
 import type { Countdown } from "./db";
 import { remainingMs } from "./countdownsRepo";
@@ -13,6 +15,33 @@ const SEGMENTS = 16;
 
 const DISPLAY = '"Archivo Black", "Arial Black", system-ui, sans-serif';
 const SANS = '"Space Grotesk", ui-sans-serif, system-ui, sans-serif';
+
+/** Rasterise a lucide icon component into an <img> we can draw on canvas. */
+async function loadCategoryIcon(
+  Icon: LucideIcon,
+  color: string,
+  px: number,
+): Promise<HTMLImageElement | null> {
+  try {
+    const { renderToStaticMarkup } = await import("react-dom/server");
+    const markup = renderToStaticMarkup(
+      createElement(Icon, {
+        width: px,
+        height: px,
+        stroke: color,
+        strokeWidth: 2.5,
+        fill: "none",
+        xmlns: "http://www.w3.org/2000/svg",
+      }),
+    );
+    const svg = markup.includes("xmlns")
+      ? markup
+      : markup.replace("<svg", '<svg xmlns="http://www.w3.org/2000/svg"');
+    return await loadImage(`data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`);
+  } catch {
+    return null;
+  }
+}
 
 function loadImage(src: string): Promise<HTMLImageElement | null> {
   return new Promise((resolve) => {
@@ -155,10 +184,17 @@ export async function renderCountdownShareImage(
 
   // Category row.
   let y = panelY + 92;
+  const iconPx = 28;
+  const icon = await loadCategoryIcon(category.icon, muted, iconPx);
+  if (icon) {
+    ctx.drawImage(icon, left, y - iconPx + 4, iconPx, iconPx);
+  } else {
+    ctx.fillStyle = muted;
+    ctx.fillRect(left, y - 18, 20, 20);
+  }
   ctx.fillStyle = muted;
-  ctx.fillRect(left, y - 16, 18, 18);
   ctx.font = `24px ${SANS}`;
-  ctx.fillText(category.label.toUpperCase(), left + 30, y);
+  ctx.fillText(category.label.toUpperCase(), left + iconPx + 14, y);
 
   // Title.
   const maxTitleW = contentW - badgeW - 40;
