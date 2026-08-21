@@ -354,6 +354,15 @@ export function CountdownCard({
 
         </div>
       )}
+
+      <p className="text-[10px] font-bold uppercase text-muted-foreground">
+        Created{" "}
+        {new Date(countdown.createdAt).toLocaleDateString(undefined, {
+          day: "numeric",
+          month: "short",
+          year: "numeric",
+        })}
+      </p>
     </article>
   );
 }
