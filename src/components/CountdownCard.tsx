@@ -356,11 +356,13 @@ export function CountdownCard({
       )}
 
       <p className="text-[10px] font-bold uppercase text-muted-foreground">
-        Created{" "}
-        {new Date(countdown.createdAt).toLocaleDateString(undefined, {
+        {new Date(countdown.createdAt).toLocaleString(undefined, {
           day: "numeric",
           month: "short",
           year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
         })}
       </p>
     </article>
