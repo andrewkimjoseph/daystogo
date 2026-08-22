@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Check, Download, Pencil, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import logoUrl from "@/assets/logo.png";
@@ -30,22 +30,29 @@ export function CountdownCard({
   onChanged: () => void;
 }) {
   const cardRef = useRef<HTMLElement | null>(null);
+  const controlsRef = useRef<HTMLDivElement | null>(null);
+  const panelRef = useRef<HTMLDivElement | null>(null);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [editing, setEditing] = useState(false);
   const [draftTitle, setDraftTitle] = useState(countdown.title);
   const [saving, setSaving] = useState(false);
+  const [revealed, setRevealed] = useState(false);
 
+  const commitTitle = useCallback(async () => {
+    const trimmed = draftTitle.trim().toUpperCase();
+    if (trimmed && trimmed !== countdown.title) {
+      await countdownsRepo.updateTags(countdown.id, { title: trimmed });
+      setDraftTitle(trimmed);
+      onChanged();
+    } else if (!trimmed) {
+      setDraftTitle(countdown.title);
+    }
+  }, [draftTitle, countdown.title, countdown.id, onChanged]);
 
-
-  const remaining = remainingMs(countdown, now);
-  const lapsed = countdown.status === "lapsed" || (countdown.status === "running" && remaining <= 0);
-  const { text, dramatic } = formatRemaining(remaining);
-  const pct = lapsed ? 100 : progressPercent(countdown.startedAt, countdown.endsAt, remaining);
-  const filled = Math.round((pct / 100) * SEGMENTS);
-  const urgent = !lapsed && countdown.status === "running" && remaining <= 60_000;
-
-  const panelRef = useRef<HTMLDivElement | null>(null);
-  const toggleRef = useRef<HTMLButtonElement | null>(null);
+  const commitTitleRef = useRef(commitTitle);
+  useEffect(() => {
+    commitTitleRef.current = commitTitle;
+  }, [commitTitle]);
 
 
   // Keep the draft title in sync with the stored title whenever the editor opens.
@@ -59,19 +66,61 @@ export function CountdownCard({
     if (!editing) return;
     const onPointerDown = async (e: PointerEvent) => {
       if (panelRef.current?.contains(e.target as Node)) return;
-      if (toggleRef.current?.contains(e.target as Node)) return;
-      const trimmed = draftTitle.trim().toUpperCase();
-      if (trimmed && trimmed !== countdown.title) {
-        await countdownsRepo.updateTags(countdown.id, { title: trimmed });
-        onChanged();
-      }
+      if (controlsRef.current?.contains(e.target as Node)) return;
+      await commitTitleRef.current();
       setEditing(false);
     };
     document.addEventListener("pointerdown", onPointerDown);
     return () => document.removeEventListener("pointerdown", onPointerDown);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editing, draftTitle, countdown.title, countdown.id]);
+  }, [editing]);
 
+  // Hide controls on touch when the user taps outside the card.
+  useEffect(() => {
+    const onDocPointerDown = (e: PointerEvent) => {
+      if (e.pointerType !== "touch") return;
+      if (!cardRef.current) return;
+      if (!cardRef.current.contains(e.target as Node)) {
+        void commitTitleRef.current();
+        setRevealed(false);
+        setEditing(false);
+        setConfirmingDelete(false);
+      }
+    };
+    document.addEventListener("pointerdown", onDocPointerDown);
+    return () => document.removeEventListener("pointerdown", onDocPointerDown);
+  }, []);
+
+
+  const handlePointerEnter = (e: React.PointerEvent) => {
+    if (e.pointerType === "mouse") setRevealed(true);
+  };
+
+  const handlePointerLeave = (e: React.PointerEvent) => {
+    if (e.pointerType !== "mouse") return;
+    // If a control is focused, blur it so the CSS focus-within reveal doesn't
+    // keep the controls visible after the mouse leaves.
+    if (cardRef.current?.contains(document.activeElement)) {
+      (document.activeElement as HTMLElement | null)?.blur();
+    }
+    void commitTitle();
+    setEditing(false);
+    setConfirmingDelete(false);
+    setRevealed(false);
+  };
+
+  const handleCardTouchStart = (e: React.TouchEvent) => {
+    if (controlsRef.current?.contains(e.target as Node)) return;
+    if (panelRef.current?.contains(e.target as Node)) return;
+    setRevealed((v) => !v);
+  };
+
+
+  const remaining = remainingMs(countdown, now);
+  const lapsed = countdown.status === "lapsed" || (countdown.status === "running" && remaining <= 0);
+  const { text, dramatic } = formatRemaining(remaining);
+  const pct = lapsed ? 100 : progressPercent(countdown.startedAt, countdown.endsAt, remaining);
+  const filled = Math.round((pct / 100) * SEGMENTS);
+  const urgent = !lapsed && countdown.status === "running" && remaining <= 60_000;
 
   // Lapse detection + one-time celebration, driven by the shared tick.
   // Celebrate synchronously and guard with a module-level set: the DB writes
@@ -100,7 +149,10 @@ export function CountdownCard({
   return (
     <article
       ref={cardRef}
-      className={`brut animate-pop-in relative flex flex-col gap-3 bg-card p-4 sm:gap-4 sm:p-5 ${editing && !lapsed ? "z-20" : "z-0"}`}
+      onPointerEnter={handlePointerEnter}
+      onPointerLeave={handlePointerLeave}
+      onTouchStart={handleCardTouchStart}
+      className={`countdown-card brut animate-pop-in relative flex flex-col gap-3 bg-card p-4 sm:gap-4 sm:p-5 ${editing && !lapsed ? "z-20" : "z-0"}`}
       style={lapsed ? { backgroundImage: `linear-gradient(140deg, ${PALETTE.mauve}, ${PALETTE.red})` } : undefined}
     >
       {lapsed && (
@@ -152,9 +204,9 @@ export function CountdownCard({
       </p>
 
       <div
-        aria-hidden={!editing || lapsed}
+        aria-hidden={!(editing && revealed) || lapsed}
         className={`grid transition-[grid-template-rows,opacity,margin] duration-[420ms] ease-[cubic-bezier(0.22,0.61,0.36,1)] motion-reduce:transition-none ${
-          editing && !lapsed
+          editing && revealed && !lapsed
             ? "grid-rows-[1fr] opacity-100"
             : "pointer-events-none -mb-3 grid-rows-[0fr] opacity-0 sm:-mb-4"
         }`}
@@ -163,7 +215,7 @@ export function CountdownCard({
         <div
           ref={panelRef}
           className={`brut-thin relative z-10 flex flex-col gap-3 bg-cream p-3 transition-transform duration-[420ms] ease-[cubic-bezier(0.22,0.61,0.36,1)] motion-reduce:transition-none ${
-            editing && !lapsed ? "translate-y-0" : "-translate-y-1"
+            editing && revealed && !lapsed ? "translate-y-0" : "-translate-y-1"
           }`}
         >
 
@@ -179,16 +231,7 @@ export function CountdownCard({
               // Keep the raw keystrokes in state — uppercasing here would reset
               // the caret to the end on every mid-word edit. CSS handles the look.
               onChange={(e) => setDraftTitle(e.target.value)}
-              onBlur={async () => {
-                const trimmed = draftTitle.trim().toUpperCase();
-                if (trimmed && trimmed !== countdown.title) {
-                  await countdownsRepo.updateTags(countdown.id, { title: trimmed });
-                  setDraftTitle(trimmed);
-                  onChanged();
-                } else if (!trimmed) {
-                  setDraftTitle(countdown.title);
-                }
-              }}
+              onBlur={commitTitle}
               maxLength={120}
               className="brut-thin w-full rounded-none border-ink bg-card px-2 py-1.5 text-sm font-bold uppercase focus:outline-none focus:ring-2 focus:ring-ink"
               placeholder="COUNTDOWN NAME"
@@ -277,84 +320,95 @@ export function CountdownCard({
         ))}
       </div>
 
-      {confirmingDelete ? (
-        <div className="brut-thin flex flex-wrap items-center justify-between gap-2 bg-destructive p-2">
-          <span className="text-sm font-bold text-destructive-foreground uppercase">
-            Nuke this countdown?
-          </span>
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={async () => {
-                await countdownsRepo.remove(countdown.id);
-                onChanged();
-              }}
-              aria-label="Confirm delete"
-              title="Do it"
-              className="brut-thin brut-press flex h-9 w-9 items-center justify-center rounded-none bg-card"
-            >
-              <Check className="h-4 w-4" strokeWidth={3} />
-            </button>
-            <button
-              type="button"
-              onClick={() => setConfirmingDelete(false)}
-              aria-label="Cancel delete"
-              title="Nope"
-              className="brut-thin brut-press flex h-9 w-9 items-center justify-center rounded-none bg-cream"
-            >
-              <X className="h-4 w-4" strokeWidth={3} />
-            </button>
-          </div>
-        </div>
-      ) : (
-        <div className="flex gap-2">
-          {!lapsed && (
-            <button
-              ref={toggleRef}
-              type="button"
-              onClick={() => setEditing((v) => !v)}
-              aria-expanded={editing}
-              className="brut-thin brut-press flex min-h-11 flex-1 items-center justify-center gap-2 rounded-none bg-primary px-3 py-2 text-sm font-bold text-primary-foreground uppercase"
-            >
-              <Pencil className="h-4 w-4" strokeWidth={3} /> {editing ? "Done" : "Edit tags"}
-            </button>
+      <div className="min-h-[48px]">
+        <div
+          ref={controlsRef}
+          onPointerDown={(e) => e.stopPropagation()}
+          className={`controls-reveal transition-all duration-200 ease-out ${
+            revealed
+              ? "pointer-events-auto translate-y-0 opacity-100"
+              : "pointer-events-none -translate-y-1 opacity-0"
+          }`}
+        >
+          {confirmingDelete ? (
+            <div className="brut-thin flex flex-wrap items-center justify-between gap-2 bg-destructive p-2">
+              <span className="text-sm font-bold text-destructive-foreground uppercase">
+                Nuke this countdown?
+              </span>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={async () => {
+                    await countdownsRepo.remove(countdown.id);
+                    onChanged();
+                  }}
+                  aria-label="Confirm delete"
+                  title="Do it"
+                  className="brut-thin brut-press flex h-9 w-9 items-center justify-center rounded-none bg-card"
+                >
+                  <Check className="h-4 w-4" strokeWidth={3} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setConfirmingDelete(false)}
+                  aria-label="Cancel delete"
+                  title="Nope"
+                  className="brut-thin brut-press flex h-9 w-9 items-center justify-center rounded-none bg-cream"
+                >
+                  <X className="h-4 w-4" strokeWidth={3} />
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="flex gap-2">
+              {!lapsed && (
+                <button
+                  type="button"
+                  onClick={() => setEditing((v) => !v)}
+                  aria-expanded={editing}
+                  className="brut-thin brut-press flex min-h-11 flex-1 items-center justify-center gap-2 rounded-none bg-primary px-3 py-2 text-sm font-bold text-primary-foreground uppercase"
+                >
+                  <Pencil className="h-4 w-4" strokeWidth={3} /> {editing ? "Done" : "Edit tags"}
+                </button>
+              )}
+
+              <button
+                type="button"
+                disabled={saving}
+                onClick={async () => {
+                  setSaving(true);
+                  try {
+                    await downloadCountdownImage(countdown, now);
+                    toast.success("Share image downloaded");
+                  } catch {
+                    toast.error("Couldn't make the image. Try again.");
+                  } finally {
+                    setSaving(false);
+                  }
+                }}
+                aria-label="Download countdown as PNG"
+                title="Download as PNG"
+                className={`brut-thin brut-press flex h-11 shrink-0 items-center justify-center gap-2 rounded-none bg-cream disabled:opacity-60 ${lapsed ? "flex-1 px-3 text-sm font-bold uppercase" : "w-11"}`}
+              >
+                <Download className="h-4 w-4" strokeWidth={3} />
+                {lapsed && <span>Save PNG</span>}
+              </button>
+
+
+              <button
+                type="button"
+                onClick={() => setConfirmingDelete(true)}
+                aria-label="Delete countdown"
+                className={`brut-thin brut-press flex h-11 items-center justify-center gap-2 rounded-none bg-card ${lapsed ? "flex-1 px-3 text-sm font-bold uppercase" : "w-11 shrink-0"}`}
+              >
+                <Trash2 className="h-4 w-4" strokeWidth={3} />
+                {lapsed && <span>Delete</span>}
+              </button>
+
+            </div>
           )}
-
-          <button
-            type="button"
-            disabled={saving}
-            onClick={async () => {
-              setSaving(true);
-              try {
-                await downloadCountdownImage(countdown, now);
-                toast.success("Share image downloaded");
-              } catch {
-                toast.error("Couldn't make the image. Try again.");
-              } finally {
-                setSaving(false);
-              }
-            }}
-            aria-label="Download countdown as PNG"
-            title="Download as PNG"
-            className={`brut-thin brut-press flex h-11 shrink-0 items-center justify-center gap-2 rounded-none bg-cream disabled:opacity-60 ${lapsed ? "flex-1 px-3 text-sm font-bold uppercase" : "w-11"}`}
-          >
-            <Download className="h-4 w-4" strokeWidth={3} />
-            {lapsed && <span>Save PNG</span>}
-          </button>
-
-
-          <button
-            type="button"
-            onClick={() => setConfirmingDelete(true)}
-            aria-label="Delete countdown"
-            className={`brut-thin brut-press flex h-11 items-center justify-center gap-2 rounded-none bg-card ${lapsed ? "flex-1 px-3 text-sm font-bold uppercase" : "w-11 shrink-0"}`}
-          >
-            <Trash2 className="h-4 w-4" strokeWidth={3} />
-            {lapsed && <span>Delete</span>}
-          </button>
-
         </div>
-      )}
+      </div>
 
       <div className="flex items-center justify-between gap-2">
         <p
