@@ -356,16 +356,23 @@ export function CountdownCard({
         </div>
       )}
 
-      <p className="text-[10px] font-bold uppercase text-muted-foreground">
-        {new Date(countdown.createdAt).toLocaleString(undefined, {
-          day: "numeric",
-          month: "short",
-          year: "numeric",
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-        })}
-      </p>
+      <div className="flex items-center justify-between gap-2">
+        <p className="text-[10px] font-bold uppercase text-muted-foreground">
+          {new Date(countdown.createdAt).toLocaleString(undefined, {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+          })}
+        </p>
+        <img
+          src={logoUrl}
+          alt="Days To Go"
+          className="h-4 w-auto opacity-60 grayscale"
+        />
+      </div>
     </article>
   );
 }
