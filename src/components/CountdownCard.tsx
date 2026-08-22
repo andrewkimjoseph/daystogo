@@ -348,7 +348,7 @@ export function CountdownCard({
                     }}
                     aria-label="Confirm delete"
                     title="Do it"
-                    className="brut-thin brut-press flex h-9 w-9 items-center justify-center rounded-none bg-card"
+                    className="brut-thin brut-pop flex h-9 w-9 items-center justify-center rounded-none bg-card"
                   >
                     <Check className="h-4 w-4" strokeWidth={3} />
                   </button>
@@ -357,7 +357,7 @@ export function CountdownCard({
                     onClick={() => setConfirmingDelete(false)}
                     aria-label="Cancel delete"
                     title="Nope"
-                    className="brut-thin brut-press flex h-9 w-9 items-center justify-center rounded-none bg-cream"
+                    className="brut-thin brut-pop flex h-9 w-9 items-center justify-center rounded-none bg-cream"
                   >
                     <X className="h-4 w-4" strokeWidth={3} />
                   </button>
@@ -370,7 +370,7 @@ export function CountdownCard({
                     type="button"
                     onClick={() => setEditing((v) => !v)}
                     aria-expanded={editing}
-                    className="brut-thin brut-press flex min-h-11 flex-1 items-center justify-center gap-2 rounded-none bg-primary px-3 py-2 text-sm font-bold text-primary-foreground uppercase"
+                    className="brut-thin brut-pop flex min-h-11 flex-1 items-center justify-center gap-2 rounded-none bg-primary px-3 py-2 text-sm font-bold text-primary-foreground uppercase"
                   >
                     <Pencil className="h-4 w-4" strokeWidth={3} /> {editing ? "Done" : "Edit tags"}
                   </button>
@@ -392,7 +392,7 @@ export function CountdownCard({
                   }}
                   aria-label="Download countdown as PNG"
                   title="Download as PNG"
-                  className={`brut-thin brut-press flex h-11 shrink-0 items-center justify-center gap-2 rounded-none bg-cream disabled:opacity-60 ${lapsed ? "flex-1 px-3 text-sm font-bold uppercase" : "w-11"}`}
+                  className={`brut-thin brut-pop flex h-11 shrink-0 items-center justify-center gap-2 rounded-none bg-cream disabled:opacity-60 ${lapsed ? "flex-1 px-3 text-sm font-bold uppercase" : "w-11"}`}
                 >
                   <Download className="h-4 w-4" strokeWidth={3} />
                   {lapsed && <span>Save PNG</span>}
@@ -403,7 +403,7 @@ export function CountdownCard({
                   type="button"
                   onClick={() => setConfirmingDelete(true)}
                   aria-label="Delete countdown"
-                  className={`brut-thin brut-press flex h-11 items-center justify-center gap-2 rounded-none bg-card ${lapsed ? "flex-1 px-3 text-sm font-bold uppercase" : "w-11 shrink-0"}`}
+                  className={`brut-thin brut-pop flex h-11 items-center justify-center gap-2 rounded-none bg-card ${lapsed ? "flex-1 px-3 text-sm font-bold uppercase" : "w-11 shrink-0"}`}
                 >
                   <Trash2 className="h-4 w-4" strokeWidth={3} />
                   {lapsed && <span>Delete</span>}
