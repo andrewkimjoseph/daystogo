@@ -320,93 +320,97 @@ export function CountdownCard({
         ))}
       </div>
 
-      <div className="min-h-[48px]">
-        <div
-          ref={controlsRef}
-          onPointerDown={(e) => e.stopPropagation()}
-          className={`controls-reveal transition-all duration-200 ease-out ${
-            revealed
-              ? "pointer-events-auto translate-y-0 opacity-100"
-              : "pointer-events-none -translate-y-1 opacity-0"
-          }`}
-        >
-          {confirmingDelete ? (
-            <div className="brut-thin flex flex-wrap items-center justify-between gap-2 bg-destructive p-2">
-              <span className="text-sm font-bold text-destructive-foreground uppercase">
-                Nuke this countdown?
-              </span>
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={async () => {
-                    await countdownsRepo.remove(countdown.id);
-                    onChanged();
-                  }}
-                  aria-label="Confirm delete"
-                  title="Do it"
-                  className="brut-thin brut-press flex h-9 w-9 items-center justify-center rounded-none bg-card"
-                >
-                  <Check className="h-4 w-4" strokeWidth={3} />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setConfirmingDelete(false)}
-                  aria-label="Cancel delete"
-                  title="Nope"
-                  className="brut-thin brut-press flex h-9 w-9 items-center justify-center rounded-none bg-cream"
-                >
-                  <X className="h-4 w-4" strokeWidth={3} />
-                </button>
+      <div
+        aria-hidden={!revealed}
+        className={`controls-reveal grid transition-[grid-template-rows,opacity,margin] duration-[420ms] ease-[cubic-bezier(0.22,0.61,0.36,1)] motion-reduce:transition-none ${
+          revealed
+            ? "grid-rows-[1fr] opacity-100"
+            : "pointer-events-none -mb-3 grid-rows-[0fr] opacity-0 sm:-mb-4"
+        }`}
+      >
+        <div className="overflow-hidden">
+          <div
+            ref={controlsRef}
+            onPointerDown={(e) => e.stopPropagation()}
+          >
+            {confirmingDelete ? (
+              <div className="brut-thin flex flex-wrap items-center justify-between gap-2 bg-destructive p-2">
+                <span className="text-sm font-bold text-destructive-foreground uppercase">
+                  Nuke this countdown?
+                </span>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      await countdownsRepo.remove(countdown.id);
+                      onChanged();
+                    }}
+                    aria-label="Confirm delete"
+                    title="Do it"
+                    className="brut-thin brut-press flex h-9 w-9 items-center justify-center rounded-none bg-card"
+                  >
+                    <Check className="h-4 w-4" strokeWidth={3} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setConfirmingDelete(false)}
+                    aria-label="Cancel delete"
+                    title="Nope"
+                    className="brut-thin brut-press flex h-9 w-9 items-center justify-center rounded-none bg-cream"
+                  >
+                    <X className="h-4 w-4" strokeWidth={3} />
+                  </button>
+                </div>
               </div>
-            </div>
-          ) : (
-            <div className="flex gap-2">
-              {!lapsed && (
+            ) : (
+              <div className="flex gap-2">
+                {!lapsed && (
+                  <button
+                    type="button"
+                    onClick={() => setEditing((v) => !v)}
+                    aria-expanded={editing}
+                    className="brut-thin brut-press flex min-h-11 flex-1 items-center justify-center gap-2 rounded-none bg-primary px-3 py-2 text-sm font-bold text-primary-foreground uppercase"
+                  >
+                    <Pencil className="h-4 w-4" strokeWidth={3} /> {editing ? "Done" : "Edit tags"}
+                  </button>
+                )}
+
                 <button
                   type="button"
-                  onClick={() => setEditing((v) => !v)}
-                  aria-expanded={editing}
-                  className="brut-thin brut-press flex min-h-11 flex-1 items-center justify-center gap-2 rounded-none bg-primary px-3 py-2 text-sm font-bold text-primary-foreground uppercase"
+                  disabled={saving}
+                  onClick={async () => {
+                    setSaving(true);
+                    try {
+                      await downloadCountdownImage(countdown, now);
+                      toast.success("Share image downloaded");
+                    } catch {
+                      toast.error("Couldn't make the image. Try again.");
+                    } finally {
+                      setSaving(false);
+                    }
+                  }}
+                  aria-label="Download countdown as PNG"
+                  title="Download as PNG"
+                  className={`brut-thin brut-press flex h-11 shrink-0 items-center justify-center gap-2 rounded-none bg-cream disabled:opacity-60 ${lapsed ? "flex-1 px-3 text-sm font-bold uppercase" : "w-11"}`}
                 >
-                  <Pencil className="h-4 w-4" strokeWidth={3} /> {editing ? "Done" : "Edit tags"}
+                  <Download className="h-4 w-4" strokeWidth={3} />
+                  {lapsed && <span>Save PNG</span>}
                 </button>
-              )}
-
-              <button
-                type="button"
-                disabled={saving}
-                onClick={async () => {
-                  setSaving(true);
-                  try {
-                    await downloadCountdownImage(countdown, now);
-                    toast.success("Share image downloaded");
-                  } catch {
-                    toast.error("Couldn't make the image. Try again.");
-                  } finally {
-                    setSaving(false);
-                  }
-                }}
-                aria-label="Download countdown as PNG"
-                title="Download as PNG"
-                className={`brut-thin brut-press flex h-11 shrink-0 items-center justify-center gap-2 rounded-none bg-cream disabled:opacity-60 ${lapsed ? "flex-1 px-3 text-sm font-bold uppercase" : "w-11"}`}
-              >
-                <Download className="h-4 w-4" strokeWidth={3} />
-                {lapsed && <span>Save PNG</span>}
-              </button>
 
 
-              <button
-                type="button"
-                onClick={() => setConfirmingDelete(true)}
-                aria-label="Delete countdown"
-                className={`brut-thin brut-press flex h-11 items-center justify-center gap-2 rounded-none bg-card ${lapsed ? "flex-1 px-3 text-sm font-bold uppercase" : "w-11 shrink-0"}`}
-              >
-                <Trash2 className="h-4 w-4" strokeWidth={3} />
-                {lapsed && <span>Delete</span>}
-              </button>
+                <button
+                  type="button"
+                  onClick={() => setConfirmingDelete(true)}
+                  aria-label="Delete countdown"
+                  className={`brut-thin brut-press flex h-11 items-center justify-center gap-2 rounded-none bg-card ${lapsed ? "flex-1 px-3 text-sm font-bold uppercase" : "w-11 shrink-0"}`}
+                >
+                  <Trash2 className="h-4 w-4" strokeWidth={3} />
+                  {lapsed && <span>Delete</span>}
+                </button>
 
-            </div>
-          )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
