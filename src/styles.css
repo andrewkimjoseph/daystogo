@@ -285,7 +285,7 @@
 /* Keep controls reachable by keyboard even when visually hidden. */
 .countdown-card:focus-within .controls-reveal {
   opacity: 1;
-  transform: translateY(0);
+  grid-template-rows: 1fr;
   pointer-events: auto;
 }
 
