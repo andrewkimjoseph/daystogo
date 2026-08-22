@@ -281,6 +281,15 @@
   color: var(--cream) !important;
 }
 
+/* --- Card control reveal --- */
+/* Keep controls reachable by keyboard even when visually hidden. */
+.countdown-card:focus-within .controls-reveal {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+
 @utility tick-numerals {
   font-family: var(--font-display);
   font-variant-numeric: tabular-nums;

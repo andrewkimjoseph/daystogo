@@ -7,10 +7,14 @@
  * Insert a no-store 404 after the filesystem handle and before the catch-all,
  * matching nitro#4474.
  */
-import { readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 const configPath = resolve(process.cwd(), ".vercel/output/config.json");
+if (!existsSync(configPath)) {
+  console.log("[patch-vercel-asset-404] no Vercel output detected, skipping");
+  process.exit(0);
+}
 const config = JSON.parse(readFileSync(configPath, "utf8"));
 const routes = Array.isArray(config.routes) ? config.routes : [];
 
