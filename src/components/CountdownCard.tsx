@@ -357,7 +357,10 @@ export function CountdownCard({
       )}
 
       <div className="flex items-center justify-between gap-2">
-        <p className="text-[10px] font-bold uppercase text-muted-foreground">
+        <p
+          className="text-[10px] font-bold uppercase"
+          style={{ color: lapsed ? PALETTE.cream : "var(--muted-foreground)" }}
+        >
           {new Date(countdown.createdAt).toLocaleString(undefined, {
             day: "numeric",
             month: "short",
