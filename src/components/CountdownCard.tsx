@@ -328,10 +328,11 @@ export function CountdownCard({
             : "pointer-events-none -mb-3 grid-rows-[0fr] opacity-0 sm:-mb-4"
         }`}
       >
-        <div className="overflow-hidden">
+        <div className="overflow-hidden px-1 pb-1">
           <div
             ref={controlsRef}
             onPointerDown={(e) => e.stopPropagation()}
+            className="pt-1"
           >
             {confirmingDelete ? (
               <div className="brut-thin flex flex-wrap items-center justify-between gap-2 bg-destructive p-2">
