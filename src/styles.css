@@ -190,6 +190,20 @@
   }
 }
 
+@utility brut-pop {
+  transition:
+    transform 0.14s var(--ease-bounce),
+    box-shadow 0.14s var(--ease-bounce);
+  &:hover {
+    transform: translate(-1px, -2px);
+    box-shadow: 5px 6px 0 0 var(--color-ink);
+  }
+  &:active {
+    transform: translate(1px, 1px);
+    box-shadow: 3px 3px 0 0 var(--color-ink);
+  }
+}
+
 @utility brut-lift {
   transition:
     transform 0.18s var(--ease-bounce),
