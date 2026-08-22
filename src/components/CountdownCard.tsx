@@ -370,7 +370,7 @@ export function CountdownCard({
         <img
           src={logoUrl}
           alt="Days To Go"
-          className="h-4 w-auto opacity-60 grayscale"
+          className="h-4 w-auto opacity-60"
         />
       </div>
     </article>
