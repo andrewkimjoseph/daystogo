@@ -206,6 +206,33 @@ export function CreateCountdownForm({ initialDate }: { initialDate?: string }) {
           <PickerSkeleton />
         )}
       </div>
+
+      {/* Mobile: the submit button lives at the bottom of the flow */}
+      <div className="flex flex-col gap-2 sm:hidden">
+        <SubmitBlock error={error} />
+      </div>
     </form>
+  );
+}
+
+function SubmitBlock({ error }: { error: string | null }) {
+  return (
+    <>
+      <button
+        type="submit"
+        className="brut brut-press w-full rounded-none bg-primary px-6 py-3 text-base font-bold text-primary-foreground uppercase sm:w-auto sm:py-4 sm:text-lg"
+      >
+        Start the clock
+      </button>
+      {error && (
+        <p
+          className="brut-thin px-3 py-2 text-sm font-bold uppercase"
+          style={{ backgroundColor: PALETTE.red, color: PALETTE.cream }}
+          role="alert"
+        >
+          {error}
+        </p>
+      )}
+    </>
   );
 }
