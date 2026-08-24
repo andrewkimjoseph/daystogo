@@ -127,22 +127,8 @@ export function CreateCountdownForm({ initialDate }: { initialDate?: string }) {
             Pick the exact moment it should land. It starts ticking the second you hit go.
           </p>
         </div>
-        <div className="flex flex-col gap-2 sm:items-end">
-          <button
-            type="submit"
-            className="brut brut-press w-full rounded-none bg-primary px-6 py-3 text-base font-bold text-primary-foreground uppercase sm:w-auto sm:py-4 sm:text-lg"
-          >
-            Start the clock
-          </button>
-          {error && (
-            <p
-              className="brut-thin px-3 py-2 text-sm font-bold uppercase"
-              style={{ backgroundColor: PALETTE.red, color: PALETTE.cream }}
-              role="alert"
-            >
-              {error}
-            </p>
-          )}
+        <div className="hidden flex-col gap-2 sm:flex sm:items-end">
+          <SubmitBlock error={error} />
         </div>
       </div>
 
