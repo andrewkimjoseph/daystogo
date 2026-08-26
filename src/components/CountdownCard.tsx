@@ -197,7 +197,7 @@ export function CountdownCard({
 
 
       <p
-        className={`tick-numerals ${dramatic ? "text-4xl sm:text-6xl" : text.length > 9 ? "text-xl sm:text-3xl" : "text-3xl sm:text-4xl"} ${urgent ? "animate-pulse-hard" : ""}`}
+        className={`tick-numerals ${dramatic ? "text-4xl sm:text-6xl" : "text-3xl sm:text-4xl"} ${urgent ? "animate-pulse-hard" : ""}`}
         style={{ color: lapsed ? PALETTE.cream : urgent ? PALETTE.red : "var(--ink)" }}
       >
         {text}
