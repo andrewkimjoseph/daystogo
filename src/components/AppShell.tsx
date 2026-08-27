@@ -23,10 +23,8 @@ export function AppShell({
         <div className="relative mb-8 grid grid-cols-[minmax(0,1fr)_auto] items-start gap-4">
           <div className="min-w-0">
             <Sparkle color={PALETTE.red} size={26} className="absolute -top-4 left-0 hidden sm:block" />
-            <h1 className="hero-gradient text-3xl uppercase sm:text-5xl">Put a clock on it.</h1>
-            <p className="mt-2 max-w-xl font-bold text-muted-foreground">
-              Three seconds to forever (well — forever isn’t a thing, but we’ll get close). Everything ticks at once.
-            </p>
+            <h1 className="hero-gradient text-3xl uppercase sm:text-5xl">{title}</h1>
+            <p className="mt-2 max-w-xl font-bold text-muted-foreground">{subtitle}</p>
           </div>
           <TodayClock />
         </div>
