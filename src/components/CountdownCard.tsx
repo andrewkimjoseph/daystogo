@@ -448,7 +448,7 @@ export function CountdownCard({
                     }}
                     aria-label={isArchived ? "Restore countdown" : "Archive countdown"}
                     title={isArchived ? "Restore" : "Archive"}
-                    className="brut-thin brut-pop flex h-11 w-11 shrink-0 items-center justify-center rounded-none bg-cream"
+                    className="brut-thin brut-pop flex h-11 flex-1 items-center justify-center rounded-none bg-cream"
                   >
                     {isArchived ? (
                       <ArchiveRestore className="h-4 w-4" strokeWidth={3} />
