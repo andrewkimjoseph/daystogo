@@ -370,7 +370,7 @@ export function CountdownCard({
                 </div>
               </div>
             ) : confirmingArchive ? (
-              <div className="brut-thin flex flex-wrap items-center justify-between gap-2 p-2" style={{ backgroundColor: PALETTE.mauve }}>
+              <div className="brut-thin flex flex-wrap items-center justify-between gap-2 p-2" style={{ backgroundColor: PALETTE.teal }}>
                 <span className="text-sm font-bold uppercase" style={{ color: PALETTE.cream }}>
                   Box it up?
                 </span>
@@ -385,7 +385,7 @@ export function CountdownCard({
                     }}
                     aria-label="Confirm archive"
                     title="Do it"
-                    className="brut-thin brut-pop flex h-9 w-9 items-center justify-center rounded-none bg-card"
+                    className="brut-thin brut-pop flex h-9 w-9 items-center justify-center rounded-none bg-cream"
                   >
                     <Check className="h-4 w-4" strokeWidth={3} style={{ color: INK }} />
                   </button>
@@ -394,7 +394,7 @@ export function CountdownCard({
                     onClick={() => setConfirmingArchive(false)}
                     aria-label="Cancel archive"
                     title="Nope"
-                    className="brut-thin brut-pop flex h-9 w-9 items-center justify-center rounded-none bg-cream"
+                    className="brut-thin brut-pop flex h-9 w-9 items-center justify-center rounded-none bg-card"
                   >
                     <X className="h-4 w-4" strokeWidth={3} style={{ color: INK }} />
                   </button>
