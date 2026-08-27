@@ -59,8 +59,27 @@ export function validateSeconds(seconds: number): string | null {
 }
 
 export const countdownsRepo = {
+  /** Active board: archived rows are excluded. */
   async all(): Promise<Countdown[]> {
-    return getDb().countdowns.orderBy("endsAt").toArray();
+    const rows = await getDb().countdowns.orderBy("endsAt").toArray();
+    return rows.filter((c) => c.archivedAt === undefined);
+  },
+
+  /** Archived rows, most recently archived first. */
+  async archived(): Promise<Countdown[]> {
+    const rows = await getDb().countdowns.toArray();
+    return rows
+      .filter((c) => c.archivedAt !== undefined)
+      .sort((a, b) => (b.archivedAt ?? 0) - (a.archivedAt ?? 0));
+  },
+
+  async archive(id: string): Promise<void> {
+    const now = Date.now();
+    await getDb().countdowns.update(id, { archivedAt: now, updatedAt: now });
+  },
+
+  async unarchive(id: string): Promise<void> {
+    await getDb().countdowns.update(id, { archivedAt: undefined, updatedAt: Date.now() });
   },
 
   async create(input: NewCountdownInput): Promise<Countdown> {
