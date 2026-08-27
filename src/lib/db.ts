@@ -27,6 +27,8 @@ export interface Countdown {
   /** Absent on rows created before categories existed — treat as "other". */
   category?: CountdownCategory | undefined;
   hasCelebrated: boolean;
+  /** Epoch ms the user archived this row; undefined means it's still on the board. */
+  archivedAt?: number | undefined;
   createdAt: number;
   updatedAt: number;
 }
