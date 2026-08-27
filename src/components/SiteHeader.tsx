@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Archive, Plus } from "lucide-react";
+import { Archive, Calendar as CalendarIcon, Info, Plus } from "lucide-react";
 import logoUrl from "@/assets/logo.png";
 import { MuteToggle } from "./MuteToggle";
 
