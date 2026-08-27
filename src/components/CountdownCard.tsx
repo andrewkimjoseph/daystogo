@@ -429,7 +429,7 @@ export function CountdownCard({
                   }}
                   aria-label="Download countdown as PNG"
                   title="Download as PNG"
-                  className="brut-thin brut-pop flex h-11 w-11 shrink-0 items-center justify-center rounded-none bg-cream disabled:opacity-60"
+                  className={`brut-thin brut-pop flex h-11 ${lapsed ? "flex-1" : "w-11 shrink-0"} items-center justify-center rounded-none bg-cream disabled:opacity-60`}
                 >
                   <Download className="h-4 w-4" strokeWidth={3} />
                 </button>
