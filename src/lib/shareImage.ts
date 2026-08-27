@@ -140,7 +140,7 @@ export async function renderCountdownShareImage(
 
   const remaining = remainingMs(countdown, now);
   const lapsed = countdown.status === "lapsed" || remaining <= 0;
-  const { text } = formatRemaining(remaining);
+  const { text, dramatic } = formatRemaining(remaining);
   const pct = lapsed ? 100 : progressPercent(countdown.startedAt, countdown.endsAt, remaining);
   const filled = Math.round((pct / 100) * SEGMENTS);
   const tagColor = lapsed ? PALETTE.red : countdown.colorTag;
