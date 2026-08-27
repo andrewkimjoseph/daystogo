@@ -208,7 +208,7 @@ export async function renderCountdownShareImage(
 
   // Title.
   const maxTitleW = contentW - badgeW - 40;
-  const title = fitLines(ctx, countdown.title.toUpperCase(), maxTitleW, 3, 76, 40, DISPLAY);
+  const title = fitLines(ctx, countdown.title.toUpperCase(), maxTitleW, 3, 46, 34, DISPLAY);
   y += 40;
   ctx.fillStyle = ink;
   for (const line of title.lines) {
