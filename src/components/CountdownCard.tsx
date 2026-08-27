@@ -10,7 +10,7 @@ import { downloadCountdownImage } from "@/lib/shareImage";
 
 import { burstConfetti } from "@/lib/confetti";
 import { playSound } from "@/lib/soundManager";
-import { COLOR_TAGS, PALETTE, tagTextColor } from "@/lib/palette";
+import { COLOR_TAGS, INK, PALETTE, tagTextColor } from "@/lib/palette";
 import { CATEGORIES, categoryMeta, type CountdownCategory } from "@/lib/categories";
 import { Sparkle } from "./Sparkle";
 
@@ -36,6 +36,7 @@ export function CountdownCard({
   const controlsRef = useRef<HTMLDivElement | null>(null);
   const panelRef = useRef<HTMLDivElement | null>(null);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [confirmingArchive, setConfirmingArchive] = useState(false);
   const [editing, setEditing] = useState(false);
   const [draftTitle, setDraftTitle] = useState(countdown.title);
   const [saving, setSaving] = useState(false);
@@ -87,6 +88,7 @@ export function CountdownCard({
         setRevealed(false);
         setEditing(false);
         setConfirmingDelete(false);
+        setConfirmingArchive(false);
       }
     };
     document.addEventListener("pointerdown", onDocPointerDown);
@@ -108,6 +110,7 @@ export function CountdownCard({
     void commitTitle();
     setEditing(false);
     setConfirmingDelete(false);
+    setConfirmingArchive(false);
     setRevealed(false);
   };
 
@@ -366,6 +369,37 @@ export function CountdownCard({
                   </button>
                 </div>
               </div>
+            ) : confirmingArchive ? (
+              <div className="brut-thin flex flex-wrap items-center justify-between gap-2 p-2" style={{ backgroundColor: PALETTE.mauve }}>
+                <span className="text-sm font-bold uppercase" style={{ color: PALETTE.cream }}>
+                  Box it up?
+                </span>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      await countdownsRepo.archive(countdown.id);
+                      toast.success("Moved to the archive");
+                      setConfirmingArchive(false);
+                      onChanged();
+                    }}
+                    aria-label="Confirm archive"
+                    title="Do it"
+                    className="brut-thin brut-pop flex h-9 w-9 items-center justify-center rounded-none bg-card"
+                  >
+                    <Check className="h-4 w-4" strokeWidth={3} style={{ color: INK }} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setConfirmingArchive(false)}
+                    aria-label="Cancel archive"
+                    title="Nope"
+                    className="brut-thin brut-pop flex h-9 w-9 items-center justify-center rounded-none bg-cream"
+                  >
+                    <X className="h-4 w-4" strokeWidth={3} style={{ color: INK }} />
+                  </button>
+                </div>
+              </div>
             ) : (
               <div className="flex flex-nowrap gap-2">
                 {!lapsed && (
@@ -407,11 +441,10 @@ export function CountdownCard({
                       if (isArchived) {
                         await countdownsRepo.unarchive(countdown.id);
                         toast.success("Back on the board");
+                        onChanged();
                       } else {
-                        await countdownsRepo.archive(countdown.id);
-                        toast.success("Moved to the archive");
+                        setConfirmingArchive(true);
                       }
-                      onChanged();
                     }}
                     aria-label={isArchived ? "Restore countdown" : "Archive countdown"}
                     title={isArchived ? "Restore" : "Archive"}
