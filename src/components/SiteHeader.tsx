@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Archive, Plus } from "lucide-react";
+import { Archive, Calendar as CalendarIcon, Info, Plus } from "lucide-react";
 import logoUrl from "@/assets/logo.png";
 import { MuteToggle } from "./MuteToggle";
 
@@ -42,16 +42,22 @@ export function SiteHeader() {
           <Link
             to={onCalendar ? "/" : "/calendar"}
             viewTransition
-            className="brut brut-press rounded-none bg-cream px-2.5 py-2 text-xs font-bold text-ink uppercase sm:px-4 sm:text-sm"
+            aria-label={onCalendar ? "Home" : "Calendar"}
+            title={onCalendar ? "Home" : "Calendar"}
+            className="brut brut-press inline-flex h-10 items-center justify-center rounded-none bg-cream px-2.5 text-xs font-bold text-ink uppercase sm:h-auto sm:px-4 sm:py-2 sm:text-sm"
           >
-            {onCalendar ? "Home" : "Calendar"}
+            <CalendarIcon className="h-4 w-4 sm:hidden" strokeWidth={3} />
+            <span className="hidden sm:inline">{onCalendar ? "Home" : "Calendar"}</span>
           </Link>
           <Link
             to={onAbout ? "/" : "/about"}
             viewTransition
-            className="brut brut-press rounded-none bg-cream px-2.5 py-2 text-xs font-bold text-ink uppercase sm:px-4 sm:text-sm"
+            aria-label={onAbout ? "Home" : "About"}
+            title={onAbout ? "Home" : "About"}
+            className="brut brut-press inline-flex h-10 items-center justify-center rounded-none bg-cream px-2.5 py-2 text-xs font-bold text-ink uppercase sm:h-auto sm:px-4 sm:text-sm"
           >
-            {onAbout ? "Home" : "About"}
+            <Info className="h-4 w-4 sm:hidden" strokeWidth={3} />
+            <span className="hidden sm:inline">{onAbout ? "Home" : "About"}</span>
           </Link>
           <MuteToggle />
         </div>
