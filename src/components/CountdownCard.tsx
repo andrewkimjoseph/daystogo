@@ -367,7 +367,7 @@ export function CountdownCard({
                 </div>
               </div>
             ) : (
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-nowrap gap-2">
                 {!lapsed && (
                   <button
                     type="button"
@@ -395,10 +395,9 @@ export function CountdownCard({
                   }}
                   aria-label="Download countdown as PNG"
                   title="Download as PNG"
-                  className={`brut-thin brut-pop flex h-11 shrink-0 items-center justify-center gap-2 rounded-none bg-cream disabled:opacity-60 ${lapsed ? "min-w-[8rem] flex-1 px-3 text-sm font-bold uppercase" : "w-11"}`}
+                  className="brut-thin brut-pop flex h-11 w-11 shrink-0 items-center justify-center rounded-none bg-cream disabled:opacity-60"
                 >
                   <Download className="h-4 w-4" strokeWidth={3} />
-                  {lapsed && <span>Save PNG</span>}
                 </button>
 
                 {lapsed && (
@@ -416,14 +415,13 @@ export function CountdownCard({
                     }}
                     aria-label={isArchived ? "Restore countdown" : "Archive countdown"}
                     title={isArchived ? "Restore" : "Archive"}
-                    className="brut-thin brut-pop flex h-11 min-w-[8rem] flex-1 items-center justify-center gap-2 rounded-none bg-cream px-3 text-sm font-bold uppercase"
+                    className="brut-thin brut-pop flex h-11 w-11 shrink-0 items-center justify-center rounded-none bg-cream"
                   >
                     {isArchived ? (
                       <ArchiveRestore className="h-4 w-4" strokeWidth={3} />
                     ) : (
                       <Archive className="h-4 w-4" strokeWidth={3} />
                     )}
-                    <span>{isArchived ? "Restore" : "Archive"}</span>
                   </button>
                 )}
 
@@ -431,10 +429,9 @@ export function CountdownCard({
                   type="button"
                   onClick={() => setConfirmingDelete(true)}
                   aria-label="Delete countdown"
-                  className={`brut-thin brut-pop flex h-11 items-center justify-center gap-2 rounded-none bg-card ${lapsed ? "min-w-[8rem] flex-1 px-3 text-sm font-bold uppercase" : "w-11 shrink-0"}`}
+                  className="brut-thin brut-pop flex h-11 w-11 shrink-0 items-center justify-center rounded-none bg-card"
                 >
                   <Trash2 className="h-4 w-4" strokeWidth={3} />
-                  {lapsed && <span>Delete</span>}
                 </button>
 
               </div>
