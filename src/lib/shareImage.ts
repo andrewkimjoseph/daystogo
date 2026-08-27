@@ -223,8 +223,23 @@ export async function renderCountdownShareImage(
     ctx.fillStyle = muted;
     ctx.font = `28px ${SANS}`;
     ctx.fillText(formatTargetLabel(countdown.targetAt).toUpperCase(), left, y);
-
   }
+
+  // Created date — small and silent, matching the card footer.
+  const createdAtMs = countdown.createdAt ?? Date.now();
+  const createdDate = new Date(createdAtMs).toLocaleString(undefined, {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
+  y += 42;
+  ctx.fillStyle = muted;
+  ctx.font = `22px ${SANS}`;
+  ctx.fillText(createdDate.toUpperCase(), left, y);
+
 
   // Big remaining figure. Sizes are the web card's rem values scaled by the
   // canvas/card ratio (~2.4x): text-4xl (36px) -> 88, text-6xl (60px) -> 145.
