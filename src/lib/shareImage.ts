@@ -140,7 +140,7 @@ export async function renderCountdownShareImage(
 
   const remaining = remainingMs(countdown, now);
   const lapsed = countdown.status === "lapsed" || remaining <= 0;
-  const { text } = formatRemaining(remaining);
+  const { text, dramatic } = formatRemaining(remaining);
   const pct = lapsed ? 100 : progressPercent(countdown.startedAt, countdown.endsAt, remaining);
   const filled = Math.round((pct / 100) * SEGMENTS);
   const tagColor = lapsed ? PALETTE.red : countdown.colorTag;
@@ -226,10 +226,14 @@ export async function renderCountdownShareImage(
 
   }
 
-  // Big remaining figure, optically centred in the space left between label and strip.
+  // Big remaining figure. Match the web app's fixed timer size
+  // (text-3xl / text-4xl standard, text-4xl / text-6xl dramatic),
+  // with a small safety floor so very long countdowns still fit.
   const stripH = 46;
   const stripY = panelY + panelH - 88;
-  const clock = fitLines(ctx, lapsed ? "00:00:00" : text, contentW, 1, 150, 60, DISPLAY);
+  const clockStart = !lapsed && dramatic ? 180 : 150;
+  const clockMin = !lapsed && dramatic ? 150 : 120;
+  const clock = fitLines(ctx, lapsed ? "00:00:00" : text, contentW, 1, clockStart, clockMin, DISPLAY);
   const midY = (y + 24 + (stripY - 40)) / 2;
   ctx.fillStyle = lapsed ? PALETTE.cream : INK;
   ctx.font = `${clock.size}px ${DISPLAY}`;
