@@ -203,7 +203,7 @@ export function CountdownCard({
 
 
       <p
-        className={`tick-numerals ${dramatic ? "text-4xl sm:text-6xl" : "text-3xl sm:text-4xl"} ${urgent ? "animate-pulse-hard" : ""}`}
+        className={`tick-numerals ${!lapsed && dramatic ? "text-4xl sm:text-6xl" : "text-3xl sm:text-4xl"} ${urgent ? "animate-pulse-hard" : ""}`}
         style={{ color: lapsed ? PALETTE.cream : urgent ? PALETTE.red : "var(--ink)" }}
       >
         {text}
@@ -370,7 +370,7 @@ export function CountdownCard({
                 </div>
               </div>
             ) : confirmingArchive ? (
-              <div className="brut-thin flex flex-wrap items-center justify-between gap-2 p-2" style={{ backgroundColor: PALETTE.mauve }}>
+              <div className="brut-thin flex flex-wrap items-center justify-between gap-2 p-2" style={{ backgroundColor: PALETTE.teal }}>
                 <span className="text-sm font-bold uppercase" style={{ color: PALETTE.cream }}>
                   Box it up?
                 </span>
@@ -385,7 +385,7 @@ export function CountdownCard({
                     }}
                     aria-label="Confirm archive"
                     title="Do it"
-                    className="brut-thin brut-pop flex h-9 w-9 items-center justify-center rounded-none bg-card"
+                    className="brut-thin brut-pop flex h-9 w-9 items-center justify-center rounded-none bg-cream"
                   >
                     <Check className="h-4 w-4" strokeWidth={3} style={{ color: INK }} />
                   </button>
@@ -394,7 +394,7 @@ export function CountdownCard({
                     onClick={() => setConfirmingArchive(false)}
                     aria-label="Cancel archive"
                     title="Nope"
-                    className="brut-thin brut-pop flex h-9 w-9 items-center justify-center rounded-none bg-cream"
+                    className="brut-thin brut-pop flex h-9 w-9 items-center justify-center rounded-none bg-card"
                   >
                     <X className="h-4 w-4" strokeWidth={3} style={{ color: INK }} />
                   </button>
@@ -429,7 +429,7 @@ export function CountdownCard({
                   }}
                   aria-label="Download countdown as PNG"
                   title="Download as PNG"
-                  className="brut-thin brut-pop flex h-11 w-11 shrink-0 items-center justify-center rounded-none bg-cream disabled:opacity-60"
+                  className={`brut-thin brut-pop flex h-11 ${lapsed ? "flex-1" : "w-11 shrink-0"} items-center justify-center rounded-none bg-cream disabled:opacity-60`}
                 >
                   <Download className="h-4 w-4" strokeWidth={3} />
                 </button>
@@ -448,7 +448,7 @@ export function CountdownCard({
                     }}
                     aria-label={isArchived ? "Restore countdown" : "Archive countdown"}
                     title={isArchived ? "Restore" : "Archive"}
-                    className="brut-thin brut-pop flex h-11 w-11 shrink-0 items-center justify-center rounded-none bg-cream"
+                    className="brut-thin brut-pop flex h-11 flex-1 items-center justify-center rounded-none bg-cream"
                   >
                     {isArchived ? (
                       <ArchiveRestore className="h-4 w-4" strokeWidth={3} />
@@ -462,7 +462,7 @@ export function CountdownCard({
                   type="button"
                   onClick={() => setConfirmingDelete(true)}
                   aria-label="Delete countdown"
-                  className="brut-thin brut-pop flex h-11 w-11 shrink-0 items-center justify-center rounded-none bg-card"
+                  className={`brut-thin brut-pop flex h-11 ${lapsed ? "flex-1" : "w-11 shrink-0"} items-center justify-center rounded-none bg-card`}
                 >
                   <Trash2 className="h-4 w-4" strokeWidth={3} />
                 </button>
