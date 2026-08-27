@@ -47,6 +47,9 @@ class DaysToGoDB extends Dexie {
     this.version(3).stores({
       countdowns: "id, status, endsAt, createdAt, targetAt, category",
     });
+    this.version(4).stores({
+      countdowns: "id, status, endsAt, createdAt, targetAt, category, archivedAt",
+    });
   }
 }
 
