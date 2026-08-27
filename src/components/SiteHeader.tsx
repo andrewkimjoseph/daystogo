@@ -28,6 +28,16 @@ export function SiteHeader() {
             </Link>
           )}
           <Link
+            to={onArchived ? "/" : "/archived"}
+            viewTransition
+            aria-label={onArchived ? "Home" : "Archived countdowns"}
+            title={onArchived ? "Home" : "Archived"}
+            className="brut brut-press inline-flex h-10 items-center gap-1.5 rounded-none bg-cream px-2.5 text-xs font-bold text-ink uppercase sm:h-auto sm:px-4 sm:py-2 sm:text-sm"
+          >
+            <Archive className="h-4 w-4 shrink-0 sm:hidden" strokeWidth={3} />
+            <span className="hidden sm:inline">{onArchived ? "Home" : "Archive"}</span>
+          </Link>
+          <Link
             to={onCalendar ? "/" : "/calendar"}
             viewTransition
             className="brut brut-press rounded-none bg-cream px-2.5 py-2 text-xs font-bold text-ink uppercase sm:px-4 sm:text-sm"
