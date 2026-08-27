@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Archive, Calendar as CalendarIcon, Info, Plus } from "lucide-react";
+import { Archive, Calendar as CalendarIcon, Home, Info, Plus } from "lucide-react";
 import logoUrl from "@/assets/logo.png";
 import { MuteToggle } from "./MuteToggle";
 
@@ -34,8 +34,12 @@ export function SiteHeader() {
             title={onArchived ? "Home" : "Archived"}
             className="brut brut-press inline-flex h-10 items-center gap-1.5 rounded-none bg-cream px-2.5 text-xs font-bold text-ink uppercase sm:h-auto sm:px-4 sm:py-2 sm:text-sm"
           >
-            {!onArchived && <Archive className="h-4 w-4 shrink-0 sm:hidden" strokeWidth={3} />}
-            <span className={onArchived ? "" : "hidden sm:inline"}>
+            {onArchived ? (
+              <Home className="h-4 w-4 shrink-0 sm:hidden" strokeWidth={3} />
+            ) : (
+              <Archive className="h-4 w-4 shrink-0 sm:hidden" strokeWidth={3} />
+            )}
+            <span className="hidden sm:inline">
               {onArchived ? "Home" : "Archive"}
             </span>
           </Link>
