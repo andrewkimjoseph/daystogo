@@ -8,6 +8,7 @@ export function SiteHeader() {
   const onAbout = pathname.startsWith("/about");
   const onCreate = pathname.startsWith("/create-countdown");
   const onCalendar = pathname.startsWith("/calendar");
+  const onArchived = pathname.startsWith("/archived");
 
   return (
     <header className="view-header border-b-4 border-ink bg-cream">
