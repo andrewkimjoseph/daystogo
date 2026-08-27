@@ -183,7 +183,7 @@ export function CountdownCard({
           >
             {countdown.title}
           </h2>
-          {countdown.targetAt !== undefined && !lapsed && (
+          {countdown.targetAt !== undefined && (
             <p
               className="mt-1 text-xs font-bold uppercase"
               style={{ color: lapsed ? PALETTE.cream : "var(--muted-foreground)" }}
