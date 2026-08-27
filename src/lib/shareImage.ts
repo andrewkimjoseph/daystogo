@@ -229,6 +229,8 @@ export async function renderCountdownShareImage(
   // Big remaining figure. Match the web app's fixed timer size
   // (text-3xl / text-4xl standard, text-4xl / text-6xl dramatic),
   // with a small safety floor so very long countdowns still fit.
+  const stripH = 46;
+  const stripY = panelY + panelH - 88;
   const clockStart = !lapsed && dramatic ? 180 : 150;
   const clockMin = !lapsed && dramatic ? 150 : 120;
   const clock = fitLines(ctx, lapsed ? "00:00:00" : text, contentW, 1, clockStart, clockMin, DISPLAY);
