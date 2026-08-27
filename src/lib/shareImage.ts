@@ -208,7 +208,7 @@ export async function renderCountdownShareImage(
 
   // Title.
   const maxTitleW = contentW - badgeW - 40;
-  const title = fitLines(ctx, countdown.title.toUpperCase(), maxTitleW, 3, 76, 40, DISPLAY);
+  const title = fitLines(ctx, countdown.title.toUpperCase(), maxTitleW, 3, 46, 34, DISPLAY);
   y += 40;
   ctx.fillStyle = ink;
   for (const line of title.lines) {
@@ -226,13 +226,12 @@ export async function renderCountdownShareImage(
 
   }
 
-  // Big remaining figure. Match the web app's fixed timer size
-  // (text-3xl / text-4xl standard, text-4xl / text-6xl dramatic),
-  // with a small safety floor so very long countdowns still fit.
+  // Big remaining figure. Sizes are the web card's rem values scaled by the
+  // canvas/card ratio (~2.4x): text-4xl (36px) -> 88, text-6xl (60px) -> 145.
   const stripH = 46;
   const stripY = panelY + panelH - 88;
-  const clockStart = !lapsed && dramatic ? 180 : 150;
-  const clockMin = !lapsed && dramatic ? 150 : 120;
+  const clockStart = !lapsed && dramatic ? 145 : 88;
+  const clockMin = !lapsed && dramatic ? 110 : 72;
   const clock = fitLines(ctx, lapsed ? "00:00:00" : text, contentW, 1, clockStart, clockMin, DISPLAY);
   const midY = (y + 24 + (stripY - 40)) / 2;
   ctx.fillStyle = lapsed ? PALETTE.cream : INK;
