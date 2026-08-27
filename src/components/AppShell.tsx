@@ -6,7 +6,15 @@ import { TodayClock } from "./TodayClock";
 
 import { PALETTE } from "@/lib/palette";
 
-export function AppShell({ children }: { children: React.ReactNode }) {
+export function AppShell({
+  children,
+  title = "Put a clock on it.",
+  subtitle = "Three seconds to forever (well — forever isn’t a thing, but we’ll get close). Everything ticks at once.",
+}: {
+  children: React.ReactNode;
+  title?: string;
+  subtitle?: string;
+}) {
   return (
     <div className="min-h-screen">
       <SiteHeader />
