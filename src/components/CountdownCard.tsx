@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Check, Download, Pencil, Trash2, X } from "lucide-react";
+import { Archive, ArchiveRestore, Check, Download, Pencil, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import logoUrl from "@/assets/logo.png";
 import type { Countdown } from "@/lib/db";
@@ -24,11 +24,14 @@ export function CountdownCard({
   countdown,
   now,
   onChanged,
+  variant = "active",
 }: {
   countdown: Countdown;
   now: number;
   onChanged: () => void;
+  variant?: "active" | "archived";
 }) {
+  const isArchived = variant === "archived";
   const cardRef = useRef<HTMLElement | null>(null);
   const controlsRef = useRef<HTMLDivElement | null>(null);
   const panelRef = useRef<HTMLDivElement | null>(null);
@@ -364,7 +367,7 @@ export function CountdownCard({
                 </div>
               </div>
             ) : (
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 {!lapsed && (
                   <button
                     type="button"
@@ -392,18 +395,43 @@ export function CountdownCard({
                   }}
                   aria-label="Download countdown as PNG"
                   title="Download as PNG"
-                  className={`brut-thin brut-pop flex h-11 shrink-0 items-center justify-center gap-2 rounded-none bg-cream disabled:opacity-60 ${lapsed ? "flex-1 px-3 text-sm font-bold uppercase" : "w-11"}`}
+                  className={`brut-thin brut-pop flex h-11 shrink-0 items-center justify-center gap-2 rounded-none bg-cream disabled:opacity-60 ${lapsed ? "min-w-[8rem] flex-1 px-3 text-sm font-bold uppercase" : "w-11"}`}
                 >
                   <Download className="h-4 w-4" strokeWidth={3} />
                   {lapsed && <span>Save PNG</span>}
                 </button>
 
+                {lapsed && (
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      if (isArchived) {
+                        await countdownsRepo.unarchive(countdown.id);
+                        toast.success("Back on the board");
+                      } else {
+                        await countdownsRepo.archive(countdown.id);
+                        toast.success("Moved to the archive");
+                      }
+                      onChanged();
+                    }}
+                    aria-label={isArchived ? "Restore countdown" : "Archive countdown"}
+                    title={isArchived ? "Restore" : "Archive"}
+                    className="brut-thin brut-pop flex h-11 min-w-[8rem] flex-1 items-center justify-center gap-2 rounded-none bg-cream px-3 text-sm font-bold uppercase"
+                  >
+                    {isArchived ? (
+                      <ArchiveRestore className="h-4 w-4" strokeWidth={3} />
+                    ) : (
+                      <Archive className="h-4 w-4" strokeWidth={3} />
+                    )}
+                    <span>{isArchived ? "Restore" : "Archive"}</span>
+                  </button>
+                )}
 
                 <button
                   type="button"
                   onClick={() => setConfirmingDelete(true)}
                   aria-label="Delete countdown"
-                  className={`brut-thin brut-pop flex h-11 items-center justify-center gap-2 rounded-none bg-card ${lapsed ? "flex-1 px-3 text-sm font-bold uppercase" : "w-11 shrink-0"}`}
+                  className={`brut-thin brut-pop flex h-11 items-center justify-center gap-2 rounded-none bg-card ${lapsed ? "min-w-[8rem] flex-1 px-3 text-sm font-bold uppercase" : "w-11 shrink-0"}`}
                 >
                   <Trash2 className="h-4 w-4" strokeWidth={3} />
                   {lapsed && <span>Delete</span>}

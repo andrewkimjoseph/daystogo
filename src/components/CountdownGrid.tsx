@@ -8,9 +8,14 @@ import { PALETTE } from "@/lib/palette";
 import { useCountdownTick } from "@/hooks/useCountdownTick";
 import { CountdownCard } from "./CountdownCard";
 
-export function CountdownGrid() {
+export function CountdownGrid({ variant = "active" }: { variant?: "active" | "archived" }) {
+  const archived = variant === "archived";
   const now = useCountdownTick();
-  const countdowns = useLiveQuery(() => countdownsRepo.all(), [], undefined);
+  const countdowns = useLiveQuery(
+    () => (archived ? countdownsRepo.archived() : countdownsRepo.all()),
+    [archived],
+    undefined,
+  );
   const [filter, setFilter] = useState<CountdownCategory | "all">("all");
 
   useEffect(() => {
@@ -23,15 +28,19 @@ export function CountdownGrid() {
     return (
       <div className="brut animate-pop-in mx-auto flex max-w-xl flex-col items-center gap-5 bg-card p-6 text-center sm:p-12">
         <img src={logoUrl} alt="Days To Go" className="w-36 sm:w-48" />
-        <h2 className="text-xl uppercase sm:text-2xl">No countdowns yet.</h2>
+        <h2 className="text-xl uppercase sm:text-2xl">
+          {archived ? "Nothing archived yet." : "No countdowns yet."}
+        </h2>
         <p className="max-w-sm font-bold text-muted-foreground">
-          What are you waiting for? Pick something, put a clock on it, watch it sweat.
+          {archived
+            ? "Once a clock hits zero, hit Archive on the card and it lands here for keeps."
+            : "What are you waiting for? Pick something, put a clock on it, watch it sweat."}
         </p>
         <Link
-          to="/create-countdown"
+          to={archived ? "/" : "/create-countdown"}
           className="brut-thin brut-press rounded-none bg-primary px-5 py-3 font-bold text-primary-foreground uppercase"
         >
-          Start one now
+          {archived ? "Back to the board" : "Start one now"}
         </Link>
       </div>
     );
@@ -71,7 +80,7 @@ export function CountdownGrid() {
 
       <div className="grid grid-cols-1 items-start gap-6 sm:grid-cols-2 xl:grid-cols-3">
         {visible.map((c) => (
-          <CountdownCard key={c.id} countdown={c} now={now} onChanged={() => {}} />
+          <CountdownCard key={c.id} countdown={c} now={now} variant={variant} onChanged={() => {}} />
         ))}
       </div>
     </div>

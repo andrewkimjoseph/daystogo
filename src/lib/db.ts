@@ -27,6 +27,8 @@ export interface Countdown {
   /** Absent on rows created before categories existed — treat as "other". */
   category?: CountdownCategory | undefined;
   hasCelebrated: boolean;
+  /** Epoch ms the user archived this row; undefined means it's still on the board. */
+  archivedAt?: number | undefined;
   createdAt: number;
   updatedAt: number;
 }
@@ -44,6 +46,9 @@ class DaysToGoDB extends Dexie {
     });
     this.version(3).stores({
       countdowns: "id, status, endsAt, createdAt, targetAt, category",
+    });
+    this.version(4).stores({
+      countdowns: "id, status, endsAt, createdAt, targetAt, category, archivedAt",
     });
   }
 }

@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Plus } from "lucide-react";
+import { Archive, Plus } from "lucide-react";
 import logoUrl from "@/assets/logo.png";
 import { MuteToggle } from "./MuteToggle";
 
@@ -8,6 +8,7 @@ export function SiteHeader() {
   const onAbout = pathname.startsWith("/about");
   const onCreate = pathname.startsWith("/create-countdown");
   const onCalendar = pathname.startsWith("/calendar");
+  const onArchived = pathname.startsWith("/archived");
 
   return (
     <header className="view-header border-b-4 border-ink bg-cream">
@@ -26,6 +27,18 @@ export function SiteHeader() {
               <span className="hidden sm:inline">New</span>
             </Link>
           )}
+          <Link
+            to={onArchived ? "/" : "/archived"}
+            viewTransition
+            aria-label={onArchived ? "Home" : "Archived countdowns"}
+            title={onArchived ? "Home" : "Archived"}
+            className="brut brut-press inline-flex h-10 items-center gap-1.5 rounded-none bg-cream px-2.5 text-xs font-bold text-ink uppercase sm:h-auto sm:px-4 sm:py-2 sm:text-sm"
+          >
+            {!onArchived && <Archive className="h-4 w-4 shrink-0 sm:hidden" strokeWidth={3} />}
+            <span className={onArchived ? "" : "hidden sm:inline"}>
+              {onArchived ? "Home" : "Archive"}
+            </span>
+          </Link>
           <Link
             to={onCalendar ? "/" : "/calendar"}
             viewTransition
