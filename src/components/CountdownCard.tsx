@@ -24,11 +24,14 @@ export function CountdownCard({
   countdown,
   now,
   onChanged,
+  variant = "active",
 }: {
   countdown: Countdown;
   now: number;
   onChanged: () => void;
+  variant?: "active" | "archived";
 }) {
+  const isArchived = variant === "archived";
   const cardRef = useRef<HTMLElement | null>(null);
   const controlsRef = useRef<HTMLDivElement | null>(null);
   const panelRef = useRef<HTMLDivElement | null>(null);
