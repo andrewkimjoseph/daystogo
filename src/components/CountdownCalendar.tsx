@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import { useLiveQuery } from "dexie-react-hooks";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { countdownsRepo, remainingMs } from "@/lib/countdownsRepo";
+import { COUNTDOWNS_QUERY_KEY, countdownsRepo, remainingMs } from "@/lib/countdownsRepo";
 import { categoryMeta } from "@/lib/categories";
 import { PALETTE, tagTextColor } from "@/lib/palette";
 import { formatTargetLabel } from "@/lib/localTime";
@@ -94,7 +94,11 @@ function CalendarSkeleton() {
 }
 
 function CalendarBody() {
-  const countdowns = useLiveQuery(() => countdownsRepo.all(), [], undefined);
+  const queryClient = useQueryClient();
+  const { data: countdowns } = useQuery({
+    queryKey: [...COUNTDOWNS_QUERY_KEY, "active"],
+    queryFn: () => countdownsRepo.all(),
+  });
   const [today] = useState(() => new Date());
   const [selected, setSelected] = useState(() => new Date());
   const [view, setView] = useState(() => ({ y: today.getFullYear(), m: today.getMonth() }));
@@ -105,8 +109,11 @@ function CalendarBody() {
 
 
   useEffect(() => {
-    void countdownsRepo.reconcile();
-  }, []);
+    void (async () => {
+      await countdownsRepo.reconcile();
+      await queryClient.invalidateQueries({ queryKey: COUNTDOWNS_QUERY_KEY });
+    })();
+  }, [queryClient]);
 
   const days = useMemo(() => monthGrid(view.y, view.m), [view]);
   const years = useMemo(() => Array.from({ length: 12 }, (_, i) => yearPage + i), [yearPage]);

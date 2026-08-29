@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { countdownsRepo, validateSeconds } from "@/lib/countdownsRepo";
+import { useQueryClient } from "@tanstack/react-query";
+import { COUNTDOWNS_QUERY_KEY, countdownsRepo, validateSeconds } from "@/lib/countdownsRepo";
 import { COLOR_TAGS, PALETTE, tagTextColor } from "@/lib/palette";
 import { CATEGORIES, type CountdownCategory } from "@/lib/categories";
 import { playSound } from "@/lib/soundManager";
@@ -80,6 +81,7 @@ function HydratedDateTimePicker({
 
 export function CreateCountdownForm({ initialDate }: { initialDate?: string }) {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const hydrated = useHydrated();
   const [title, setTitle] = useState("");
   const [targetInput, setTargetInput] = useState("");
@@ -112,6 +114,7 @@ export function CreateCountdownForm({ initialDate }: { initialDate?: string }) {
       return;
     }
     await countdownsRepo.create({ mode: "target", title, targetAt, colorTag, category });
+    await queryClient.invalidateQueries({ queryKey: COUNTDOWNS_QUERY_KEY });
 
     playSound("start");
     void navigate({ to: "/" });

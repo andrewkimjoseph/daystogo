@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { useLiveQuery } from "dexie-react-hooks";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import logoUrl from "@/assets/logo.png";
-import { countdownsRepo } from "@/lib/countdownsRepo";
+import { COUNTDOWNS_QUERY_KEY, countdownsRepo } from "@/lib/countdownsRepo";
 import { CATEGORIES, categoryMeta, type CountdownCategory } from "@/lib/categories";
 import { PALETTE } from "@/lib/palette";
 import { useCountdownTick } from "@/hooks/useCountdownTick";
@@ -11,15 +11,23 @@ import { CountdownCard } from "./CountdownCard";
 export function CountdownGrid({ variant = "active" }: { variant?: "active" | "archived" }) {
   const archived = variant === "archived";
   const now = useCountdownTick();
-  const countdowns = useLiveQuery(
-    () => (archived ? countdownsRepo.archived() : countdownsRepo.all()),
-    [archived],
-    undefined,
-  );
+  const queryClient = useQueryClient();
+  const { data: countdowns } = useQuery({
+    queryKey: [...COUNTDOWNS_QUERY_KEY, archived ? "archived" : "active"],
+    queryFn: () => (archived ? countdownsRepo.archived() : countdownsRepo.all()),
+  });
   const [filter, setFilter] = useState<CountdownCategory | "all">("all");
 
+  const onChanged = () => {
+    void queryClient.invalidateQueries({ queryKey: COUNTDOWNS_QUERY_KEY });
+  };
+
   useEffect(() => {
-    void countdownsRepo.reconcile();
+    void (async () => {
+      await countdownsRepo.reconcile();
+      onChanged();
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (!countdowns) return null;
@@ -80,7 +88,7 @@ export function CountdownGrid({ variant = "active" }: { variant?: "active" | "ar
 
       <div className="grid grid-cols-1 items-start gap-6 sm:grid-cols-2 xl:grid-cols-3">
         {visible.map((c) => (
-          <CountdownCard key={c.id} countdown={c} now={now} variant={variant} onChanged={() => {}} />
+          <CountdownCard key={c.id} countdown={c} now={now} variant={variant} onChanged={onChanged} />
         ))}
       </div>
     </div>
