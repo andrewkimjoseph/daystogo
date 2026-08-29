@@ -8,17 +8,17 @@ import { PALETTE } from "@/lib/palette";
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "About Days To Go — Local-First Countdown Timers" },
+      { title: "About Days To Go — Playful Countdown Timers" },
       {
         name: "description",
         content:
-          "What Days To Go is: playful brutalist countdown timers, 3 seconds to years out, running locally in your browser with confetti and a chime at zero.",
+          "What Days To Go is: playful brutalist countdown timers, 3 seconds to years out, with confetti and a chime at zero.",
       },
-      { property: "og:title", content: "About Days To Go — Local-First Countdown Timers" },
+      { property: "og:title", content: "About Days To Go — Playful Countdown Timers" },
       {
         property: "og:description",
         content:
-          "Playful brutalist countdown timers, 3 seconds to years out, running locally in your browser.",
+          "Playful brutalist countdown timers, 3 seconds to years out, ticking in the cloud.",
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://app.daystogo.xyz/about" },
@@ -65,7 +65,7 @@ function AboutPage() {
         </h1>
 
         <p className="mt-4 text-lg font-bold text-muted-foreground">
-          A playful, brutalist countdown timer that lives right in your browser.
+          A playful, brutalist countdown timer for the things you're waiting on.
         </p>
 
         <div className="brut mt-6 bg-card p-4 text-foreground sm:mt-8 sm:p-6">
@@ -83,9 +83,8 @@ function AboutPage() {
             and a little chime. Re-tag it, run it again, or bin it — it's all yours.
           </p>
           <p className="mt-4 text-base leading-relaxed">
-            It's local-first: your timers are saved in your browser, so there's no
-            account to make and no server to trust. Open the tab, set a countdown, and put
-            a clock on it.
+            Sign in and your timers live in the cloud, so the same board follows you from one
+            browser to the next. Open the tab, set a countdown, and put a clock on it.
           </p>
         </div>
 
