@@ -1,6 +1,7 @@
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
+@import "@clerk/ui/themes/shadcn.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -218,6 +219,22 @@
   background-image: linear-gradient(100deg, var(--color-red), var(--color-mauve), var(--color-teal));
   background-clip: text;
   color: transparent;
+}
+
+/* --- Clerk: square avatar (default radius is 50%) --- */
+
+.cl-userButtonBox,
+.cl-userButtonTrigger,
+.cl-userButtonAvatarBox,
+.cl-avatarBox {
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 0 !important;
+}
+
+.cl-userButtonAvatarBox img,
+.cl-avatarBox img {
+  border-radius: 0 !important;
 }
 
 /* --- Sonner toast brutalist override --- */

@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
+import { AuthGate } from "@/components/AuthGate";
 import { CreateCountdownForm } from "@/components/CreateCountdownForm";
 
 export const Route = createFileRoute("/create-countdown")({
@@ -47,7 +48,9 @@ function CreateCountdownPage() {
           </Link>
         </div>
 
-        <CreateCountdownForm initialDate={date ?? ""} />
+        <AuthGate>
+          <CreateCountdownForm initialDate={date ?? ""} />
+        </AuthGate>
       </main>
 
     </div>

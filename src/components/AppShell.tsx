@@ -1,8 +1,10 @@
 import { Plus } from "lucide-react";
 import { Link } from "@tanstack/react-router";
+import { Show } from "@clerk/tanstack-react-start";
 import { SiteHeader } from "./SiteHeader";
 import { Sparkle } from "./Sparkle";
 import { TodayClock } from "./TodayClock";
+import { AuthGate } from "./AuthGate";
 
 import { PALETTE } from "@/lib/palette";
 
@@ -29,17 +31,19 @@ export function AppShell({
           <TodayClock />
         </div>
 
-        {children}
+        <AuthGate>{children}</AuthGate>
         <div className="h-20 sm:h-24" aria-hidden="true" />
       </main>
 
 
-      <Link
-        to="/create-countdown"
-        className="brut brut-press fixed right-4 bottom-4 z-40 flex items-center gap-2 rounded-none bg-primary px-4 py-3 text-sm font-bold text-primary-foreground uppercase sm:right-8 sm:bottom-8 sm:px-5 sm:py-4 sm:text-base"
-      >
-        <Plus className="h-5 w-5 shrink-0" strokeWidth={3.5} /> New countdown
-      </Link>
+      <Show when="signed-in">
+        <Link
+          to="/create-countdown"
+          className="brut brut-press fixed right-4 bottom-4 z-40 flex items-center gap-2 rounded-none bg-primary px-4 py-3 text-sm font-bold text-primary-foreground uppercase sm:right-8 sm:bottom-8 sm:px-5 sm:py-4 sm:text-base"
+        >
+          <Plus className="h-5 w-5 shrink-0" strokeWidth={3.5} /> New countdown
+        </Link>
+      </Show>
     </div>
   );
 }

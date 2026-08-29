@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
+import { AuthGate } from "@/components/AuthGate";
 import { CountdownCalendar } from "@/components/CountdownCalendar";
 
 export const Route = createFileRoute("/calendar")({
@@ -50,7 +51,9 @@ function CalendarPage() {
           them.
         </p>
 
-        <CountdownCalendar />
+        <AuthGate>
+          <CountdownCalendar />
+        </AuthGate>
       </main>
     </div>
   );

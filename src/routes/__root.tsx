@@ -1,3 +1,5 @@
+import { ClerkProvider } from "@clerk/tanstack-react-start";
+import { shadcn } from "@clerk/ui/themes";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   Outlet,
@@ -12,7 +14,6 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { Toaster } from "../components/ui/sonner";
 import { reportLovableError } from "../lib/lovable-error-reporting";
-
 
 function NotFoundComponent() {
   return (
@@ -80,7 +81,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Days To Go — Playful Countdown Timers" },
-      { name: "description", content: "Playful brutalist countdown timers, right in your browser." },
+      {
+        name: "description",
+        content: "Playful brutalist countdown timers, right in your browser.",
+      },
       { property: "og:title", content: "Days To Go — Playful Countdown Timers" },
       {
         property: "og:description",
@@ -128,8 +132,26 @@ function RootShell({ children }: { children: ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        {children}
-        <Scripts />
+        <ClerkProvider
+          appearance={{
+            theme: shadcn as never,
+            variables: {
+              colorInput: "var(--card)",
+              colorInputForeground: "var(--ink)",
+              colorBackground: "var(--card)",
+              borderRadius: "0px",
+            },
+            elements: {
+              input:
+                "bg-card text-ink placeholder:text-slate border-ink rounded-none",
+              formFieldInput:
+                "bg-card text-ink placeholder:text-slate border-ink rounded-none",
+            },
+          }}
+        >
+          {children}
+          <Scripts />
+        </ClerkProvider>
       </body>
     </html>
   );
@@ -144,6 +166,5 @@ function RootComponent() {
       <Outlet />
       <Toaster position="top-center" />
     </QueryClientProvider>
-
   );
 }
