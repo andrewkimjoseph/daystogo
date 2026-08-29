@@ -408,7 +408,7 @@ function DayPanelRow({ countdown }: { countdown: Countdown }) {
   const meta = categoryMeta(countdown.category);
   const Icon = meta.icon;
   const remaining = remainingMs(countdown, now);
-  const lapsed = countdown.status === "lapsed" || remaining <= 0;
+  const lapsed = remaining <= 0;
   const { text } = formatRemaining(remaining);
   const landing = new Date(Math.round(endMoment(countdown) / 1000) * 1000).toLocaleTimeString(
     undefined,

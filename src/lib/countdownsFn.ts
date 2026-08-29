@@ -211,6 +211,11 @@ export const reconcileCountdownsFn = createServerFn({ method: "POST" }).handler(
       dirty = true;
     }
 
+    if (next.status === "lapsed" && next.endsAt > now) {
+      next = { ...next, status: "running", hasCelebrated: false, updatedAt: now };
+      dirty = true;
+    }
+
     if (!dirty) continue;
 
     await runWithClaims(
@@ -223,6 +228,7 @@ export const reconcileCountdownsFn = createServerFn({ method: "POST" }).handler(
           status: next.status,
           endsAt: next.endsAt,
           pausedRemainingMs: next.pausedRemainingMs ?? null,
+          hasCelebrated: next.hasCelebrated,
           updatedAt: next.updatedAt,
         })
         .where(eq(countdowns.id, next.id)),
