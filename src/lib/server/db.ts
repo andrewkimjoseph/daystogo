@@ -14,27 +14,53 @@ export class UnauthorizedError extends Error {
 
 type AuthedDb = NeonHttpDatabase<typeof schema>;
 
+function rethrowDbError(error: unknown, context: string): never {
+  const parts = [context];
+  const seen = new Set<unknown>();
+  let current: unknown = error;
+
+  while (current && typeof current === "object" && !seen.has(current)) {
+    seen.add(current);
+    if (current instanceof Error && current.message) parts.push(current.message);
+    const pg = current as { code?: unknown; detail?: unknown; hint?: unknown; cause?: unknown; sourceError?: unknown };
+    if (typeof pg.code === "string") parts.push(`code=${pg.code}`);
+    if (typeof pg.detail === "string") parts.push(pg.detail);
+    if (typeof pg.hint === "string") parts.push(pg.hint);
+    current = pg.cause ?? pg.sourceError;
+  }
+
+  const wrapped = new Error(parts.join(" | "));
+  wrapped.cause = error;
+  console.error(wrapped);
+  throw wrapped;
+}
+
 async function ensureUserRecord(db: AuthedDb, userId: string) {
-  const [existing] = await db.select({ id: users.id }).from(users).where(eq(users.id, userId)).limit(1);
-  if (existing) return;
+  try {
+    const [existing] = await db.select({ id: users.id }).from(users).where(eq(users.id, userId)).limit(1);
+    if (existing) return;
 
-  const clerkUser = await clerkClient().users.getUser(userId);
-  const email = clerkUser.primaryEmailAddress?.emailAddress ?? clerkUser.emailAddresses[0]?.emailAddress;
-  if (!email) throw new Error("Clerk user has no email address");
+    const clerkUser = await clerkClient().users.getUser(userId);
+    const email = clerkUser.primaryEmailAddress?.emailAddress ?? clerkUser.emailAddresses[0]?.emailAddress;
+    if (!email) throw new Error("Clerk user has no email address");
 
-  const name = clerkUser.fullName?.trim() || clerkUser.username || null;
-  const now = Date.now();
+    const name = clerkUser.fullName?.trim() || clerkUser.username || null;
+    const now = Date.now();
 
-  await db
-    .insert(users)
-    .values({
-      id: userId,
-      email,
-      name,
-      createdAt: now,
-      updatedAt: now,
-    })
-    .onConflictDoNothing({ target: users.id });
+    await db
+      .insert(users)
+      .values({
+        id: userId,
+        email,
+        name,
+        createdAt: now,
+        updatedAt: now,
+      })
+      .onConflictDoNothing({ target: users.id });
+  } catch (error) {
+    if (error instanceof UnauthorizedError) throw error;
+    rethrowDbError(error, "Failed to ensure user record");
+  }
 }
 
 export async function getAuthedDb() {
