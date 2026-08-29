@@ -478,7 +478,7 @@ export function CountdownCard({
           className="text-[10px] font-bold uppercase"
           style={{ color: lapsed ? PALETTE.cream : "var(--muted-foreground)" }}
         >
-          {new Date(countdown.createdAt).toLocaleString(undefined, {
+          CREATED ON {new Date(countdown.createdAt).toLocaleString(undefined, {
             day: "numeric",
             month: "short",
             year: "numeric",
