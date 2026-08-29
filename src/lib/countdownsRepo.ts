@@ -1,6 +1,20 @@
-import { getDb, type Countdown, type DurationType } from "./db";
+import type { Countdown, DurationType } from "./db";
 import type { CountdownCategory } from "./categories";
-import { rollbackColorTag } from "./palette";
+import {
+  archiveCountdownFn,
+  createCountdownFn,
+  importLocalCountdownsFn,
+  listArchivedCountdownsFn,
+  listCountdownsFn,
+  markCelebratedFn,
+  markLapsedFn,
+  reconcileCountdownsFn,
+  removeCountdownFn,
+  unarchiveCountdownFn,
+  updateTagsFn,
+} from "./countdownsFn";
+
+export const COUNTDOWNS_QUERY_KEY = ["countdowns"] as const;
 
 export const MIN_DURATION_SECONDS = 3;
 /** Sanity bound, not a product limit: ~100 years keeps dates valid. */
@@ -54,32 +68,28 @@ function describeSeconds(seconds: number): { type: DurationType; value: number }
 export function validateSeconds(seconds: number): string | null {
   if (!Number.isFinite(seconds)) return "That's not a number we can count down from.";
   if (seconds < MIN_DURATION_SECONDS) return "Give it at least 3 seconds to be a real countdown.";
-  if (seconds > MAX_DURATION_SECONDS) return "Forever isn\u2019t a thing \u2014 pick something this side of the next century.";
+  if (seconds > MAX_DURATION_SECONDS)
+    return "Forever isn’t a thing — pick something this side of the next century.";
   return null;
 }
 
 export const countdownsRepo = {
   /** Active board: archived rows are excluded. */
   async all(): Promise<Countdown[]> {
-    const rows = await getDb().countdowns.orderBy("endsAt").toArray();
-    return rows.filter((c) => c.archivedAt === undefined);
+    return listCountdownsFn();
   },
 
   /** Archived rows, most recently archived first. */
   async archived(): Promise<Countdown[]> {
-    const rows = await getDb().countdowns.toArray();
-    return rows
-      .filter((c) => c.archivedAt !== undefined)
-      .sort((a, b) => (b.archivedAt ?? 0) - (a.archivedAt ?? 0));
+    return listArchivedCountdownsFn();
   },
 
   async archive(id: string): Promise<void> {
-    const now = Date.now();
-    await getDb().countdowns.update(id, { archivedAt: now, updatedAt: now });
+    await archiveCountdownFn({ data: { id } });
   },
 
   async unarchive(id: string): Promise<void> {
-    await getDb().countdowns.update(id, { archivedAt: undefined, updatedAt: Date.now() });
+    await unarchiveCountdownFn({ data: { id } });
   },
 
   async create(input: NewCountdownInput): Promise<Countdown> {
@@ -107,8 +117,7 @@ export const countdownsRepo = {
       createdAt: now,
       updatedAt: now,
     };
-    await getDb().countdowns.add(row);
-    return row;
+    return createCountdownFn({ data: row });
   },
 
   /** Only the cosmetic fields are editable once a clock is running. */
@@ -116,23 +125,24 @@ export const countdownsRepo = {
     id: string,
     patch: { title?: string; colorTag?: string; category?: CountdownCategory },
   ): Promise<void> {
-    await getDb().countdowns.update(id, { ...patch, updatedAt: Date.now() });
+    await updateTagsFn({ data: { id, ...patch } });
   },
 
-
   async markLapsed(id: string): Promise<void> {
-    await getDb().countdowns.update(id, { status: "lapsed", updatedAt: Date.now() });
+    await markLapsedFn({ data: { id } });
   },
 
   async markCelebrated(id: string): Promise<void> {
-    await getDb().countdowns.update(id, { hasCelebrated: true, updatedAt: Date.now() });
+    await markCelebratedFn({ data: { id } });
   },
 
-
-
-
   async remove(id: string): Promise<void> {
-    await getDb().countdowns.delete(id);
+    await removeCountdownFn({ data: { id } });
+  },
+
+  async importLocal(rows: Countdown[]): Promise<void> {
+    if (rows.length === 0) return;
+    await importLocalCountdownsFn({ data: rows });
   },
 
   /**
@@ -140,39 +150,6 @@ export const countdownsRepo = {
    * Legacy paused rows resume where they left off — pausing is no longer offered.
    */
   async reconcile(): Promise<void> {
-    const db = getDb();
-    const now = Date.now();
-    const rows = await db.countdowns.toArray();
-    const byId = new Map<string, Countdown>();
-
-    for (const c of rows) {
-      const colorTag = rollbackColorTag(c.colorTag);
-      if (colorTag !== c.colorTag) {
-        byId.set(c.id, { ...c, colorTag, updatedAt: now });
-      }
-    }
-
-    const get = (c: Countdown) => byId.get(c.id) ?? c;
-
-    const patched = rows
-      .filter((c) => c.status === "paused")
-      .map((c) => {
-        const base = get(c);
-        return {
-          ...base,
-          status: "running" as const,
-          endsAt: now + Math.max(0, base.pausedRemainingMs ?? 0),
-          pausedRemainingMs: undefined,
-          updatedAt: now,
-        };
-      });
-    const due = [...patched, ...rows.filter((c) => c.status === "running").map(get)]
-      .filter((c) => c.endsAt <= now)
-      .map((c) => ({ ...c, status: "lapsed" as const, updatedAt: now }));
-
-    for (const c of [...patched, ...due]) byId.set(c.id, c);
-
-    if (byId.size === 0) return;
-    await db.countdowns.bulkPut([...byId.values()]);
+    await reconcileCountdownsFn();
   },
 };
