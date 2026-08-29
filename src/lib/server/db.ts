@@ -14,6 +14,20 @@ export class UnauthorizedError extends Error {
 
 type AuthedDb = NeonHttpDatabase<typeof schema>;
 
+function jwtMeta(token: string): string {
+  try {
+    const [headerB64, payloadB64] = token.split(".");
+    if (!headerB64 || !payloadB64) return "token=malformed";
+    const decode = (part: string) =>
+      JSON.parse(Buffer.from(part, "base64url").toString("utf8")) as Record<string, unknown>;
+    const header = decode(headerB64);
+    const payload = decode(payloadB64);
+    return `kid=${String(header["kid"] ?? "?")} iss=${String(payload["iss"] ?? "?")} alg=${String(header["alg"] ?? "?")}`;
+  } catch {
+    return "token=unreadable";
+  }
+}
+
 function rethrowDbError(error: unknown, context: string): never {
   const parts = [context];
   const seen = new Set<unknown>();
@@ -76,6 +90,11 @@ export async function getAuthedDb() {
 
   const sql = neon(url, { authToken: token });
   const db = drizzle(sql, { schema });
-  await ensureUserRecord(db, userId);
+  try {
+    await ensureUserRecord(db, userId);
+  } catch (error) {
+    if (error instanceof UnauthorizedError) throw error;
+    rethrowDbError(error, `Failed to ensure user record | ${jwtMeta(token)}`);
+  }
   return { db, userId };
 }
