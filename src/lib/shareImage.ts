@@ -225,22 +225,6 @@ export async function renderCountdownShareImage(
     ctx.fillText(formatTargetLabel(countdown.targetAt).toUpperCase(), left, y);
   }
 
-  // Created date — small and silent, matching the card footer.
-  const createdAtMs = countdown.createdAt ?? Date.now();
-  const createdDate = new Date(createdAtMs).toLocaleString(undefined, {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-  });
-  y += 42;
-  ctx.fillStyle = muted;
-  ctx.font = `22px ${SANS}`;
-  ctx.fillText(createdDate.toUpperCase(), left, y);
-
-
   // Big remaining figure. Sizes are the web card's rem values scaled by the
   // canvas/card ratio (~2.4x): text-4xl (36px) -> 88, text-6xl (60px) -> 145.
   const stripH = 46;
@@ -252,6 +236,21 @@ export async function renderCountdownShareImage(
   ctx.fillStyle = lapsed ? PALETTE.cream : INK;
   ctx.font = `${clock.size}px ${DISPLAY}`;
   ctx.fillText(clock.lines[0]!, left, midY + clock.size * 0.36);
+
+  // Created date — small and silent, sitting in the gap between the timer and
+  // the progress strip.
+  const createdAtMs = countdown.createdAt ?? Date.now();
+  const createdDate = new Date(createdAtMs).toLocaleString(undefined, {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
+  ctx.fillStyle = muted;
+  ctx.font = `22px ${SANS}`;
+  ctx.fillText(createdDate.toUpperCase(), left, stripY - 20);
 
 
   // Progress segments.
