@@ -1,6 +1,6 @@
 import { auth, clerkClient } from "@clerk/tanstack-react-start/server";
 import { eq } from "drizzle-orm";
-import { neon } from "@neondatabase/serverless";
+import { neon, type NeonQueryFunction } from "@neondatabase/serverless";
 import { drizzle, type NeonHttpDatabase } from "drizzle-orm/neon-http";
 import * as schema from "./schema";
 import { users } from "./schema";
@@ -13,20 +13,7 @@ export class UnauthorizedError extends Error {
 }
 
 type AuthedDb = NeonHttpDatabase<typeof schema>;
-
-function jwtMeta(token: string): string {
-  try {
-    const [headerB64, payloadB64] = token.split(".");
-    if (!headerB64 || !payloadB64) return "token=malformed";
-    const decode = (part: string) =>
-      JSON.parse(Buffer.from(part, "base64url").toString("utf8")) as Record<string, unknown>;
-    const header = decode(headerB64);
-    const payload = decode(payloadB64);
-    return `kid=${String(header["kid"] ?? "?")} iss=${String(payload["iss"] ?? "?")} alg=${String(header["alg"] ?? "?")}`;
-  } catch {
-    return "token=unreadable";
-  }
-}
+type SqlClient = NeonQueryFunction<false, false>;
 
 function rethrowDbError(error: unknown, context: string): never {
   const parts = [context];
@@ -49,10 +36,36 @@ function rethrowDbError(error: unknown, context: string): never {
   throw wrapped;
 }
 
-async function ensureUserRecord(db: AuthedDb, userId: string) {
+/**
+ * Runs a Drizzle query under Neon RLS without depending on Neon's external
+ * JWKS provider registration. Clerk's own middleware has already verified
+ * the caller before this ever runs, so we set `request.jwt.claims` ourselves
+ * in the same transaction as the query — this is Neon's documented
+ * "JWT self-verification" pattern:
+ * https://neon.com/docs/serverless/serverless-driver#using-transactions-with-jwt-self-verification
+ */
+export async function runWithClaims<T>(
+  sqlClient: SqlClient,
+  userId: string,
+  query: { toSQL(): { sql: string; params: unknown[] } },
+): Promise<T[]> {
+  const claims = JSON.stringify({ sub: userId, role: "authenticated" });
+  const { sql: text, params } = query.toSQL();
+  const [, result] = await sqlClient.transaction([
+    sqlClient`select set_config('request.jwt.claims', ${claims}, true)`,
+    sqlClient.query(text, params as unknown[]),
+  ]);
+  return result as T[];
+}
+
+async function ensureUserRecord(sqlClient: SqlClient, db: AuthedDb, userId: string) {
   try {
-    const [existing] = await db.select({ id: users.id }).from(users).where(eq(users.id, userId)).limit(1);
-    if (existing) return;
+    const existing = await runWithClaims<{ id: string }>(
+      sqlClient,
+      userId,
+      db.select({ id: users.id }).from(users).where(eq(users.id, userId)).limit(1),
+    );
+    if (existing[0]) return;
 
     const clerkUser = await clerkClient().users.getUser(userId);
     const email = clerkUser.primaryEmailAddress?.emailAddress ?? clerkUser.emailAddresses[0]?.emailAddress;
@@ -61,16 +74,20 @@ async function ensureUserRecord(db: AuthedDb, userId: string) {
     const name = clerkUser.fullName?.trim() || clerkUser.username || null;
     const now = Date.now();
 
-    await db
-      .insert(users)
-      .values({
-        id: userId,
-        email,
-        name,
-        createdAt: now,
-        updatedAt: now,
-      })
-      .onConflictDoNothing({ target: users.id });
+    await runWithClaims(
+      sqlClient,
+      userId,
+      db
+        .insert(users)
+        .values({
+          id: userId,
+          email,
+          name,
+          createdAt: now,
+          updatedAt: now,
+        })
+        .onConflictDoNothing({ target: users.id }),
+    );
   } catch (error) {
     if (error instanceof UnauthorizedError) throw error;
     rethrowDbError(error, "Failed to ensure user record");
@@ -82,19 +99,18 @@ export async function getAuthedDb() {
   const userId = session.userId;
   if (!userId) throw new UnauthorizedError();
 
-  const token = await session.getToken();
-  if (!token) throw new UnauthorizedError();
-
   const url = process.env["DATABASE_AUTHENTICATED_URL"];
   if (!url) throw new Error("Missing DATABASE_AUTHENTICATED_URL");
 
-  const sql = neon(url, { authToken: token });
-  const db = drizzle(sql, { schema });
+  const sqlClient = neon(url);
+  const db = drizzle(sqlClient, { schema });
+
   try {
-    await ensureUserRecord(db, userId);
+    await ensureUserRecord(sqlClient, db, userId);
   } catch (error) {
     if (error instanceof UnauthorizedError) throw error;
-    rethrowDbError(error, `Failed to ensure user record | ${jwtMeta(token)}`);
+    rethrowDbError(error, "Failed to ensure user record");
   }
-  return { db, userId };
+
+  return { db, sql: sqlClient, userId };
 }
