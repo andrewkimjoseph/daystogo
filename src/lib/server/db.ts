@@ -1,6 +1,6 @@
 import { auth, clerkClient } from "@clerk/tanstack-react-start/server";
-import { eq } from "drizzle-orm";
-import { neon, type NeonQueryFunction } from "@neondatabase/serverless";
+import { eq, sql } from "drizzle-orm";
+import { neon } from "@neondatabase/serverless";
 import { drizzle, type NeonHttpDatabase } from "drizzle-orm/neon-http";
 import * as schema from "./schema";
 import { users } from "./schema";
@@ -12,8 +12,7 @@ export class UnauthorizedError extends Error {
   }
 }
 
-type AuthedDb = NeonHttpDatabase<typeof schema>;
-type SqlClient = NeonQueryFunction<false, false>;
+export type AuthedDb = NeonHttpDatabase<typeof schema>;
 
 function rethrowDbError(error: unknown, context: string): never {
   const parts = [context];
@@ -36,32 +35,28 @@ function rethrowDbError(error: unknown, context: string): never {
   throw wrapped;
 }
 
+type Batchable = Parameters<AuthedDb["batch"]>[0][number];
+
 /**
  * Runs a Drizzle query under Neon RLS without depending on Neon's external
  * JWKS provider registration. Clerk's own middleware has already verified
  * the caller before this ever runs, so we set `request.jwt.claims` ourselves
- * in the same transaction as the query — this is Neon's documented
- * "JWT self-verification" pattern:
+ * in the same batch as the query — this is Neon's documented
+ * "JWT self-verification" pattern, adapted to use Drizzle's own `db.batch()`
+ * (instead of the raw driver's `sql.transaction()`) so results still get
+ * Drizzle's normal camelCase/type mapping applied:
  * https://neon.com/docs/serverless/serverless-driver#using-transactions-with-jwt-self-verification
  */
-export async function runWithClaims<T>(
-  sqlClient: SqlClient,
-  userId: string,
-  query: { toSQL(): { sql: string; params: unknown[] } },
-): Promise<T[]> {
+export async function runWithClaims<T>(db: AuthedDb, userId: string, query: Batchable): Promise<T> {
   const claims = JSON.stringify({ sub: userId, role: "authenticated" });
-  const { sql: text, params } = query.toSQL();
-  const [, result] = await sqlClient.transaction([
-    sqlClient`select set_config('request.jwt.claims', ${claims}, true)`,
-    sqlClient.query(text, params as unknown[]),
-  ]);
-  return result as T[];
+  const [, result] = await db.batch([db.execute(sql`select set_config('request.jwt.claims', ${claims}, true)`), query]);
+  return result as T;
 }
 
-async function ensureUserRecord(sqlClient: SqlClient, db: AuthedDb, userId: string) {
+async function ensureUserRecord(db: AuthedDb, userId: string) {
   try {
-    const existing = await runWithClaims<{ id: string }>(
-      sqlClient,
+    const existing = await runWithClaims<{ id: string }[]>(
+      db,
       userId,
       db.select({ id: users.id }).from(users).where(eq(users.id, userId)).limit(1),
     );
@@ -75,7 +70,7 @@ async function ensureUserRecord(sqlClient: SqlClient, db: AuthedDb, userId: stri
     const now = Date.now();
 
     await runWithClaims(
-      sqlClient,
+      db,
       userId,
       db
         .insert(users)
@@ -106,11 +101,11 @@ export async function getAuthedDb() {
   const db = drizzle(sqlClient, { schema });
 
   try {
-    await ensureUserRecord(sqlClient, db, userId);
+    await ensureUserRecord(db, userId);
   } catch (error) {
     if (error instanceof UnauthorizedError) throw error;
     rethrowDbError(error, "Failed to ensure user record");
   }
 
-  return { db, sql: sqlClient, userId };
+  return { db, userId };
 }

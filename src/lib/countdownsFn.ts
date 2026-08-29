@@ -58,9 +58,9 @@ function toInsert(row: Countdown, userId: string) {
 }
 
 export const listCountdownsFn = createServerFn({ method: "GET" }).handler(async () => {
-  const { db, sql, userId } = await getAuthedDb();
-  const rows = await runWithClaims<CountdownRow>(
-    sql,
+  const { db, userId } = await getAuthedDb();
+  const rows = await runWithClaims<CountdownRow[]>(
+    db,
     userId,
     db.select().from(countdowns).where(isNull(countdowns.archivedAt)).orderBy(countdowns.endsAt),
   );
@@ -68,9 +68,9 @@ export const listCountdownsFn = createServerFn({ method: "GET" }).handler(async 
 });
 
 export const listArchivedCountdownsFn = createServerFn({ method: "GET" }).handler(async () => {
-  const { db, sql, userId } = await getAuthedDb();
-  const rows = await runWithClaims<CountdownRow>(
-    sql,
+  const { db, userId } = await getAuthedDb();
+  const rows = await runWithClaims<CountdownRow[]>(
+    db,
     userId,
     db.select().from(countdowns).where(isNotNull(countdowns.archivedAt)).orderBy(desc(countdowns.archivedAt)),
   );
@@ -80,9 +80,9 @@ export const listArchivedCountdownsFn = createServerFn({ method: "GET" }).handle
 export const createCountdownFn = createServerFn({ method: "POST" })
   .validator((data: Countdown) => data)
   .handler(async ({ data }) => {
-    const { db, sql, userId } = await getAuthedDb();
-    const rows = await runWithClaims<CountdownRow>(
-      sql,
+    const { db, userId } = await getAuthedDb();
+    const rows = await runWithClaims<CountdownRow[]>(
+      db,
       userId,
       db.insert(countdowns).values(toInsert(data, userId)).returning(),
     );
@@ -94,21 +94,21 @@ export const createCountdownFn = createServerFn({ method: "POST" })
 export const updateTagsFn = createServerFn({ method: "POST" })
   .validator((data: { id: string; title?: string; colorTag?: string; category?: CountdownCategory }) => data)
   .handler(async ({ data }) => {
-    const { db, sql, userId } = await getAuthedDb();
+    const { db, userId } = await getAuthedDb();
     const patch: Partial<typeof countdowns.$inferInsert> = { updatedAt: Date.now() };
     if (data.title !== undefined) patch.title = data.title;
     if (data.colorTag !== undefined) patch.colorTag = data.colorTag;
     if (data.category !== undefined) patch.category = data.category;
-    await runWithClaims(sql, userId, db.update(countdowns).set(patch).where(eq(countdowns.id, data.id)));
+    await runWithClaims(db, userId, db.update(countdowns).set(patch).where(eq(countdowns.id, data.id)));
   });
 
 export const archiveCountdownFn = createServerFn({ method: "POST" })
   .validator((data: { id: string }) => data)
   .handler(async ({ data }) => {
-    const { db, sql, userId } = await getAuthedDb();
+    const { db, userId } = await getAuthedDb();
     const now = Date.now();
     await runWithClaims(
-      sql,
+      db,
       userId,
       db.update(countdowns).set({ archivedAt: now, updatedAt: now }).where(eq(countdowns.id, data.id)),
     );
@@ -117,9 +117,9 @@ export const archiveCountdownFn = createServerFn({ method: "POST" })
 export const unarchiveCountdownFn = createServerFn({ method: "POST" })
   .validator((data: { id: string }) => data)
   .handler(async ({ data }) => {
-    const { db, sql, userId } = await getAuthedDb();
+    const { db, userId } = await getAuthedDb();
     await runWithClaims(
-      sql,
+      db,
       userId,
       db
         .update(countdowns)
@@ -131,9 +131,9 @@ export const unarchiveCountdownFn = createServerFn({ method: "POST" })
 export const markLapsedFn = createServerFn({ method: "POST" })
   .validator((data: { id: string }) => data)
   .handler(async ({ data }) => {
-    const { db, sql, userId } = await getAuthedDb();
+    const { db, userId } = await getAuthedDb();
     await runWithClaims(
-      sql,
+      db,
       userId,
       db
         .update(countdowns)
@@ -145,9 +145,9 @@ export const markLapsedFn = createServerFn({ method: "POST" })
 export const markCelebratedFn = createServerFn({ method: "POST" })
   .validator((data: { id: string }) => data)
   .handler(async ({ data }) => {
-    const { db, sql, userId } = await getAuthedDb();
+    const { db, userId } = await getAuthedDb();
     await runWithClaims(
-      sql,
+      db,
       userId,
       db
         .update(countdowns)
@@ -159,17 +159,17 @@ export const markCelebratedFn = createServerFn({ method: "POST" })
 export const removeCountdownFn = createServerFn({ method: "POST" })
   .validator((data: { id: string }) => data)
   .handler(async ({ data }) => {
-    const { db, sql, userId } = await getAuthedDb();
-    await runWithClaims(sql, userId, db.delete(countdowns).where(eq(countdowns.id, data.id)));
+    const { db, userId } = await getAuthedDb();
+    await runWithClaims(db, userId, db.delete(countdowns).where(eq(countdowns.id, data.id)));
   });
 
 export const importLocalCountdownsFn = createServerFn({ method: "POST" })
   .validator((data: Countdown[]) => data)
   .handler(async ({ data }) => {
-    const { db, sql, userId } = await getAuthedDb();
+    const { db, userId } = await getAuthedDb();
     if (data.length === 0) return { imported: 0 };
     await runWithClaims(
-      sql,
+      db,
       userId,
       db
         .insert(countdowns)
@@ -180,9 +180,9 @@ export const importLocalCountdownsFn = createServerFn({ method: "POST" })
   });
 
 export const reconcileCountdownsFn = createServerFn({ method: "POST" }).handler(async () => {
-  const { db, sql, userId } = await getAuthedDb();
+  const { db, userId } = await getAuthedDb();
   const now = Date.now();
-  const rows = await runWithClaims<CountdownRow>(sql, userId, db.select().from(countdowns));
+  const rows = await runWithClaims<CountdownRow[]>(db, userId, db.select().from(countdowns));
 
   for (const row of rows) {
     const mapped = fromRow(row);
@@ -214,7 +214,7 @@ export const reconcileCountdownsFn = createServerFn({ method: "POST" }).handler(
     if (!dirty) continue;
 
     await runWithClaims(
-      sql,
+      db,
       userId,
       db
         .update(countdowns)
