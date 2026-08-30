@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Archive, ArchiveRestore, Check, Download, Pencil, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
-import logoUrl from "@/assets/logo.png";
 import type { Countdown } from "@/lib/db";
 import { countdownsRepo, remainingMs } from "@/lib/countdownsRepo";
 import { formatRemaining, progressPercent } from "@/lib/formatTime";
@@ -490,7 +489,7 @@ export function CountdownCard({
           })}
         </p>
         <img
-          src={logoUrl}
+          src="/logo.png"
           alt="Days To Go"
           className="h-10 w-auto opacity-80"
         />

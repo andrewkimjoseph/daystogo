@@ -15,9 +15,7 @@ export function TodayClock() {
         role="status"
         aria-label="Loading"
       >
-        <span className="animate-hourglass-spin block text-2xl leading-none" aria-hidden="true">
-          ⏳
-        </span>
+        <img src="/loader.svg" alt="" className="h-16 w-16" aria-hidden="true" />
       </div>
     );
   }

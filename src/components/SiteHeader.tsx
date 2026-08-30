@@ -1,6 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Archive, Calendar as CalendarIcon, Home, Info, Plus } from "lucide-react";
-import logoUrl from "@/assets/logo.png";
 import { MuteToggle } from "./MuteToggle";
 import { AuthControls } from "./AuthControls";
 
@@ -13,7 +12,7 @@ export function SiteHeader() {
     <header className="view-header border-b-4 border-ink bg-cream">
       <div className="mx-auto grid max-w-6xl grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 sm:px-6">
         <Link to="/" viewTransition className="inline-flex min-w-0 items-center gap-2">
-          <img src={logoUrl} alt="Days To Go" className="h-11 w-auto shrink-0 sm:h-16" />
+          <img src="/logo.png" alt="Days To Go" className="h-11 w-auto shrink-0 sm:h-16" />
         </Link>
         <div className="flex shrink-0 items-center gap-1.5 sm:gap-3">
           {!onCreate && (

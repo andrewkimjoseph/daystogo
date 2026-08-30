@@ -17,10 +17,10 @@ export function AppShell({
   subtitle?: string;
 }) {
   return (
-    <div className="min-h-screen">
+    <div className="flex min-h-svh flex-col">
       <SiteHeader />
 
-      <main className="view-page mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
+      <main className="view-page mx-auto flex w-full max-w-6xl flex-1 flex-col px-4 py-8 sm:px-6 sm:py-10">
         <div className="relative mb-8 grid grid-cols-[minmax(0,1fr)_auto] items-start gap-4">
           <div className="min-w-0">
             <Sparkle color={PALETTE.red} size={26} className="absolute -top-4 left-0 hidden sm:block" />
@@ -30,7 +30,9 @@ export function AppShell({
           <TodayClock />
         </div>
 
-        <AuthGate>{children}</AuthGate>
+        <div className="flex min-h-0 flex-1 flex-col">
+          <AuthGate>{children}</AuthGate>
+        </div>
         <div className="h-20 sm:h-24" aria-hidden="true" />
       </main>
 

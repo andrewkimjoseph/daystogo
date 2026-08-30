@@ -1,6 +1,5 @@
 import { createElement } from "react";
 import type { LucideIcon } from "lucide-react";
-import logoUrl from "@/assets/logo.png";
 import type { Countdown } from "./db";
 import { remainingMs } from "./countdownsRepo";
 import { formatRemaining, progressPercent } from "./formatTime";
@@ -125,7 +124,7 @@ export async function renderCountdownShareImage(
   if (typeof document === "undefined") throw new Error("Share images render in the browser only.");
 
   await document.fonts?.ready?.catch?.(() => undefined);
-  const logo = await loadImage(logoUrl);
+  const logo = await loadImage("/logo.png");
 
   const canvas = document.createElement("canvas");
   canvas.width = SIZE * SCALE;
