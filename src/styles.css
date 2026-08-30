@@ -191,8 +191,8 @@
     transform 0.14s var(--ease-bounce),
     box-shadow 0.14s var(--ease-bounce);
   &:hover {
-    transform: translate(1px, 1px);
-    box-shadow: var(--shadow-brut-sm);
+    transform: translate(-1px, -1px);
+    box-shadow: var(--shadow-brut-hover);
   }
   &:active {
     transform: translate(3px, 3px);
@@ -304,12 +304,13 @@
 }
 
 [data-sonner-toast] [data-button]:hover {
-  transform: translate(1px, 1px) !important;
-  box-shadow: var(--shadow-brut-none) !important;
+  transform: translate(-1px, -1px) !important;
+  box-shadow: var(--shadow-brut-hover) !important;
 }
 
 [data-sonner-toast] [data-button]:active {
   transform: translate(3px, 3px) !important;
+  box-shadow: var(--shadow-brut-none) !important;
 }
 
 [data-sonner-toast] [data-close-button] {
