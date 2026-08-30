@@ -313,7 +313,7 @@
 }
 
 [data-sonner-toast] [data-button]:active {
-  transform: translate(3px, 3px) !important;
+  transform: translate(2px, 2px) !important;
   box-shadow: var(--shadow-brut-none) !important;
 }
 
