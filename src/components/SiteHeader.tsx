@@ -20,7 +20,7 @@ export function SiteHeader() {
             <Link
               to="/create-countdown"
               aria-label="New countdown"
-              className="brut brut-press inline-flex h-10 items-center gap-1.5 rounded-none bg-primary px-2.5 text-xs font-bold text-primary-foreground uppercase sm:h-auto sm:px-3 sm:py-2 sm:text-sm"
+              className="brut brut-press inline-flex h-10 items-center gap-1.5 rounded-none bg-primary px-2.5 text-xs font-bold text-primary-foreground uppercase sm:px-3 sm:text-sm"
             >
               <Plus className="h-4 w-4 shrink-0" strokeWidth={3} />
               <span className="hidden sm:inline">New</span>
@@ -33,7 +33,7 @@ export function SiteHeader() {
                 viewTransition
                 aria-label="Archived countdowns"
                 title="Archived"
-                className="brut brut-press inline-flex h-10 items-center gap-1.5 rounded-none bg-cream px-2.5 text-xs font-bold text-ink uppercase sm:h-auto sm:px-4 sm:py-2 sm:text-sm"
+                className="brut brut-press inline-flex h-10 items-center gap-1.5 rounded-none bg-cream px-2.5 text-xs font-bold text-ink uppercase sm:px-4 sm:text-sm"
               >
                 <Archive className="h-4 w-4 shrink-0 sm:hidden" strokeWidth={3} />
                 <span className="hidden sm:inline">Archive</span>
@@ -43,7 +43,7 @@ export function SiteHeader() {
                 viewTransition
                 aria-label="Calendar"
                 title="Calendar"
-                className="brut brut-press inline-flex h-10 items-center justify-center rounded-none bg-cream px-2.5 text-xs font-bold text-ink uppercase sm:h-auto sm:px-4 sm:py-2 sm:text-sm"
+                className="brut brut-press inline-flex h-10 items-center justify-center rounded-none bg-cream px-2.5 text-xs font-bold text-ink uppercase sm:px-4 sm:text-sm"
               >
                 <CalendarIcon className="h-4 w-4 sm:hidden" strokeWidth={3} />
                 <span className="hidden sm:inline">Calendar</span>
@@ -53,7 +53,7 @@ export function SiteHeader() {
                 viewTransition
                 aria-label="About"
                 title="About"
-                className="brut brut-press inline-flex h-10 items-center justify-center rounded-none bg-cream px-2.5 py-2 text-xs font-bold text-ink uppercase sm:h-auto sm:px-4 sm:text-sm"
+                className="brut brut-press inline-flex h-10 items-center justify-center rounded-none bg-cream px-2.5 text-xs font-bold text-ink uppercase sm:px-4 sm:text-sm"
               >
                 <Info className="h-4 w-4 sm:hidden" strokeWidth={3} />
                 <span className="hidden sm:inline">About</span>
@@ -65,7 +65,7 @@ export function SiteHeader() {
               viewTransition
               aria-label="Home"
               title="Home"
-              className="brut brut-press inline-flex h-10 items-center gap-1.5 rounded-none bg-cream px-2.5 text-xs font-bold text-ink uppercase sm:h-auto sm:px-4 sm:py-2 sm:text-sm"
+              className="brut brut-press inline-flex h-10 items-center gap-1.5 rounded-none bg-cream px-2.5 text-xs font-bold text-ink uppercase sm:px-4 sm:text-sm"
             >
               <Home className="h-4 w-4 shrink-0 sm:hidden" strokeWidth={3} />
               <span className="hidden sm:inline">Home</span>
