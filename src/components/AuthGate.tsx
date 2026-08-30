@@ -4,6 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { COUNTDOWNS_QUERY_KEY } from "@/lib/countdownsRepo";
 import { setUsesCloud } from "@/lib/syncMode";
 import { LocalImport } from "./LocalImport";
+import { HourglassLoader } from "./HourglassLoader";
 
 export function AuthGate({ children }: { children: ReactNode }) {
   const { isSignedIn, isLoaded } = useAuth();
@@ -20,7 +21,7 @@ export function AuthGate({ children }: { children: ReactNode }) {
     prevSignedIn.current = isSignedIn;
   }, [isLoaded, isSignedIn, queryClient]);
 
-  if (!isLoaded) return null;
+  if (!isLoaded) return <HourglassLoader />;
   if (isSignedIn) return <LocalImport>{children}</LocalImport>;
   return children;
 }

@@ -8,6 +8,7 @@ import { CATEGORIES, categoryMeta, type CountdownCategory } from "@/lib/categori
 import { PALETTE } from "@/lib/palette";
 import { useCountdownTick } from "@/hooks/useCountdownTick";
 import { CountdownCard } from "./CountdownCard";
+import { HourglassLoader } from "./HourglassLoader";
 
 export function CountdownGrid({ variant = "active" }: { variant?: "active" | "archived" }) {
   const archived = variant === "archived";
@@ -35,7 +36,7 @@ export function CountdownGrid({ variant = "active" }: { variant?: "active" | "ar
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoaded, source]);
 
-  if (!countdowns) return null;
+  if (!countdowns) return <HourglassLoader />;
 
   if (countdowns.length === 0) {
     return (

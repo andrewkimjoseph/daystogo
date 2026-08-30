@@ -3,6 +3,7 @@ import { useAuth } from "@clerk/tanstack-react-start";
 import { useQueryClient } from "@tanstack/react-query";
 import { getDb } from "@/lib/db";
 import { COUNTDOWNS_QUERY_KEY, countdownsRepo } from "@/lib/countdownsRepo";
+import { HourglassLoader } from "./HourglassLoader";
 
 function migratedKey(userId: string) {
   return `daystogo:migrated:${userId}`;
@@ -52,7 +53,7 @@ export function LocalImport({ children }: { children: ReactNode }) {
   }, [isLoaded, userId, queryClient, attempt]);
 
   if (phase === "importing" || phase === "checking") {
-    if (phase === "checking") return null;
+    if (phase === "checking") return <HourglassLoader />;
     return (
       <div className="brut animate-pop-in mx-auto flex max-w-xl flex-col items-center gap-3 bg-card p-6 text-center sm:p-12">
         <h2 className="text-xl uppercase sm:text-2xl">Importing your countdowns…</h2>
