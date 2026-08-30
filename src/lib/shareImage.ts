@@ -107,7 +107,7 @@ function drawPanel(
   h: number,
   fill: string | CanvasGradient,
   border = 8,
-  offset = 14,
+  offset = 7,
 ) {
   ctx.fillStyle = INK;
   ctx.fillRect(x + offset, y + offset, w, h);
@@ -178,7 +178,7 @@ export async function renderCountdownShareImage(
   const badgeH = 58;
   const badgeX = panelX + panelW - padX - badgeW;
   const badgeY = panelY + 56;
-  drawPanel(ctx, badgeX, badgeY, badgeW, badgeH, tagColor, 5, 8);
+  drawPanel(ctx, badgeX, badgeY, badgeW, badgeH, tagColor, 5, 5);
   ctx.fillStyle = tagTextColor(tagColor);
   ctx.textBaseline = "middle";
   ctx.fillText(badge, badgeX + 22, badgeY + badgeH / 2 + 2);
