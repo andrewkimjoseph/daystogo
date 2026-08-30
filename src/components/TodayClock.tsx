@@ -9,7 +9,17 @@ export function TodayClock() {
   const now = useCountdownTick();
 
   if (!hydrated) {
-    return <div className="brut hidden h-[92px] w-[220px] bg-card sm:block" aria-hidden />;
+    return (
+      <div
+        className="brut hidden h-[92px] w-[220px] items-center justify-center bg-card sm:flex"
+        role="status"
+        aria-label="Loading"
+      >
+        <span className="animate-hourglass-spin block text-2xl leading-none" aria-hidden="true">
+          ⏳
+        </span>
+      </div>
+    );
   }
 
   const d = new Date(now);
