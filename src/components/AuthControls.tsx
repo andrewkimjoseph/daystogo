@@ -27,7 +27,7 @@ export function AuthControls() {
               aria-label="Sign up"
               className={`${brutBtn} bg-primary text-primary-foreground`}
             >
-              <span className="text-base leading-none sm:hidden" aria-hidden="true">✨</span>
+              <UserPlus className="size-4 sm:hidden" aria-hidden="true" />
               <span className="hidden sm:inline">Sign up</span>
             </button>
           </SignUpButton>
