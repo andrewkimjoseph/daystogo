@@ -255,7 +255,7 @@
   --normal-border: var(--ink);
   border-radius: 0 !important;
   border: 3px solid var(--ink) !important;
-  box-shadow: 4px 4px 0 0 var(--ink) !important;
+  box-shadow: var(--shadow-brut) !important;
   font-family: var(--font-sans) !important;
   text-transform: uppercase !important;
   font-weight: 700 !important;
@@ -297,19 +297,19 @@
   text-transform: uppercase !important;
   font-size: 0.75rem !important;
   font-weight: 700 !important;
-  box-shadow: 2px 2px 0 0 var(--ink) !important;
+  box-shadow: var(--shadow-brut-sm) !important;
   transition:
     transform 0.14s var(--ease-bounce),
     box-shadow 0.14s var(--ease-bounce) !important;
 }
 
 [data-sonner-toast] [data-button]:hover {
-  transform: translate(2px, 2px) !important;
-  box-shadow: 0 0 0 0 var(--ink) !important;
+  transform: translate(1px, 1px) !important;
+  box-shadow: var(--shadow-brut-none) !important;
 }
 
 [data-sonner-toast] [data-button]:active {
-  transform: translate(4px, 4px) !important;
+  transform: translate(3px, 3px) !important;
 }
 
 [data-sonner-toast] [data-close-button] {
