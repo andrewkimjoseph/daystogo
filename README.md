@@ -104,6 +104,8 @@ The dev server runs on Vite. Scripts:
 
 Without an account, countdowns stay in this browser (IndexedDB). Sign in and they sync to Neon Postgres, scoped to your Clerk account with row-level security. First sign-in on a browser that still has local timers will import them once. Clearing the browser deletes guest clocks; it does not delete cloud timers.
 
+Full details live on the site: [Privacy Policy](https://app.daystogo.xyz/privacy) · [Terms of Service](https://app.daystogo.xyz/terms)
+
 ## Author
 
 Built by **Andrew Kim Joseph** — [github.com/andrewkimjoseph](https://github.com/andrewkimjoseph).
