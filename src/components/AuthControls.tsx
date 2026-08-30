@@ -2,7 +2,7 @@ import { LogIn, UserPlus } from "lucide-react";
 import { Show, SignInButton, SignUpButton, UserButton } from "@clerk/tanstack-react-start";
 
 const brutBtn =
-  "brut brut-press inline-flex h-10 items-center justify-center rounded-none px-2.5 text-xs font-bold uppercase sm:h-auto sm:px-4 sm:py-2 sm:text-sm";
+  "brut brut-press inline-flex h-10 items-center justify-center rounded-none px-2.5 text-xs font-bold uppercase sm:px-4 sm:text-sm";
 
 export function AuthControls() {
   return (
@@ -34,7 +34,7 @@ export function AuthControls() {
         </span>
       </Show>
       <Show when="signed-in">
-        <div className="brut-thin brut-press h-11 w-11 shrink-0 overflow-hidden bg-card">
+        <div className="brut-thin brut-press h-10 w-10 shrink-0 overflow-hidden bg-card">
           <UserButton
             appearance={{
               elements: {
