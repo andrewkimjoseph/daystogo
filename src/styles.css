@@ -468,4 +468,8 @@
   .tick-bump {
     animation: none !important;
   }
+
+  .animate-hourglass-spin {
+    animation: pulse-hard 1s steps(2, end) infinite !important;
+  }
 }
