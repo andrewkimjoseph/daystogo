@@ -1,3 +1,4 @@
+import { LogIn, UserPlus } from "lucide-react";
 import { Show, SignInButton, SignUpButton, UserButton } from "@clerk/tanstack-react-start";
 
 const brutBtn =
@@ -15,7 +16,7 @@ export function AuthControls() {
               aria-label="Sign in"
               className={`${brutBtn} bg-cream text-ink`}
             >
-              <span className="text-base leading-none sm:hidden" aria-hidden="true">🔑</span>
+              <LogIn className="size-4 sm:hidden" aria-hidden="true" />
               <span className="hidden sm:inline">Sign in</span>
             </button>
           </SignInButton>
@@ -26,7 +27,7 @@ export function AuthControls() {
               aria-label="Sign up"
               className={`${brutBtn} bg-primary text-primary-foreground`}
             >
-              <span className="text-base leading-none sm:hidden" aria-hidden="true">✨</span>
+              <UserPlus className="size-4 sm:hidden" aria-hidden="true" />
               <span className="hidden sm:inline">Sign up</span>
             </button>
           </SignUpButton>
