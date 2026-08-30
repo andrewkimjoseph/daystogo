@@ -16,7 +16,7 @@ export function AuthControls() {
               aria-label="Sign in"
               className={`${brutBtn} bg-cream text-ink`}
             >
-              <LogIn className="size-4 sm:hidden" aria-hidden="true" />
+              <LogIn className="size-4 sm:hidden" strokeWidth={3} aria-hidden="true" />
               <span className="hidden sm:inline">Sign in</span>
             </button>
           </SignInButton>
@@ -27,7 +27,7 @@ export function AuthControls() {
               aria-label="Sign up"
               className={`${brutBtn} bg-primary text-primary-foreground`}
             >
-              <UserPlus className="size-4 sm:hidden" aria-hidden="true" />
+              <UserPlus className="size-4 sm:hidden" strokeWidth={3} aria-hidden="true" />
               <span className="hidden sm:inline">Sign up</span>
             </button>
           </SignUpButton>

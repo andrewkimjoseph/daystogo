@@ -100,7 +100,7 @@ function AboutPage() {
             rel="noreferrer"
             className="brut brut-press mt-4 inline-flex items-center gap-3 rounded-none bg-primary px-6 py-4 text-lg font-bold uppercase text-primary-foreground"
           >
-            <Github className="h-6 w-6" strokeWidth={2.5} />
+            <Github className="h-6 w-6" strokeWidth={3} />
             andrewkimjoseph on GitHub
           </a>
         </section>

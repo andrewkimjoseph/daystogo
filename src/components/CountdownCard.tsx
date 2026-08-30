@@ -299,7 +299,7 @@ export function CountdownCard({
                           : { backgroundColor: "var(--card)" }
                       }
                     >
-                      <Icon className="h-4 w-4" strokeWidth={2.5} />
+                      <Icon className="h-4 w-4" strokeWidth={3} />
                     </button>
                     <span className="brut-thin pointer-events-none absolute -top-7 left-1/2 z-20 -translate-x-1/2 bg-ink px-1.5 py-0.5 text-[9px] font-bold whitespace-nowrap text-cream uppercase opacity-0 transition-opacity group-hover:opacity-100">
                       {c.label}
