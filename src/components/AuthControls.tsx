@@ -1,3 +1,4 @@
+import { LogIn, UserPlus } from "lucide-react";
 import { Show, SignInButton, SignUpButton, UserButton } from "@clerk/tanstack-react-start";
 
 const brutBtn =
