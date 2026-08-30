@@ -148,7 +148,7 @@ export function CountdownCard({
 
 
   const tagColor = lapsed ? PALETTE.red : countdown.colorTag;
-  const badge = lapsed ? "🎉 Lapsed!" : "Running";
+  const badge = lapsed ? "⌛" : "⏳";
   const category = categoryMeta(countdown.category);
   const CategoryIcon = category.icon;
 
@@ -193,7 +193,9 @@ export function CountdownCard({
           )}
         </div>
         <span
-          className="brut-thin shrink-0 rounded-none px-3 py-1 text-xs font-bold whitespace-nowrap uppercase"
+          title={lapsed ? "Lapsed" : "Running"}
+          aria-label={lapsed ? "Lapsed" : "Running"}
+          className="brut-thin shrink-0 rounded-none px-3 py-1 text-base leading-none font-bold whitespace-nowrap uppercase"
           style={{ backgroundColor: tagColor, color: tagTextColor(tagColor) }}
         >
           {badge}

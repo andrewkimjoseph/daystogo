@@ -170,26 +170,19 @@ export async function renderCountdownShareImage(
   const contentW = panelW - padX * 2;
   ctx.textBaseline = "alphabetic";
 
-  // Badge, top right.
-  const badge = lapsed ? "LAPSED!" : "RUNNING";
-  const emoji = lapsed ? "🎉" : "";
-  const emojiFont = `26px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", ${SANS}`;
+  // Badge, top right — emoji-only hourglass on the coloured chip.
+  const badge = lapsed ? "⌛" : "⏳";
+  const emojiFont = `34px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", ${SANS}`;
   ctx.font = emojiFont;
-  const emojiW = emoji ? ctx.measureText(emoji).width + 12 : 0;
-  ctx.font = `26px ${SANS}`;
-  const badgeW = ctx.measureText(badge).width + emojiW + 44;
+  const badgeW = ctx.measureText(badge).width + 44;
   const badgeH = 58;
   const badgeX = panelX + panelW - padX - badgeW;
   const badgeY = panelY + 56;
   drawPanel(ctx, badgeX, badgeY, badgeW, badgeH, tagColor, 5, 8);
   ctx.fillStyle = tagTextColor(tagColor);
-  const badgeTextY = badgeY + badgeH / 2 + 9;
-  if (emoji) {
-    ctx.font = emojiFont;
-    ctx.fillText(emoji, badgeX + 22, badgeTextY);
-  }
-  ctx.font = `26px ${SANS}`;
-  ctx.fillText(badge, badgeX + 22 + emojiW, badgeTextY);
+  ctx.textBaseline = "middle";
+  ctx.fillText(badge, badgeX + 22, badgeY + badgeH / 2 + 2);
+  ctx.textBaseline = "alphabetic";
 
 
   // Category row.
