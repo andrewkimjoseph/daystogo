@@ -16,7 +16,7 @@ export function AuthControls() {
               aria-label="Sign in"
               className={`${brutBtn} bg-cream text-ink`}
             >
-              <span className="text-base leading-none sm:hidden" aria-hidden="true">🔑</span>
+              <LogIn className="size-4 sm:hidden" aria-hidden="true" />
               <span className="hidden sm:inline">Sign in</span>
             </button>
           </SignInButton>
