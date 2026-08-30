@@ -15,7 +15,7 @@ A playful, brutalist countdown timer web app. Run as many clocks as you like —
 - **Seconds everywhere** — every long-form date label ("Lands on Mon, 3 Aug 2026, 23:27:05") includes seconds, so nothing is rounded away.
 - **Mute toggle** — turn sound off without losing the confetti.
 - **Custom brutalist date/time picker** — an inline calendar with year/month/day panes and typable, clamped time steppers, styled to match the platform. No native browser pickers.
-- **Local-first, optional sync** — guests keep timers in this browser (IndexedDB via Dexie). Sign in and they live in Postgres (Neon), scoped to your Clerk account. First sign-in imports any local countdowns.
+- **Local-first, optional sync** — guests keep timers in this browser (IndexedDB via Dexie). Sign in and every change writes Dexie and Neon together, scoped to your Clerk account. Session start pushes local-only clocks up and refreshes Dexie from the cloud.
 - **View transitions** — route changes and picker panes animate with a fluid feel.
 - **Responsive** — laid out for mobile and desktop, with consistent alignment across every route.
 
@@ -28,7 +28,7 @@ A "Playful Brutalist" aesthetic: a cream base (`#EFEADD`), thick black borders, 
 - **Framework:** [TanStack Start](https://tanstack.com/start) v1 (React 19, SSR/SSG) with TanStack Router, on Vite 8
 - **Styling:** Tailwind CSS v4 with native `@theme` tokens
 - **Auth:** [Clerk](https://clerk.com) via `@clerk/tanstack-react-start`
-- **Persistence:** [Dexie](https://dexie.org) (IndexedDB) for guests; [Neon](https://neon.tech) Postgres with Row-Level Security for signed-in users, queried through TanStack Start server functions + [Drizzle](https://orm.drizzle.team). First sign-in imports local clocks.
+- **Persistence:** [Dexie](https://dexie.org) (IndexedDB) for guests; signed-in users dual-write Dexie and [Neon](https://neon.tech) Postgres (RLS) through TanStack Start server functions + [Drizzle](https://orm.drizzle.team).
 - **Dates:** [date-fns](https://date-fns.org)
 - **Effects:** [canvas-confetti](https://www.npmjs.com/package/canvas-confetti) for the lapse celebration
 - **Icons:** [lucide-react](https://lucide.dev)
@@ -54,10 +54,10 @@ src/
 │   ├── useHydrated.ts            # SSR-safe gate for time-dependent UI
 │   └── use-mobile.tsx
 ├── lib/
-│   ├── db.ts                     # Countdown type + Dexie (guest store)
-│   ├── countdownsLocal.ts        # Dexie CRUD for signed-out guests
-│   ├── syncMode.ts               # Clerk signed-in → cloud vs local
-│   ├── countdownsRepo.ts         # CRUD dispatcher (Dexie or server functions)
+│   ├── db.ts                     # Countdown type + Dexie store
+│   ├── countdownsLocal.ts        # Dexie CRUD
+│   ├── syncMode.ts               # Clerk signed-in → dual-write vs local
+│   ├── countdownsRepo.ts         # CRUD (Dexie, or Neon then Dexie)
 │   ├── countdownsFn.ts           # createServerFn RPC (client-callable)
 │   ├── server/
 │   │   ├── schema.ts             # Drizzle users + countdowns tables
@@ -102,7 +102,7 @@ The dev server runs on Vite. Scripts:
 
 ## Data & privacy
 
-Without an account, countdowns stay in this browser (IndexedDB). Sign in and they sync to Neon Postgres, scoped to your Clerk account with row-level security. First sign-in on a browser that still has local timers will import them once. Clearing the browser deletes guest clocks; it does not delete cloud timers.
+Without an account, countdowns stay in this browser (IndexedDB). Sign in and each create, edit, archive, or delete updates both Dexie and Neon (RLS, scoped to your Clerk account). Opening the app while signed in pushes any local-only clocks to Neon and replaces Dexie with the cloud set. Clearing the browser deletes the local copy; it does not delete cloud timers.
 
 Full details live on the site: [Privacy Policy](https://app.daystogo.xyz/privacy) · [Terms of Service](https://app.daystogo.xyz/terms)
 

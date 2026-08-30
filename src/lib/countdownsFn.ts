@@ -77,6 +77,12 @@ export const listArchivedCountdownsFn = createServerFn({ method: "GET" }).handle
   return rows.map(fromRow);
 });
 
+export const listAllCountdownsFn = createServerFn({ method: "GET" }).handler(async () => {
+  const { db, userId } = await getAuthedDb();
+  const rows = await runWithClaims<CountdownRow[]>(db, userId, db.select().from(countdowns));
+  return rows.map(fromRow);
+});
+
 export const createCountdownFn = createServerFn({ method: "POST" })
   .validator((data: Countdown) => data)
   .handler(async ({ data }) => {

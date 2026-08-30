@@ -1,4 +1,4 @@
-import type { Countdown, DurationType } from "./db";
+import { getDb, type Countdown, type DurationType } from "./db";
 import type { CountdownCategory } from "./categories";
 import { countdownsLocal } from "./countdownsLocal";
 import { isCloudSync } from "./syncMode";
@@ -6,6 +6,7 @@ import {
   archiveCountdownFn,
   createCountdownFn,
   importLocalCountdownsFn,
+  listAllCountdownsFn,
   listArchivedCountdownsFn,
   listCountdownsFn,
   markCelebratedFn,
@@ -75,6 +76,20 @@ export function validateSeconds(seconds: number): string | null {
   return null;
 }
 
+/** Dexie follow-up after a successful Neon write — never roll back the cloud. */
+async function mirrorLocal(work: () => Promise<unknown>): Promise<void> {
+  try {
+    await work();
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+async function pullCloudIntoDexie(): Promise<void> {
+  const rows = await listAllCountdownsFn();
+  await mirrorLocal(() => countdownsLocal.replaceAll(rows));
+}
+
 export const countdownsRepo = {
   /** Active board: archived rows are excluded. */
   async all(): Promise<Countdown[]> {
@@ -87,13 +102,21 @@ export const countdownsRepo = {
   },
 
   async archive(id: string): Promise<void> {
-    if (isCloudSync()) await archiveCountdownFn({ data: { id } });
-    else await countdownsLocal.archive(id);
+    if (isCloudSync()) {
+      await archiveCountdownFn({ data: { id } });
+      await mirrorLocal(() => countdownsLocal.archive(id));
+      return;
+    }
+    await countdownsLocal.archive(id);
   },
 
   async unarchive(id: string): Promise<void> {
-    if (isCloudSync()) await unarchiveCountdownFn({ data: { id } });
-    else await countdownsLocal.unarchive(id);
+    if (isCloudSync()) {
+      await unarchiveCountdownFn({ data: { id } });
+      await mirrorLocal(() => countdownsLocal.unarchive(id));
+      return;
+    }
+    await countdownsLocal.unarchive(id);
   },
 
   async create(input: NewCountdownInput): Promise<Countdown> {
@@ -121,7 +144,12 @@ export const countdownsRepo = {
       createdAt: now,
       updatedAt: now,
     };
-    return isCloudSync() ? createCountdownFn({ data: row }) : countdownsLocal.add(row);
+    if (isCloudSync()) {
+      const saved = await createCountdownFn({ data: row });
+      await mirrorLocal(() => countdownsLocal.put(saved));
+      return saved;
+    }
+    return countdownsLocal.add(row);
   },
 
   /** Only the cosmetic fields are editable once a clock is running. */
@@ -129,23 +157,39 @@ export const countdownsRepo = {
     id: string,
     patch: { title?: string; colorTag?: string; category?: CountdownCategory },
   ): Promise<void> {
-    if (isCloudSync()) await updateTagsFn({ data: { id, ...patch } });
-    else await countdownsLocal.updateTags(id, patch);
+    if (isCloudSync()) {
+      await updateTagsFn({ data: { id, ...patch } });
+      await mirrorLocal(() => countdownsLocal.updateTags(id, patch));
+      return;
+    }
+    await countdownsLocal.updateTags(id, patch);
   },
 
   async markLapsed(id: string): Promise<void> {
-    if (isCloudSync()) await markLapsedFn({ data: { id } });
-    else await countdownsLocal.markLapsed(id);
+    if (isCloudSync()) {
+      await markLapsedFn({ data: { id } });
+      await mirrorLocal(() => countdownsLocal.markLapsed(id));
+      return;
+    }
+    await countdownsLocal.markLapsed(id);
   },
 
   async markCelebrated(id: string): Promise<void> {
-    if (isCloudSync()) await markCelebratedFn({ data: { id } });
-    else await countdownsLocal.markCelebrated(id);
+    if (isCloudSync()) {
+      await markCelebratedFn({ data: { id } });
+      await mirrorLocal(() => countdownsLocal.markCelebrated(id));
+      return;
+    }
+    await countdownsLocal.markCelebrated(id);
   },
 
   async remove(id: string): Promise<void> {
-    if (isCloudSync()) await removeCountdownFn({ data: { id } });
-    else await countdownsLocal.remove(id);
+    if (isCloudSync()) {
+      await removeCountdownFn({ data: { id } });
+      await mirrorLocal(() => countdownsLocal.remove(id));
+      return;
+    }
+    await countdownsLocal.remove(id);
   },
 
   async importLocal(rows: Countdown[]): Promise<void> {
@@ -154,11 +198,27 @@ export const countdownsRepo = {
   },
 
   /**
+   * Signed-in boot: push this browser's Dexie rows into Neon, then reconcile
+   * and replace Dexie with the cloud set so both stores match.
+   */
+  async sync(): Promise<void> {
+    const rows = await getDb().countdowns.toArray();
+    if (rows.length > 0) await importLocalCountdownsFn({ data: rows });
+    await reconcileCountdownsFn();
+    await pullCloudIntoDexie();
+  },
+
+  /**
    * Never trust a stale `status`: reconcile against the wall clock on load.
    * Legacy paused rows resume where they left off — pausing is no longer offered.
+   * When signed in, Neon is reconciled then Dexie is replaced from the cloud.
    */
   async reconcile(): Promise<void> {
-    if (isCloudSync()) await reconcileCountdownsFn();
-    else await countdownsLocal.reconcile();
+    if (isCloudSync()) {
+      await reconcileCountdownsFn();
+      await pullCloudIntoDexie();
+      return;
+    }
+    await countdownsLocal.reconcile();
   },
 };

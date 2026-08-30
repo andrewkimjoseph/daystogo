@@ -29,6 +29,19 @@ export const countdownsLocal = {
     return row;
   },
 
+  async put(row: Countdown): Promise<Countdown> {
+    await getDb().countdowns.put(row);
+    return row;
+  },
+
+  async replaceAll(rows: Countdown[]): Promise<void> {
+    const db = getDb();
+    await db.transaction("rw", db.countdowns, async () => {
+      await db.countdowns.clear();
+      if (rows.length > 0) await db.countdowns.bulkPut(rows);
+    });
+  },
+
   async updateTags(
     id: string,
     patch: { title?: string; colorTag?: string; category?: CountdownCategory },

@@ -1,13 +1,8 @@
 import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { useAuth } from "@clerk/tanstack-react-start";
 import { useQueryClient } from "@tanstack/react-query";
-import { getDb } from "@/lib/db";
 import { COUNTDOWNS_QUERY_KEY, countdownsRepo } from "@/lib/countdownsRepo";
 import { HourglassLoader } from "./HourglassLoader";
-
-function migratedKey(userId: string) {
-  return `daystogo:migrated:${userId}`;
-}
 
 export function LocalImport({ children }: { children: ReactNode }) {
   const { userId, isLoaded } = useAuth();
@@ -22,23 +17,12 @@ export function LocalImport({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!isLoaded || !userId) return;
-    if (localStorage.getItem(migratedKey(userId))) {
-      setPhase("ready");
-      return;
-    }
 
     let cancelled = false;
     void (async () => {
       try {
-        const rows = await getDb().countdowns.toArray();
-        if (rows.length === 0) {
-          localStorage.setItem(migratedKey(userId), "1");
-          if (!cancelled) setPhase("ready");
-          return;
-        }
         if (!cancelled) setPhase("importing");
-        await countdownsRepo.importLocal(rows);
-        localStorage.setItem(migratedKey(userId), "1");
+        await countdownsRepo.sync();
         await queryClient.invalidateQueries({ queryKey: COUNTDOWNS_QUERY_KEY });
         if (!cancelled) setPhase("ready");
       } catch (error) {
@@ -56,9 +40,9 @@ export function LocalImport({ children }: { children: ReactNode }) {
     if (phase === "checking") return <HourglassLoader />;
     return (
       <div className="brut animate-pop-in mx-auto flex max-w-xl flex-col items-center gap-3 bg-card p-6 text-center sm:p-12">
-        <h2 className="text-xl uppercase sm:text-2xl">Importing your countdowns…</h2>
+        <h2 className="text-xl uppercase sm:text-2xl">Syncing your countdowns…</h2>
         <p className="max-w-sm font-bold text-muted-foreground">
-          Moving the clocks that were sitting in this browser up to the cloud.
+          Lining up the clocks in this browser with the ones in the cloud.
         </p>
       </div>
     );
@@ -67,10 +51,10 @@ export function LocalImport({ children }: { children: ReactNode }) {
   if (phase === "error") {
     return (
       <div className="brut animate-pop-in mx-auto flex max-w-xl flex-col items-center gap-4 bg-card p-6 text-center sm:p-12">
-        <h2 className="text-xl uppercase sm:text-2xl">Couldn't import — try again</h2>
+        <h2 className="text-xl uppercase sm:text-2xl">Couldn't sync — try again</h2>
         <p className="max-w-sm font-bold text-muted-foreground">
-          Your local clocks are still in this browser. The cloud copy didn’t land, so nothing was marked
-          done.
+          Your local clocks are still in this browser. The cloud copy didn’t line up, so nothing was
+          marked done.
         </p>
         <button
           type="button"
