@@ -104,6 +104,28 @@ function AboutPage() {
             andrewkimjoseph on GitHub
           </a>
         </section>
+
+        <section className="mt-8">
+          <h2 className="text-2xl uppercase">The fine print</h2>
+          <div className="mt-3 flex flex-wrap gap-3">
+            <Link
+              to="/privacy"
+              viewTransition
+              className="brut brut-press inline-flex items-center gap-2 rounded-none bg-cream px-4 py-3 text-sm font-bold uppercase text-ink"
+            >
+              <Shield className="h-4 w-4 shrink-0" strokeWidth={3} />
+              Privacy
+            </Link>
+            <Link
+              to="/terms"
+              viewTransition
+              className="brut brut-press inline-flex items-center gap-2 rounded-none bg-cream px-4 py-3 text-sm font-bold uppercase text-ink"
+            >
+              <FileText className="h-4 w-4 shrink-0" strokeWidth={3} />
+              Terms
+            </Link>
+          </div>
+        </section>
       </main>
     </div>
   );
