@@ -105,6 +105,15 @@
   --slate: oklch(0.505 0.055 245.7); /* #426A85 */
   --ink: oklch(0.16 0.01 260);
 
+  /* brutalist drop-shadow scale */
+  --shadow-brut: 3px 3px 0 0 var(--ink);
+  --shadow-brut-sm: 2px 2px 0 0 var(--ink);
+  --shadow-brut-hover: 4px 4px 0 0 var(--ink);
+  --shadow-brut-none: 0 0 0 0 var(--ink);
+  --shadow-brut-slate: 3px 3px 0 0 var(--slate);
+
+
+
   --background: var(--cream);
   --foreground: var(--ink);
   --card: oklch(0.985 0.008 90);
