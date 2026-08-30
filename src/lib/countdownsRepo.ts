@@ -1,5 +1,7 @@
 import type { Countdown, DurationType } from "./db";
 import type { CountdownCategory } from "./categories";
+import { countdownsLocal } from "./countdownsLocal";
+import { isCloudSync } from "./syncMode";
 import {
   archiveCountdownFn,
   createCountdownFn,
@@ -76,20 +78,22 @@ export function validateSeconds(seconds: number): string | null {
 export const countdownsRepo = {
   /** Active board: archived rows are excluded. */
   async all(): Promise<Countdown[]> {
-    return listCountdownsFn();
+    return isCloudSync() ? listCountdownsFn() : countdownsLocal.all();
   },
 
   /** Archived rows, most recently archived first. */
   async archived(): Promise<Countdown[]> {
-    return listArchivedCountdownsFn();
+    return isCloudSync() ? listArchivedCountdownsFn() : countdownsLocal.archived();
   },
 
   async archive(id: string): Promise<void> {
-    await archiveCountdownFn({ data: { id } });
+    if (isCloudSync()) await archiveCountdownFn({ data: { id } });
+    else await countdownsLocal.archive(id);
   },
 
   async unarchive(id: string): Promise<void> {
-    await unarchiveCountdownFn({ data: { id } });
+    if (isCloudSync()) await unarchiveCountdownFn({ data: { id } });
+    else await countdownsLocal.unarchive(id);
   },
 
   async create(input: NewCountdownInput): Promise<Countdown> {
@@ -117,7 +121,7 @@ export const countdownsRepo = {
       createdAt: now,
       updatedAt: now,
     };
-    return createCountdownFn({ data: row });
+    return isCloudSync() ? createCountdownFn({ data: row }) : countdownsLocal.add(row);
   },
 
   /** Only the cosmetic fields are editable once a clock is running. */
@@ -125,19 +129,23 @@ export const countdownsRepo = {
     id: string,
     patch: { title?: string; colorTag?: string; category?: CountdownCategory },
   ): Promise<void> {
-    await updateTagsFn({ data: { id, ...patch } });
+    if (isCloudSync()) await updateTagsFn({ data: { id, ...patch } });
+    else await countdownsLocal.updateTags(id, patch);
   },
 
   async markLapsed(id: string): Promise<void> {
-    await markLapsedFn({ data: { id } });
+    if (isCloudSync()) await markLapsedFn({ data: { id } });
+    else await countdownsLocal.markLapsed(id);
   },
 
   async markCelebrated(id: string): Promise<void> {
-    await markCelebratedFn({ data: { id } });
+    if (isCloudSync()) await markCelebratedFn({ data: { id } });
+    else await countdownsLocal.markCelebrated(id);
   },
 
   async remove(id: string): Promise<void> {
-    await removeCountdownFn({ data: { id } });
+    if (isCloudSync()) await removeCountdownFn({ data: { id } });
+    else await countdownsLocal.remove(id);
   },
 
   async importLocal(rows: Countdown[]): Promise<void> {
@@ -150,6 +158,7 @@ export const countdownsRepo = {
    * Legacy paused rows resume where they left off — pausing is no longer offered.
    */
   async reconcile(): Promise<void> {
-    await reconcileCountdownsFn();
+    if (isCloudSync()) await reconcileCountdownsFn();
+    else await countdownsLocal.reconcile();
   },
 };

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useAuth, SignInButton } from "@clerk/tanstack-react-start";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import logoUrl from "@/assets/logo.png";
@@ -12,9 +13,12 @@ export function CountdownGrid({ variant = "active" }: { variant?: "active" | "ar
   const archived = variant === "archived";
   const now = useCountdownTick();
   const queryClient = useQueryClient();
+  const { isSignedIn, isLoaded } = useAuth();
+  const source = isSignedIn ? "cloud" : "local";
   const { data: countdowns } = useQuery({
-    queryKey: [...COUNTDOWNS_QUERY_KEY, archived ? "archived" : "active"],
+    queryKey: [...COUNTDOWNS_QUERY_KEY, source, archived ? "archived" : "active"],
     queryFn: () => (archived ? countdownsRepo.archived() : countdownsRepo.all()),
+    enabled: isLoaded,
   });
   const [filter, setFilter] = useState<CountdownCategory | "all">("all");
 
@@ -23,12 +27,13 @@ export function CountdownGrid({ variant = "active" }: { variant?: "active" | "ar
   };
 
   useEffect(() => {
+    if (!isLoaded) return;
     void (async () => {
       await countdownsRepo.reconcile();
       onChanged();
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [isLoaded, source]);
 
   if (!countdowns) return null;
 
@@ -42,7 +47,9 @@ export function CountdownGrid({ variant = "active" }: { variant?: "active" | "ar
         <p className="max-w-sm font-bold text-muted-foreground">
           {archived
             ? "Once a clock hits zero, hit Archive on the card and it lands here for keeps."
-            : "What are you waiting for? Pick something, put a clock on it, watch it sweat."}
+            : isLoaded && !isSignedIn
+              ? "This board lives in this browser. Sign in later if you want the same clocks everywhere."
+              : "What are you waiting for? Pick something, put a clock on it, watch it sweat."}
         </p>
         <Link
           to={archived ? "/" : "/create-countdown"}
@@ -62,6 +69,21 @@ export function CountdownGrid({ variant = "active" }: { variant?: "active" | "ar
 
   return (
     <div className="flex flex-col gap-6">
+      {!archived && isLoaded && !isSignedIn && (
+        <div className="brut-thin flex flex-wrap items-center justify-between gap-3 bg-card px-4 py-3">
+          <p className="font-bold text-muted-foreground">
+            This board lives in this browser. Sign in to sync it everywhere.
+          </p>
+          <SignInButton>
+            <button
+              type="button"
+              className="brut-thin brut-press rounded-none bg-cream px-4 py-2 text-xs font-bold text-ink uppercase"
+            >
+              Sign in
+            </button>
+          </SignInButton>
+        </div>
+      )}
       {used.length > 1 && (
         <div className="flex flex-wrap gap-2">
           {[{ key: "all" as const, label: "All" }, ...used].map((cat) => {

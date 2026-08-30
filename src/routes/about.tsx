@@ -18,7 +18,7 @@ export const Route = createFileRoute("/about")({
       {
         property: "og:description",
         content:
-          "Playful brutalist countdown timers, 3 seconds to years out, ticking in the cloud.",
+          "Playful brutalist countdown timers, 3 seconds to years out. Sign in only if you want them in the cloud.",
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://app.daystogo.xyz/about" },
@@ -83,8 +83,9 @@ function AboutPage() {
             and a little chime. Re-tag it, run it again, or bin it — it's all yours.
           </p>
           <p className="mt-4 text-base leading-relaxed">
-            Sign in and your timers live in the cloud, so the same board follows you from one
-            browser to the next. Open the tab, set a countdown, and put a clock on it.
+            You don't need an account — clocks live in this browser until you want them
+            elsewhere. Sign in and the same board follows you from one browser to the next.
+            Open the tab, set a countdown, and put a clock on it.
           </p>
         </div>
 

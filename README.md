@@ -1,6 +1,6 @@
 # Days To Go
 
-A playful, brutalist countdown timer web app. Run as many clocks as you like — a quick 3-second timer or a date years out — ticking down to the second, with a burst of confetti and a chime when the timer hits zero. Sign in and your timers follow you. Put a clock on it.
+A playful, brutalist countdown timer web app. Run as many clocks as you like — a quick 3-second timer or a date years out — ticking down to the second, with a burst of confetti and a chime when the timer hits zero. Works in this browser with no account; sign in if you want the same board everywhere. Put a clock on it.
 
 **Live:** [app.daystogo.xyz](https://app.daystogo.xyz) · **Source:** [github.com/andrewkimjoseph](https://github.com/andrewkimjoseph)
 
@@ -15,7 +15,7 @@ A playful, brutalist countdown timer web app. Run as many clocks as you like —
 - **Seconds everywhere** — every long-form date label ("Lands on Mon, 3 Aug 2026, 23:27:05") includes seconds, so nothing is rounded away.
 - **Mute toggle** — turn sound off without losing the confetti.
 - **Custom brutalist date/time picker** — an inline calendar with year/month/day panes and typable, clamped time steppers, styled to match the platform. No native browser pickers.
-- **Signed-in persistence** — timers live in Postgres (Neon), scoped to your Clerk account. First sign-in imports any older local IndexedDB countdowns.
+- **Local-first, optional sync** — guests keep timers in this browser (IndexedDB via Dexie). Sign in and they live in Postgres (Neon), scoped to your Clerk account. First sign-in imports any local countdowns.
 - **View transitions** — route changes and picker panes animate with a fluid feel.
 - **Responsive** — laid out for mobile and desktop, with consistent alignment across every route.
 
@@ -28,7 +28,7 @@ A "Playful Brutalist" aesthetic: a cream base (`#EFEADD`), thick black borders, 
 - **Framework:** [TanStack Start](https://tanstack.com/start) v1 (React 19, SSR/SSG) with TanStack Router, on Vite 8
 - **Styling:** Tailwind CSS v4 with native `@theme` tokens
 - **Auth:** [Clerk](https://clerk.com) via `@clerk/tanstack-react-start`
-- **Persistence:** [Neon](https://neon.tech) Postgres with Row-Level Security, queried through TanStack Start server functions + [Drizzle](https://orm.drizzle.team). One-time import from IndexedDB (Dexie).
+- **Persistence:** [Dexie](https://dexie.org) (IndexedDB) for guests; [Neon](https://neon.tech) Postgres with Row-Level Security for signed-in users, queried through TanStack Start server functions + [Drizzle](https://orm.drizzle.team). First sign-in imports local clocks.
 - **Dates:** [date-fns](https://date-fns.org)
 - **Effects:** [canvas-confetti](https://www.npmjs.com/package/canvas-confetti) for the lapse celebration
 - **Icons:** [lucide-react](https://lucide.dev)
@@ -54,8 +54,10 @@ src/
 │   ├── useHydrated.ts            # SSR-safe gate for time-dependent UI
 │   └── use-mobile.tsx
 ├── lib/
-│   ├── db.ts                     # Countdown type + Dexie (one-time local import)
-│   ├── countdownsRepo.ts         # CRUD via TanStack Start server functions
+│   ├── db.ts                     # Countdown type + Dexie (guest store)
+│   ├── countdownsLocal.ts        # Dexie CRUD for signed-out guests
+│   ├── syncMode.ts               # Clerk signed-in → cloud vs local
+│   ├── countdownsRepo.ts         # CRUD dispatcher (Dexie or server functions)
 │   ├── countdownsFn.ts           # createServerFn RPC (client-callable)
 │   ├── server/
 │   │   ├── schema.ts             # Drizzle users + countdowns tables
@@ -100,7 +102,7 @@ The dev server runs on Vite. Scripts:
 
 ## Data & privacy
 
-Countdowns are stored in Neon Postgres, scoped to your Clerk account with row-level security. First sign-in on a browser that still has old local timers will import them once. Clearing the browser no longer deletes cloud timers.
+Without an account, countdowns stay in this browser (IndexedDB). Sign in and they sync to Neon Postgres, scoped to your Clerk account with row-level security. First sign-in on a browser that still has local timers will import them once. Clearing the browser deletes guest clocks; it does not delete cloud timers.
 
 ## Author
 

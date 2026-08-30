@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useAuth } from "@clerk/tanstack-react-start";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -95,9 +96,12 @@ function CalendarSkeleton() {
 
 function CalendarBody() {
   const queryClient = useQueryClient();
+  const { isSignedIn, isLoaded } = useAuth();
+  const source = isSignedIn ? "cloud" : "local";
   const { data: countdowns } = useQuery({
-    queryKey: [...COUNTDOWNS_QUERY_KEY, "active"],
+    queryKey: [...COUNTDOWNS_QUERY_KEY, source, "active"],
     queryFn: () => countdownsRepo.all(),
+    enabled: isLoaded,
   });
   const [today] = useState(() => new Date());
   const [selected, setSelected] = useState(() => new Date());
@@ -109,11 +113,12 @@ function CalendarBody() {
 
 
   useEffect(() => {
+    if (!isLoaded) return;
     void (async () => {
       await countdownsRepo.reconcile();
       await queryClient.invalidateQueries({ queryKey: COUNTDOWNS_QUERY_KEY });
     })();
-  }, [queryClient]);
+  }, [isLoaded, source, queryClient]);
 
   const days = useMemo(() => monthGrid(view.y, view.m), [view]);
   const years = useMemo(() => Array.from({ length: 12 }, (_, i) => yearPage + i), [yearPage]);
