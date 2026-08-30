@@ -85,8 +85,8 @@ function TermsPage() {
           <section>
             <h2 className="text-xl uppercase">No warranty</h2>
             <p className="mt-2 text-base leading-relaxed">
-              Days To Go is provided <span className="font-bold">"as is"</span> and{" "}
-              <span className="font-bold">"as available"</span>, without warranties of any
+              Days To Go is provided <span className="font-bold">“as is”</span> and{" "}
+              <span className="font-bold">“as available”</span>, without warranties of any
               kind. It may change, break, or be discontinued. Don't rely on it for anything
               critical — if a countdown matters, keep your own backup of the date.
             </p>
