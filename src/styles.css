@@ -186,6 +186,8 @@
   border-radius: 0;
 }
 
+/* Single shared interaction behaviour for every clickable element:
+   hover lifts out with the 4px shadow, active presses inward and flattens. */
 @utility brut-press {
   transition:
     transform 0.14s var(--ease-bounce),
@@ -195,11 +197,12 @@
     box-shadow: var(--shadow-brut-hover);
   }
   &:active {
-    transform: translate(3px, 3px);
+    transform: translate(2px, 2px);
     box-shadow: var(--shadow-brut-none);
   }
 }
 
+/* Alias of brut-press, kept so existing markup keeps working. */
 @utility brut-pop {
   transition:
     transform 0.14s var(--ease-bounce),
@@ -209,8 +212,8 @@
     box-shadow: var(--shadow-brut-hover);
   }
   &:active {
-    transform: translate(1px, 1px);
-    box-shadow: var(--shadow-brut-sm);
+    transform: translate(2px, 2px);
+    box-shadow: var(--shadow-brut-none);
   }
 }
 
@@ -223,6 +226,7 @@
     box-shadow: var(--shadow-brut-hover);
   }
 }
+
 
 
 @utility hero-gradient {
