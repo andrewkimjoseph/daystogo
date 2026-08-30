@@ -20,9 +20,9 @@ export function MuteToggle() {
       style={{ backgroundColor: muted ? undefined : "var(--teal)" }}
     >
       {muted ? (
-        <VolumeX className="h-5 w-5" strokeWidth={2.75} />
+        <VolumeX className="h-5 w-5" strokeWidth={3} />
       ) : (
-        <Volume2 className="h-5 w-5 text-primary-foreground" strokeWidth={2.75} />
+        <Volume2 className="h-5 w-5 text-primary-foreground" strokeWidth={3} />
       )}
     </button>
   );

@@ -187,7 +187,7 @@ export function CreateCountdownForm({ initialDate }: { initialDate?: string }) {
                     : { backgroundColor: "var(--cream)" }
                 }
               >
-                <Icon className="h-4 w-4 shrink-0" strokeWidth={2.5} />
+                <Icon className="h-4 w-4 shrink-0" strokeWidth={3} />
                 <span className="min-w-0 break-words">{c.label}</span>
               </button>
             );

@@ -39,7 +39,7 @@ export function AppShell({
         to="/create-countdown"
         className="brut brut-press fixed right-4 bottom-4 z-40 flex items-center gap-2 rounded-none bg-primary px-4 py-3 text-sm font-bold text-primary-foreground uppercase sm:right-8 sm:bottom-8 sm:px-5 sm:py-4 sm:text-base"
       >
-        <Plus className="h-5 w-5 shrink-0" strokeWidth={3.5} /> New countdown
+        <Plus className="h-5 w-5 shrink-0" strokeWidth={3} /> New countdown
       </Link>
     </div>
   );
