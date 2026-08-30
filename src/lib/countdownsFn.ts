@@ -3,7 +3,7 @@ import { createServerFn } from "@tanstack/react-start";
 import type { Countdown, CountdownMode, CountdownStatus, DurationType } from "@/lib/db";
 import type { CountdownCategory } from "@/lib/categories";
 import { rollbackColorTag } from "@/lib/palette";
-import { getAuthedDb, runWithClaims } from "./server/db";
+import { getAuthedDb, runWithClaims, runWithClaimsMany } from "./server/db";
 import { countdowns, type CountdownRow } from "./server/schema";
 
 function n(value: number | string | null | undefined): number | undefined {
@@ -190,6 +190,7 @@ export const reconcileCountdownsFn = createServerFn({ method: "POST" }).handler(
   const now = Date.now();
   const rows = await runWithClaims<CountdownRow[]>(db, userId, db.select().from(countdowns));
 
+  const updates = [];
   for (const row of rows) {
     const mapped = fromRow(row);
     const colorTag = rollbackColorTag(mapped.colorTag);
@@ -224,9 +225,7 @@ export const reconcileCountdownsFn = createServerFn({ method: "POST" }).handler(
 
     if (!dirty) continue;
 
-    await runWithClaims(
-      db,
-      userId,
+    updates.push(
       db
         .update(countdowns)
         .set({
@@ -239,5 +238,10 @@ export const reconcileCountdownsFn = createServerFn({ method: "POST" }).handler(
         })
         .where(eq(countdowns.id, next.id)),
     );
+  }
+
+  const CHUNK = 20;
+  for (let i = 0; i < updates.length; i += CHUNK) {
+    await runWithClaimsMany(db, userId, updates.slice(i, i + CHUNK));
   }
 });

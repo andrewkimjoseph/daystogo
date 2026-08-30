@@ -1,7 +1,7 @@
 import { getDb, type Countdown, type DurationType } from "./db";
 import type { CountdownCategory } from "./categories";
 import { countdownsLocal } from "./countdownsLocal";
-import { isCloudSync } from "./syncMode";
+import { isCloudSync, shouldSkipCloudReconcile } from "./syncMode";
 import {
   archiveCountdownFn,
   createCountdownFn,
@@ -215,6 +215,7 @@ export const countdownsRepo = {
    */
   async reconcile(): Promise<void> {
     if (isCloudSync()) {
+      if (shouldSkipCloudReconcile()) return;
       await reconcileCountdownsFn();
       await pullCloudIntoDexie();
       return;

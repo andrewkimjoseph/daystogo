@@ -53,6 +53,17 @@ export async function runWithClaims<T>(db: AuthedDb, userId: string, query: Batc
   return result as T;
 }
 
+/** Same claims transaction as `runWithClaims`, but many queries in one HTTP batch. */
+export async function runWithClaimsMany(db: AuthedDb, userId: string, queries: Batchable[]): Promise<unknown[]> {
+  if (queries.length === 0) return [];
+  const claims = JSON.stringify({ sub: userId, role: "authenticated" });
+  const [, ...results] = await db.batch([
+    db.execute(sql`select set_config('request.jwt.claims', ${claims}, true)`),
+    ...queries,
+  ] as [Batchable, ...Batchable[]]);
+  return results;
+}
+
 async function ensureUserRecord(db: AuthedDb, userId: string) {
   try {
     const existing = await runWithClaims<{ id: string }[]>(
