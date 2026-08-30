@@ -9,16 +9,25 @@ export function AuthControls() {
       <Show when="signed-out">
         <span className="contents">
           <SignInButton>
-            <button type="button" className={`${brutBtn} bg-cream text-ink`}>
-              Sign in
+            <button
+              type="button"
+              title="Sign in"
+              aria-label="Sign in"
+              className={`${brutBtn} bg-cream text-ink`}
+            >
+              <span className="text-base leading-none sm:hidden" aria-hidden="true">🔑</span>
+              <span className="hidden sm:inline">Sign in</span>
             </button>
           </SignInButton>
           <SignUpButton>
             <button
               type="button"
+              title="Sign up"
+              aria-label="Sign up"
               className={`${brutBtn} bg-primary text-primary-foreground`}
             >
-              Sign up
+              <span className="text-base leading-none sm:hidden" aria-hidden="true">✨</span>
+              <span className="hidden sm:inline">Sign up</span>
             </button>
           </SignUpButton>
         </span>
