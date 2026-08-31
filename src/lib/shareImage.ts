@@ -5,7 +5,7 @@ import { remainingMs } from "./countdownsRepo";
 import { formatRemaining, progressPercent } from "./formatTime";
 import { formatTargetLabel } from "./localTime";
 import { categoryMeta } from "./categories";
-import { INK, PALETTE, tagTextColor } from "./palette";
+import { INK, PALETTE } from "./palette";
 
 const SIZE = 1080;
 /** Supersample factor: all drawing stays in 1080-space, output is SIZE * SCALE px. */
@@ -124,7 +124,7 @@ export async function renderCountdownShareImage(
   if (typeof document === "undefined") throw new Error("Share images render in the browser only.");
 
   await document.fonts?.ready?.catch?.(() => undefined);
-  const logo = await loadImage("/logo.png");
+  const [logo, hourglass] = await Promise.all([loadImage("/logo.png"), loadImage("/hourglass.svg")]);
 
   const canvas = document.createElement("canvas");
   canvas.width = SIZE * SCALE;
@@ -169,19 +169,23 @@ export async function renderCountdownShareImage(
   const contentW = panelW - padX * 2;
   ctx.textBaseline = "alphabetic";
 
-  // Badge, top right — emoji-only hourglass on the coloured chip.
-  const badge = lapsed ? "⌛" : "⏳";
-  const emojiFont = `34px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", ${SANS}`;
-  ctx.font = emojiFont;
-  const badgeW = ctx.measureText(badge).width + 44;
+  // Badge, top right — static hourglass on the coloured chip.
+  const iconSize = 34;
+  const badgePad = 12;
+  const badgeW = iconSize + badgePad * 2;
   const badgeH = 58;
   const badgeX = panelX + panelW - padX - badgeW;
   const badgeY = panelY + 56;
   drawPanel(ctx, badgeX, badgeY, badgeW, badgeH, tagColor, 5, 5);
-  ctx.fillStyle = tagTextColor(tagColor);
-  ctx.textBaseline = "middle";
-  ctx.fillText(badge, badgeX + 22, badgeY + badgeH / 2 + 2);
-  ctx.textBaseline = "alphabetic";
+  if (hourglass) {
+    ctx.drawImage(
+      hourglass,
+      badgeX + (badgeW - iconSize) / 2,
+      badgeY + (badgeH - iconSize) / 2,
+      iconSize,
+      iconSize,
+    );
+  }
 
 
   // Category row.

@@ -9,7 +9,7 @@ import { downloadCountdownImage } from "@/lib/shareImage";
 
 import { burstConfetti } from "@/lib/confetti";
 import { playSound } from "@/lib/soundManager";
-import { COLOR_TAGS, INK, PALETTE, tagTextColor } from "@/lib/palette";
+import { COLOR_TAGS, INK, PALETTE } from "@/lib/palette";
 import { CATEGORIES, categoryMeta, type CountdownCategory } from "@/lib/categories";
 import { Sparkle } from "./Sparkle";
 
@@ -147,7 +147,6 @@ export function CountdownCard({
 
 
   const tagColor = lapsed ? PALETTE.red : countdown.colorTag;
-  const badge = lapsed ? "⌛" : "⏳";
   const category = categoryMeta(countdown.category);
   const CategoryIcon = category.icon;
 
@@ -194,10 +193,10 @@ export function CountdownCard({
         <span
           title={lapsed ? "Lapsed" : "Running"}
           aria-label={lapsed ? "Lapsed" : "Running"}
-          className="brut-thin shrink-0 rounded-none px-3 py-1 text-base leading-none font-bold whitespace-nowrap uppercase"
-          style={{ backgroundColor: tagColor, color: tagTextColor(tagColor) }}
+          className="brut-thin shrink-0 rounded-none px-2 py-1 leading-none"
+          style={{ backgroundColor: tagColor }}
         >
-          {badge}
+          <img src="/hourglass.svg" alt="" className="h-5 w-5" aria-hidden="true" />
         </span>
       </header>
 
