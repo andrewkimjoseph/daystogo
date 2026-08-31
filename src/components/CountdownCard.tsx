@@ -190,14 +190,12 @@ export function CountdownCard({
             </p>
           )}
         </div>
-        <span
+        <img
+          src="/hourglass.svg"
+          alt={lapsed ? "Lapsed" : "Running"}
           title={lapsed ? "Lapsed" : "Running"}
-          aria-label={lapsed ? "Lapsed" : "Running"}
-          className="brut-thin shrink-0 rounded-none px-2 py-1 leading-none"
-          style={{ backgroundColor: tagColor }}
-        >
-          <img src="/hourglass.svg" alt="" className="h-5 w-5" aria-hidden="true" />
-        </span>
+          className="h-10 w-10 shrink-0"
+        />
       </header>
 
 

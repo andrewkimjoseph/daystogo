@@ -169,22 +169,16 @@ export async function renderCountdownShareImage(
   const contentW = panelW - padX * 2;
   ctx.textBaseline = "alphabetic";
 
-  // Badge, top right — static hourglass on the coloured chip.
-  const iconSize = 34;
-  const badgePad = 12;
-  const badgeW = iconSize + badgePad * 2;
-  const badgeH = 58;
-  const badgeX = panelX + panelW - padX - badgeW;
-  const badgeY = panelY + 56;
-  drawPanel(ctx, badgeX, badgeY, badgeW, badgeH, tagColor, 5, 5);
+  // Hourglass, top right — keep the SVG's tall aspect (canvas drawImage
+  // otherwise squashes 188×256 into a square).
+  const hourglassH = 72;
+  const natW = hourglass?.naturalWidth || 188;
+  const natH = hourglass?.naturalHeight || 256;
+  const hourglassW = hourglassH * (natW / natH);
+  const badgeX = panelX + panelW - padX - hourglassW;
+  const badgeY = panelY + 48;
   if (hourglass) {
-    ctx.drawImage(
-      hourglass,
-      badgeX + (badgeW - iconSize) / 2,
-      badgeY + (badgeH - iconSize) / 2,
-      iconSize,
-      iconSize,
-    );
+    ctx.drawImage(hourglass, badgeX, badgeY, hourglassW, hourglassH);
   }
 
 
@@ -203,7 +197,7 @@ export async function renderCountdownShareImage(
   ctx.fillText(category.label.toUpperCase(), left + iconPx + 14, y);
 
   // Title.
-  const maxTitleW = contentW - badgeW - 40;
+  const maxTitleW = contentW - hourglassW - 40;
   const title = fitLines(ctx, countdown.title.toUpperCase(), maxTitleW, 3, 46, 34, DISPLAY);
   y += 40;
   ctx.fillStyle = ink;
