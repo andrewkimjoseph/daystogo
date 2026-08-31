@@ -22,7 +22,7 @@ export function LocalImport({ children }: { children: ReactNode }) {
     let cancelled = false;
     void (async () => {
       try {
-        await runSessionSync(userId, () => countdownsRepo.sync());
+        await runSessionSync(userId, () => countdownsRepo.sync(userId));
         await queryClient.invalidateQueries({ queryKey: COUNTDOWNS_QUERY_KEY });
       } catch (error) {
         console.error(error);

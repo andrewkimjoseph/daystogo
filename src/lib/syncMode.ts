@@ -34,12 +34,23 @@ export function resetSessionSync(): void {
   sessionSync = null;
 }
 
+async function withAuthRetry<T>(work: () => Promise<T>, retries = 2, delayMs = 500): Promise<T> {
+  try {
+    return await work();
+  } catch (error) {
+    const isAuthRace = error instanceof Error && error.message === "Unauthorized";
+    if (!isAuthRace || retries === 0) throw error;
+    await new Promise((r) => setTimeout(r, delayMs));
+    return withAuthRetry(work, retries - 1, delayMs);
+  }
+}
+
 /** One Dexie/Neon sync per signed-in tab session. Later callers share the same promise. */
 export function runSessionSync(userId: string, work: () => Promise<void>): Promise<void> {
   if (sessionSyncedUserId === userId) return Promise.resolve();
   if (sessionSync?.userId === userId) return sessionSync.promise;
 
-  const promise = work()
+  const promise = withAuthRetry(work)
     .then(() => {
       sessionSyncedUserId = userId;
     })

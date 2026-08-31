@@ -1,4 +1,4 @@
-import { getDb, type Countdown } from "./db";
+import { getDb, type Countdown, type SyncMeta } from "./db";
 import type { CountdownCategory } from "./categories";
 import { rollbackColorTag } from "./palette";
 
@@ -40,6 +40,14 @@ export const countdownsLocal = {
       await db.countdowns.clear();
       if (rows.length > 0) await db.countdowns.bulkPut(rows);
     });
+  },
+
+  async getSyncMeta(): Promise<SyncMeta | undefined> {
+    return getDb().syncMeta.get("sync");
+  },
+
+  async setSyncMeta(userId: string, lastSyncedAt: number): Promise<void> {
+    await getDb().syncMeta.put({ id: "sync", userId, lastSyncedAt });
   },
 
   async updateTags(

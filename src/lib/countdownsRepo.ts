@@ -22,6 +22,8 @@ export const COUNTDOWNS_QUERY_KEY = ["countdowns"] as const;
 export const MIN_DURATION_SECONDS = 3;
 /** Sanity bound, not a product limit: ~100 years keeps dates valid. */
 export const MAX_DURATION_SECONDS = 100 * 365 * 24 * 60 * 60;
+/** Skip a full Dexie/Neon round trip when this device last synced this account within 24h. */
+const SYNC_TTL_MS = 24 * 60 * 60 * 1000;
 
 const MULTIPLIER: Record<DurationType, number> = {
   seconds: 1,
@@ -200,12 +202,27 @@ export const countdownsRepo = {
   /**
    * Signed-in boot: push this browser's Dexie rows into Neon, then reconcile
    * and replace Dexie with the cloud set so both stores match.
+   * Skips the round trip when this device already synced this account within TTL.
    */
-  async sync(): Promise<void> {
-    const rows = await getDb().countdowns.toArray();
-    if (rows.length > 0) await importLocalCountdownsFn({ data: rows });
+  async sync(userId: string): Promise<void> {
+    const meta = await countdownsLocal.getSyncMeta();
+    const now = Date.now();
+
+    if (meta?.userId === userId && now - meta.lastSyncedAt < SYNC_TTL_MS) {
+      return;
+    }
+
+    // Only push local rows when we know they belong to this account (or no
+    // account is known yet) — never push a previous account's mirrored rows
+    // into a newly signed-in account.
+    if (meta == null || meta.userId === userId) {
+      const rows = await getDb().countdowns.toArray();
+      if (rows.length > 0) await importLocalCountdownsFn({ data: rows });
+    }
+
     await reconcileCountdownsFn();
     await pullCloudIntoDexie();
+    await countdownsLocal.setSyncMeta(userId, now);
   },
 
   /**

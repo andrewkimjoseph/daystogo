@@ -33,8 +33,16 @@ export interface Countdown {
   updatedAt: number;
 }
 
+/** Singleton row recording the last successful Dexie/Neon sync for this browser. */
+export interface SyncMeta {
+  id: "sync";
+  userId: string;
+  lastSyncedAt: number;
+}
+
 class DaysToGoDB extends Dexie {
   countdowns!: Table<Countdown, string>;
+  syncMeta!: Table<SyncMeta, string>;
 
   constructor() {
     super("daystogo");
@@ -49,6 +57,10 @@ class DaysToGoDB extends Dexie {
     });
     this.version(4).stores({
       countdowns: "id, status, endsAt, createdAt, targetAt, category, archivedAt",
+    });
+    this.version(5).stores({
+      countdowns: "id, status, endsAt, createdAt, targetAt, category, archivedAt",
+      syncMeta: "id",
     });
   }
 }
