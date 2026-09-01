@@ -353,7 +353,7 @@ export function CountdownCard({
             {confirmingDelete ? (
               <div className="brut-thin flex flex-wrap items-center justify-between gap-2 bg-secondary p-2">
                 <span className="text-sm font-bold text-secondary-foreground uppercase">
-                  Nuke this countdown?
+                  Delete this countdown for good?
                 </span>
                 <div className="flex gap-2">
                   <button
@@ -362,8 +362,8 @@ export function CountdownCard({
                       await countdownsRepo.remove(countdown.id);
                       onChanged();
                     }}
-                    aria-label="Confirm delete"
-                    title="Do it"
+                    aria-label="Delete countdown"
+                    title="Delete"
                     className="brut-thin brut-press flex h-9 w-9 items-center justify-center rounded-none bg-card"
                   >
                     <Check className="h-4 w-4" strokeWidth={3} />
@@ -371,8 +371,8 @@ export function CountdownCard({
                   <button
                     type="button"
                     onClick={() => setConfirmingDelete(false)}
-                    aria-label="Cancel delete"
-                    title="Nope"
+                    aria-label="Keep the countdown"
+                    title="Cancel"
                     className="brut-thin brut-press flex h-9 w-9 items-center justify-center rounded-none bg-cream"
                   >
                     <X className="h-4 w-4" strokeWidth={3} />
@@ -382,7 +382,7 @@ export function CountdownCard({
             ) : confirmingArchive ? (
               <div className="brut-thin flex flex-wrap items-center justify-between gap-2 p-2" style={{ backgroundColor: PALETTE.teal }}>
                 <span className="text-sm font-bold uppercase" style={{ color: PALETTE.cream }}>
-                  Box it up?
+                  Archive this countdown?
                 </span>
                 <div className="flex gap-2">
                   <button
@@ -393,8 +393,8 @@ export function CountdownCard({
                       setConfirmingArchive(false);
                       onChanged();
                     }}
-                    aria-label="Confirm archive"
-                    title="Do it"
+                    aria-label="Archive countdown"
+                    title="Archive"
                     className="brut-thin brut-press flex h-9 w-9 items-center justify-center rounded-none bg-cream"
                   >
                     <Check className="h-4 w-4" strokeWidth={3} style={{ color: INK }} />
@@ -402,8 +402,8 @@ export function CountdownCard({
                   <button
                     type="button"
                     onClick={() => setConfirmingArchive(false)}
-                    aria-label="Cancel archive"
-                    title="Nope"
+                    aria-label="Keep the countdown on the board"
+                    title="Cancel"
                     className="brut-thin brut-press flex h-9 w-9 items-center justify-center rounded-none bg-card"
                   >
                     <X className="h-4 w-4" strokeWidth={3} style={{ color: INK }} />
