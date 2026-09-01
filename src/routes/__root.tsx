@@ -170,7 +170,7 @@ function RootComponent() {
         </div>
         <SiteFooter />
       </div>
-      <Toaster position="top-center" />
+      <Toaster position="top-center" duration={1800} />
     </QueryClientProvider>
   );
 }
