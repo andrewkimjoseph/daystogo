@@ -12,6 +12,10 @@ export function SiteFooter() {
           ·
         </span>
         <span title={`Days To Go ${APP_VERSION}`}>{APP_VERSION}</span>
+        <span aria-hidden className="text-ink/30">
+          ·
+        </span>
+
         <Link to="/about" viewTransition className="underline hover:text-ink">
           About
         </Link>
