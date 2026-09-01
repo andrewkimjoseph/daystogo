@@ -3,7 +3,7 @@
   "private": true,
   "sideEffects": false,
   "type": "module",
-  "version": "0.1.0",
+  "version": "1.19.26+1",
   "scripts": {
     "dev": "vite dev",
     "build": "vite build && node scripts/patch-vercel-asset-404.mjs",
