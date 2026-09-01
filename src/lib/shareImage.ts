@@ -233,7 +233,7 @@ export async function renderCountdownShareImage(
   // Big remaining figure. Sizes are the web card's rem values scaled by the
   // canvas/card ratio (~2.4x): text-4xl (36px) -> 88, text-6xl (60px) -> 145.
   const stripH = 46;
-  const stripY = panelY + panelH - 130;
+  const stripY = panelY + panelH - 200;
   const clockStart = !lapsed && dramatic ? 145 : 88;
   const clockMin = !lapsed && dramatic ? 110 : 46;
   const clock = fitLines(ctx, lapsed ? "00:00:00" : text, contentW, 1, clockStart, clockMin, DISPLAY);
