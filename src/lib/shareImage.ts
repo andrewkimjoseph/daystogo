@@ -255,7 +255,7 @@ export async function renderCountdownShareImage(
   });
   ctx.fillStyle = muted;
   ctx.font = `22px ${SANS}`;
-  ctx.fillText(`CREATED ON ${createdDate.toUpperCase()}`, left, stripY - 20);
+  ctx.fillText(`CREATED ON ${createdDate.toUpperCase()}`, left, stripY - 44);
 
 
   // Progress segments.
