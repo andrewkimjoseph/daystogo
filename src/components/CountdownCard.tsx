@@ -351,8 +351,7 @@ export function CountdownCard({
             className="pt-1"
           >
             {confirmingDelete ? (
-              <div className="flex h-11 items-center justify-between gap-2 bg-secondary px-2">
-
+              <div className="brut-thin flex h-11 items-center justify-between gap-2 bg-secondary px-2">
                 <span className="text-sm font-bold text-secondary-foreground uppercase">
                   Delete?
                 </span>
