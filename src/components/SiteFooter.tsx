@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import pkg from "../../package.json";
 
-const APP_VERSION = `v${pkg.version}`;
+const APP_VERSION = pkg.version;
 
 export function SiteFooter() {
   return (
