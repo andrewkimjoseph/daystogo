@@ -220,7 +220,7 @@ export async function renderCountdownShareImage(
   const stripH = 46;
   const stripY = panelY + panelH - 88;
   const clockStart = !lapsed && dramatic ? 145 : 88;
-  const clockMin = !lapsed && dramatic ? 110 : 72;
+  const clockMin = !lapsed && dramatic ? 110 : 46;
   const clock = fitLines(ctx, lapsed ? "00:00:00" : text, contentW, 1, clockStart, clockMin, DISPLAY);
   const midY = (y + 24 + (stripY - 40)) / 2;
   ctx.fillStyle = lapsed ? PALETTE.cream : INK;
