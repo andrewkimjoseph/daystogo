@@ -414,7 +414,7 @@ function DayPanelRow({ countdown }: { countdown: Countdown }) {
   const Icon = meta.icon;
   const remaining = remainingMs(countdown, now);
   const lapsed = remaining <= 0;
-  const { text } = formatRemaining(remaining);
+  const { text } = formatRemaining(remaining, now, countdown.endsAt);
   const landing = new Date(Math.round(endMoment(countdown) / 1000) * 1000).toLocaleTimeString(
     undefined,
     { hour: "2-digit", minute: "2-digit", second: "2-digit" },
