@@ -36,3 +36,6 @@ dist-ssr
 .lovable/
 
 .clerk/
+
+# clerk configuration (can include secrets)
+/.clerk/
