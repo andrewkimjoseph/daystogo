@@ -166,6 +166,16 @@ export function CountdownCard({
         </>
       )}
 
+      {/* Colour-tag corner flash, bottom-right, purely decorative. */}
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute right-0 bottom-0 h-7 w-7"
+        style={{
+          backgroundColor: lapsed ? PALETTE.cream : countdown.colorTag,
+          clipPath: "polygon(100% 0, 100% 100%, 0 100%)",
+        }}
+      />
+
       <header className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p

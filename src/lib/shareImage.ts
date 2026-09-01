@@ -164,6 +164,21 @@ export async function renderCountdownShareImage(
   }
   drawPanel(ctx, panelX, panelY, panelW, panelH, fill);
 
+  // Colour-tag corner flash, inside the ink border at the bottom-right.
+  const flash = 68;
+  const inset = 8;
+  const fx = panelX + panelW - inset;
+  const fy = panelY + panelH - inset;
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(fx, fy - flash);
+  ctx.lineTo(fx, fy);
+  ctx.lineTo(fx - flash, fy);
+  ctx.closePath();
+  ctx.fillStyle = lapsed ? PALETTE.cream : countdown.colorTag;
+  ctx.fill();
+  ctx.restore();
+
   const padX = 56;
   const left = panelX + padX;
   const contentW = panelW - padX * 2;
