@@ -1,4 +1,7 @@
 import { Link } from "@tanstack/react-router";
+import pkg from "../../package.json";
+
+const APP_VERSION = `v${pkg.version}`;
 
 export function SiteFooter() {
   return (
@@ -8,6 +11,7 @@ export function SiteFooter() {
         <span aria-hidden className="text-ink/30">
           ·
         </span>
+        <span title={`Days To Go ${APP_VERSION}`}>{APP_VERSION}</span>
         <Link to="/about" viewTransition className="underline hover:text-ink">
           About
         </Link>
