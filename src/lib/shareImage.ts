@@ -255,7 +255,21 @@ export async function renderCountdownShareImage(
   });
   ctx.fillStyle = muted;
   ctx.font = `22px ${SANS}`;
-  ctx.fillText(`CREATED ON ${createdDate.toUpperCase()}`, left, stripY - 44);
+  ctx.fillStyle = muted;
+  ctx.fillText("CREATED", SIZE - M, 0);
+  ctx.textAlign = "left";
+  ctx.font = `22px ${SANS}`;
+  ctx.fillText(`CREATED / ${createdDate.toUpperCase()}`, left, stripY - 44);
+  // Downloaded date, right-aligned on the same baseline.
+  ctx.textAlign = "right";
+  ctx.fillText(`DOWNLOADED / ${new Date(now).toLocaleString(undefined, {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  }).toUpperCase()}`, SIZE - M, stripY - 44);
 
 
   // Progress segments.
