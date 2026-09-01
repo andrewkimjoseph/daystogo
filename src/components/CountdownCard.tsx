@@ -353,7 +353,7 @@ export function CountdownCard({
             {confirmingDelete ? (
               <div className="brut-thin flex flex-wrap items-center justify-between gap-2 bg-secondary p-2">
                 <span className="text-sm font-bold text-secondary-foreground uppercase">
-                  Delete this countdown for good?
+                  Delete?
                 </span>
                 <div className="flex gap-2">
                   <button
@@ -382,7 +382,7 @@ export function CountdownCard({
             ) : confirmingArchive ? (
               <div className="brut-thin flex flex-wrap items-center justify-between gap-2 p-2" style={{ backgroundColor: PALETTE.teal }}>
                 <span className="text-sm font-bold uppercase" style={{ color: PALETTE.cream }}>
-                  Archive this countdown?
+                  Archive?
                 </span>
                 <div className="flex gap-2">
                   <button
