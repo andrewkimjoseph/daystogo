@@ -253,19 +253,36 @@ export async function renderCountdownShareImage(
     minute: "2-digit",
     second: "2-digit",
   });
-  ctx.fillStyle = muted;
-  ctx.font = `22px ${SANS}`;
-  ctx.fillText(`CREATED / ${createdDate.toUpperCase()}`, left, stripY - 44);
-  // Downloaded date, right-aligned on the same baseline.
-  ctx.textAlign = "right";
-  ctx.fillText(`DOWNLOADED / ${new Date(now).toLocaleString(undefined, {
+  // Both timestamps share one row and must stay inside the panel. Shrink the
+  // type until CREATED + gap + DOWNLOADED fits the padded content width.
+  const createdText = `CREATED / ${createdDate.toUpperCase()}`;
+  const downloadedDate = new Date(now).toLocaleString(undefined, {
     day: "numeric",
     month: "short",
     year: "numeric",
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
-  }).toUpperCase()}`, SIZE - M, stripY - 44);
+  }).toUpperCase();
+  const downloadedText = `DOWNLOADED / ${downloadedDate}`;
+  const stampGap = 32;
+  let stampSize = 22;
+  for (; stampSize >= 14; stampSize -= 2) {
+    ctx.font = `${stampSize}px ${SANS}`;
+    if (
+      ctx.measureText(createdText).width +
+        stampGap +
+        ctx.measureText(downloadedText).width <=
+      contentW
+    ) {
+      break;
+    }
+  }
+  ctx.font = `${stampSize}px ${SANS}`;
+  ctx.fillText(createdText, left, stripY - 44);
+  // Right-aligned to the padded edge, never past the ink border.
+  ctx.textAlign = "right";
+  ctx.fillText(downloadedText, left + contentW, stripY - 44);
 
 
   // Progress segments.
