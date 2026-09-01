@@ -122,7 +122,7 @@ export function CountdownCard({
 
   const remaining = remainingMs(countdown, now);
   const lapsed = remaining <= 0;
-  const { text, dramatic } = formatRemaining(remaining);
+  const { text, dramatic, length } = formatRemaining(remaining, now, countdown.endsAt);
   const pct = lapsed ? 100 : progressPercent(countdown.startedAt, countdown.endsAt, remaining);
   const filled = Math.round((pct / 100) * SEGMENTS);
   const urgent = !lapsed && countdown.status === "running" && remaining <= 60_000;
