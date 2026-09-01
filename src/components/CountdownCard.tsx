@@ -201,11 +201,20 @@ export function CountdownCard({
 
 
       <p
-        className={`tick-numerals ${!lapsed && dramatic ? "text-4xl sm:text-6xl" : "text-3xl sm:text-4xl"} ${urgent ? "animate-pulse-hard" : ""}`}
+        className={`tick-numerals whitespace-nowrap ${
+          !lapsed && dramatic
+            ? "text-4xl sm:text-6xl"
+            : length > 20
+              ? "text-xl sm:text-2xl"
+              : length > 16
+                ? "text-2xl sm:text-3xl"
+                : "text-3xl sm:text-4xl"
+        } ${urgent ? "animate-pulse-hard" : ""}`}
         style={{ color: lapsed ? PALETTE.cream : urgent ? PALETTE.red : "var(--ink)" }}
       >
         {text}
       </p>
+
 
       <div
         aria-hidden={!(editing && revealed) || lapsed}
