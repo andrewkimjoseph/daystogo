@@ -10,6 +10,19 @@ import { INK, PALETTE } from "./palette";
 const SIZE = 1080;
 /** Supersample factor: all drawing stays in 1080-space, output is SIZE * SCALE px. */
 const SCALE = 4;
+/**
+ * Mobile Safari caps canvas dimensions (4096px) and total area; anything above
+ * that silently drops draw calls. Pick the largest safe supersample factor.
+ */
+function pickScale(): number {
+  const MAX_DIM = 4096;
+  const MAX_AREA = 16_777_216;
+  for (let s = SCALE; s > 1; s -= 1) {
+    if (SIZE * s <= MAX_DIM && (SIZE * s) ** 2 <= MAX_AREA) return s;
+  }
+  return 2;
+}
+
 const SEGMENTS = 16;
 
 const DISPLAY = '"Archivo Black", "Arial Black", system-ui, sans-serif';
@@ -126,13 +139,15 @@ export async function renderCountdownShareImage(
   await document.fonts?.ready?.catch?.(() => undefined);
   const [logo, hourglass] = await Promise.all([loadImage("/logo.png"), loadImage("/hourglass.svg")]);
 
+  const scale = pickScale();
   const canvas = document.createElement("canvas");
-  canvas.width = SIZE * SCALE;
-  canvas.height = SIZE * SCALE;
+  canvas.width = SIZE * scale;
+  canvas.height = SIZE * scale;
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("Canvas is unavailable in this browser.");
-  // Draw everything at 1x coordinates, rasterised at SCALE for crisp type and edges.
-  ctx.scale(SCALE, SCALE);
+  // Draw everything at 1x coordinates, rasterised at scale for crisp type and edges.
+  ctx.scale(scale, scale);
+
   ctx.imageSmoothingEnabled = true;
   ctx.imageSmoothingQuality = "high";
 
@@ -267,7 +282,8 @@ export async function renderCountdownShareImage(
   const downloadedText = `DOWNLOADED / ${downloadedDate}`;
   const stampGap = 32;
   let stampSize = 22;
-  for (; stampSize >= 14; stampSize -= 2) {
+  let fitsOneRow = false;
+  for (; stampSize >= 12; stampSize -= 2) {
     ctx.font = `${stampSize}px ${SANS}`;
     if (
       ctx.measureText(createdText).width +
@@ -275,14 +291,28 @@ export async function renderCountdownShareImage(
         ctx.measureText(downloadedText).width <=
       contentW
     ) {
+      fitsOneRow = true;
       break;
     }
   }
+  if (!fitsOneRow) stampSize = 18;
+  ctx.fillStyle = muted;
   ctx.font = `${stampSize}px ${SANS}`;
-  ctx.fillText(createdText, left, stripY - 44);
-  // Right-aligned to the padded edge, never past the ink border.
-  ctx.textAlign = "right";
-  ctx.fillText(downloadedText, left + contentW, stripY - 44);
+  const stampBaseline = stripY - 44;
+  if (fitsOneRow) {
+    ctx.textAlign = "left";
+    ctx.fillText(createdText, left, stampBaseline);
+    // Right-aligned to the padded edge, never past the ink border.
+    ctx.textAlign = "right";
+    ctx.fillText(downloadedText, left + contentW, stampBaseline);
+  } else {
+    // Narrow/fallback fonts: stack the two stamps so DOWNLOADED never gets
+    // clipped or overlapped by CREATED.
+    ctx.textAlign = "left";
+    ctx.fillText(createdText, left, stampBaseline - stampSize - 6);
+    ctx.fillText(downloadedText, left, stampBaseline);
+  }
+
 
 
   // Progress segments.
