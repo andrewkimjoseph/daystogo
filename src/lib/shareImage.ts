@@ -282,7 +282,8 @@ export async function renderCountdownShareImage(
   const downloadedText = `DOWNLOADED / ${downloadedDate}`;
   const stampGap = 32;
   let stampSize = 22;
-  for (; stampSize >= 14; stampSize -= 2) {
+  let fitsOneRow = false;
+  for (; stampSize >= 12; stampSize -= 2) {
     ctx.font = `${stampSize}px ${SANS}`;
     if (
       ctx.measureText(createdText).width +
@@ -290,14 +291,28 @@ export async function renderCountdownShareImage(
         ctx.measureText(downloadedText).width <=
       contentW
     ) {
+      fitsOneRow = true;
       break;
     }
   }
+  if (!fitsOneRow) stampSize = 18;
+  ctx.fillStyle = muted;
   ctx.font = `${stampSize}px ${SANS}`;
-  ctx.fillText(createdText, left, stripY - 44);
-  // Right-aligned to the padded edge, never past the ink border.
-  ctx.textAlign = "right";
-  ctx.fillText(downloadedText, left + contentW, stripY - 44);
+  const stampBaseline = stripY - 44;
+  if (fitsOneRow) {
+    ctx.textAlign = "left";
+    ctx.fillText(createdText, left, stampBaseline);
+    // Right-aligned to the padded edge, never past the ink border.
+    ctx.textAlign = "right";
+    ctx.fillText(downloadedText, left + contentW, stampBaseline);
+  } else {
+    // Narrow/fallback fonts: stack the two stamps so DOWNLOADED never gets
+    // clipped or overlapped by CREATED.
+    ctx.textAlign = "left";
+    ctx.fillText(createdText, left, stampBaseline - stampSize - 6);
+    ctx.fillText(downloadedText, left, stampBaseline);
+  }
+
 
 
   // Progress segments.
