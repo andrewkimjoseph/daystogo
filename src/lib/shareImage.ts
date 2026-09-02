@@ -10,6 +10,19 @@ import { INK, PALETTE } from "./palette";
 const SIZE = 1080;
 /** Supersample factor: all drawing stays in 1080-space, output is SIZE * SCALE px. */
 const SCALE = 4;
+/**
+ * Mobile Safari caps canvas dimensions (4096px) and total area; anything above
+ * that silently drops draw calls. Pick the largest safe supersample factor.
+ */
+function pickScale(): number {
+  const MAX_DIM = 4096;
+  const MAX_AREA = 16_777_216;
+  for (let s = SCALE; s > 1; s -= 1) {
+    if (SIZE * s <= MAX_DIM && (SIZE * s) ** 2 <= MAX_AREA) return s;
+  }
+  return 2;
+}
+
 const SEGMENTS = 16;
 
 const DISPLAY = '"Archivo Black", "Arial Black", system-ui, sans-serif';
