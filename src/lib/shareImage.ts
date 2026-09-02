@@ -139,13 +139,15 @@ export async function renderCountdownShareImage(
   await document.fonts?.ready?.catch?.(() => undefined);
   const [logo, hourglass] = await Promise.all([loadImage("/logo.png"), loadImage("/hourglass.svg")]);
 
+  const scale = pickScale();
   const canvas = document.createElement("canvas");
-  canvas.width = SIZE * SCALE;
-  canvas.height = SIZE * SCALE;
+  canvas.width = SIZE * scale;
+  canvas.height = SIZE * scale;
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("Canvas is unavailable in this browser.");
-  // Draw everything at 1x coordinates, rasterised at SCALE for crisp type and edges.
-  ctx.scale(SCALE, SCALE);
+  // Draw everything at 1x coordinates, rasterised at scale for crisp type and edges.
+  ctx.scale(scale, scale);
+
   ctx.imageSmoothingEnabled = true;
   ctx.imageSmoothingQuality = "high";
 
