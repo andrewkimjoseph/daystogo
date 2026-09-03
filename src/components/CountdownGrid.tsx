@@ -101,7 +101,7 @@ export function CountdownGrid({ variant = "active" }: { variant?: "active" | "ar
                     : { backgroundColor: "var(--cream)" }
                 }
               >
-                {cat.label}
+                {cat.emoji} {cat.label}
               </button>
             );
           })}
