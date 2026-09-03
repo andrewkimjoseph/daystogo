@@ -33,7 +33,6 @@ export interface CategoryMeta {
   label: string;
   hint: string;
   icon: LucideIcon;
-  emoji: string;
 }
 
 export const CATEGORIES: CategoryMeta[] = [
