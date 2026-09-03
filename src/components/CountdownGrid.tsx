@@ -86,7 +86,12 @@ export function CountdownGrid({ variant = "active" }: { variant?: "active" | "ar
       )}
       {used.length > 1 && (
         <div className="flex flex-wrap gap-2">
-          {[{ key: "all" as const, label: "All" }, ...used].map((cat) => {
+        {(
+          [
+            { key: "all" as const, label: "All", emoji: null },
+            ...used,
+          ] as { key: CountdownCategory | "all"; label: string; emoji: string | null }[]
+        ).map((cat) => {
             const on = filter === cat.key;
             return (
               <button
@@ -101,7 +106,7 @@ export function CountdownGrid({ variant = "active" }: { variant?: "active" | "ar
                     : { backgroundColor: "var(--cream)" }
                 }
               >
-                {cat.emoji} {cat.label}
+                {cat.emoji ? `${cat.emoji} ${cat.label}` : cat.label}
               </button>
             );
           })}
