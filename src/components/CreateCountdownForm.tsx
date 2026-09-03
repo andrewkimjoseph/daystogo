@@ -188,7 +188,9 @@ export function CreateCountdownForm({ initialDate }: { initialDate?: string }) {
                 }
               >
                 <Icon className="h-4 w-4 shrink-0" strokeWidth={3} />
-                <span className="min-w-0 break-words">{c.label}</span>
+                <span className="min-w-0 break-words">
+                  <span aria-hidden>{c.emoji}</span> {c.label}
+                </span>
               </button>
             );
           })}
