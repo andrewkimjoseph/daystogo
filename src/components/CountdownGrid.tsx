@@ -1,3 +1,4 @@
+import type { LucideIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAuth, SignInButton } from "@clerk/tanstack-react-start";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -88,9 +89,9 @@ export function CountdownGrid({ variant = "active" }: { variant?: "active" | "ar
         <div className="flex flex-wrap gap-2">
         {(
           [
-            { key: "all" as const, label: "All", emoji: null },
+            { key: "all" as const, label: "All", icon: null },
             ...used,
-          ] as { key: CountdownCategory | "all"; label: string; emoji: string | null }[]
+          ] as { key: CountdownCategory | "all"; label: string; icon: LucideIcon | null }[]
         ).map((cat) => {
             const on = filter === cat.key;
             return (
@@ -106,7 +107,10 @@ export function CountdownGrid({ variant = "active" }: { variant?: "active" | "ar
                     : { backgroundColor: "var(--cream)" }
                 }
               >
-                {cat.emoji ? `${cat.emoji} ${cat.label}` : cat.label}
+                <span className="flex items-center gap-1.5">
+                  {cat.icon ? <cat.icon className="h-3.5 w-3.5 shrink-0" strokeWidth={3} /> : null}
+                  {cat.label}
+                </span>
               </button>
             );
           })}
