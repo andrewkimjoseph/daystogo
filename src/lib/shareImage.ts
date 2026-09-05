@@ -245,13 +245,13 @@ export async function renderCountdownShareImage(
     ctx.fillText(formatTargetLabel(countdown.targetAt).toUpperCase(), left, y);
   }
 
-  // Big remaining figure. Sizes are the web card's rem values scaled by the
-  // canvas/card ratio (~2.4x): text-4xl (36px) -> 88, text-6xl (60px) -> 145.
+  // Big remaining figure. Use one size for every state (running, lapsed,
+  // final-minute) so the downloadable matches the web card's uniform timer.
+  // 64px is the largest size that still fits the longest readout in the panel.
   const stripH = 46;
   const stripY = panelY + panelH - 200;
-  const clockStart = !lapsed && dramatic ? 145 : 88;
-  const clockMin = !lapsed && dramatic ? 110 : 46;
-  const clock = fitLines(ctx, lapsed ? "00:00:00" : text, contentW, 1, clockStart, clockMin, DISPLAY);
+  const TIMER_SIZE = 64;
+  const clock = fitLines(ctx, text, contentW, 1, TIMER_SIZE, TIMER_SIZE, DISPLAY);
   const midY = (y + 24 + (stripY - 40)) / 2;
   ctx.fillStyle = lapsed ? PALETTE.cream : INK;
   ctx.font = `${clock.size}px ${DISPLAY}`;
