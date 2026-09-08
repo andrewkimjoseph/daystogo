@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, Shield, FileText } from "lucide-react";
+import { ArrowLeft, Github, Linkedin, Mail, Shield, FileText } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { PALETTE } from "@/lib/palette";
+import { socialLinks } from "@/lib/socials";
 
 
 export const Route = createFileRoute("/about")({
@@ -30,8 +31,8 @@ export const Route = createFileRoute("/about")({
           "@context": "https://schema.org",
           "@type": "Person",
           name: "Andrew Kim Joseph",
-          url: "https://x.com/andrewkimjoseph",
-          sameAs: ["https://x.com/andrewkimjoseph"],
+          url: socialLinks.x,
+          sameAs: [socialLinks.x, socialLinks.github, socialLinks.linkedin],
         }),
       },
     ],
