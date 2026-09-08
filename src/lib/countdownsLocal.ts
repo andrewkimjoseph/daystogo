@@ -1,6 +1,7 @@
 import { getDb, type Countdown, type SyncMeta } from "./db";
 import type { CountdownCategory } from "./categories";
 import { rollbackColorTag } from "./palette";
+import { advanceRecurring, isRecurring } from "./recurrence";
 
 export const countdownsLocal = {
   async all(): Promise<Countdown[]> {
@@ -102,7 +103,7 @@ export const countdownsLocal = {
       });
     const due = [...patched, ...rows.filter((c) => c.status === "running").map(get)]
       .filter((c) => c.endsAt <= now)
-      .map((c) => ({ ...c, status: "lapsed" as const, updatedAt: now }));
+      .map((c) => advanceRecurring(c, now) ?? { ...c, status: "lapsed" as const, updatedAt: now });
 
     for (const c of [...patched, ...due]) byId.set(c.id, c);
 
@@ -110,6 +111,13 @@ export const countdownsLocal = {
     // end is still in the future was marked by a stale clock — put it back.
     for (const c of rows) {
       const next = byId.get(c.id) ?? c;
+      if (next.status === "lapsed" && isRecurring(next)) {
+        const advanced = advanceRecurring({ ...next, status: "running" }, now);
+        if (advanced) {
+          byId.set(c.id, advanced);
+          continue;
+        }
+      }
       if (next.status === "lapsed" && next.endsAt > now) {
         byId.set(c.id, { ...next, status: "running", hasCelebrated: false, updatedAt: now });
       }

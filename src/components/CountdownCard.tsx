@@ -3,6 +3,7 @@ import { Archive, ArchiveRestore, Check, Download, Pencil, Trash2, X } from "luc
 import { toast } from "sonner";
 import type { Countdown } from "@/lib/db";
 import { countdownsRepo, remainingMs } from "@/lib/countdownsRepo";
+import { isRecurring, recurrenceLabel } from "@/lib/recurrence";
 import { formatRemaining, progressPercent } from "@/lib/formatTime";
 import { formatTargetLabel } from "@/lib/localTime";
 import { downloadCountdownImage } from "@/lib/shareImage";
@@ -18,6 +19,8 @@ const SEGMENTS = 16;
 
 /** Ids already celebrated this session — survives effect teardown/re-runs. */
 const celebrated = new Set<string>();
+/** Recurring clocks currently advancing — blocks a second restart/confetti burst. */
+const restarting = new Set<string>();
 
 export function CountdownCard({
   countdown,
@@ -132,6 +135,23 @@ export function CountdownCard({
   // below re-render this card, which would otherwise cancel the effect midway.
   useEffect(() => {
     if (!lapsed) return;
+
+    if (!isArchived && isRecurring(countdown)) {
+      if (restarting.has(countdown.id)) return;
+      if (!celebrated.has(countdown.id)) {
+        celebrated.add(countdown.id);
+        burstConfetti(cardRef.current);
+        playSound("lapsed");
+      }
+      restarting.add(countdown.id);
+      void countdownsRepo.restart(countdown).finally(() => {
+        restarting.delete(countdown.id);
+        celebrated.delete(countdown.id);
+        onChanged();
+      });
+      return;
+    }
+
     if (!countdown.hasCelebrated && !celebrated.has(countdown.id)) {
       celebrated.add(countdown.id);
       burstConfetti(cardRef.current);
@@ -143,12 +163,13 @@ export function CountdownCard({
     }
     onChanged();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lapsed, countdown.id, countdown.status, countdown.hasCelebrated]);
+  }, [lapsed, countdown.id, countdown.status, countdown.hasCelebrated, countdown.recurrence]);
 
 
   const tagColor = lapsed ? PALETTE.red : countdown.colorTag;
   const category = categoryMeta(countdown.category);
   const CategoryIcon = category.icon;
+  const repeats = recurrenceLabel(countdown.recurrence);
 
   return (
     <article
@@ -197,6 +218,14 @@ export function CountdownCard({
               style={{ color: lapsed ? PALETTE.cream : "var(--muted-foreground)" }}
             >
               {formatTargetLabel(countdown.targetAt)}
+            </p>
+          )}
+          {repeats && (
+            <p
+              className="mt-1 text-xs font-bold uppercase"
+              style={{ color: lapsed ? PALETTE.cream : "var(--muted-foreground)" }}
+            >
+              {repeats}
             </p>
           )}
         </div>

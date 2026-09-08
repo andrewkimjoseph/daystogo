@@ -42,6 +42,7 @@ export const countdowns = pgTable(
     category: text("category"),
     hasCelebrated: boolean("has_celebrated").notNull().default(false),
     archivedAt: bigint("archived_at", { mode: "number" }),
+    recurrence: text("recurrence"),
     createdAt: bigint("created_at", { mode: "number" }).notNull(),
     updatedAt: bigint("updated_at", { mode: "number" }).notNull(),
   },
