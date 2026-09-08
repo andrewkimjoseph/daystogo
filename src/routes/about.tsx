@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, Shield, FileText } from "lucide-react";
+import { ArrowLeft, Github, Linkedin, Mail, Shield, FileText } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { PALETTE } from "@/lib/palette";
+import { socialLinks } from "@/lib/socials";
 
 
 export const Route = createFileRoute("/about")({
@@ -30,8 +31,8 @@ export const Route = createFileRoute("/about")({
           "@context": "https://schema.org",
           "@type": "Person",
           name: "Andrew Kim Joseph",
-          url: "https://x.com/andrewkimjoseph",
-          sameAs: ["https://x.com/andrewkimjoseph"],
+          url: socialLinks.x,
+          sameAs: [socialLinks.x, socialLinks.github, socialLinks.linkedin],
         }),
       },
     ],
@@ -93,17 +94,45 @@ function AboutPage() {
           <p className="mt-2 text-base text-muted-foreground">
             Days To Go is a project by Andrew Kim Joseph. Say hi:
           </p>
-          <a
-            href="https://x.com/andrewkimjoseph"
-            target="_blank"
-            rel="noreferrer"
-            className="brut brut-press mt-4 inline-flex items-center gap-3 rounded-none bg-primary px-6 py-4 text-lg font-bold uppercase text-primary-foreground"
-          >
-            <svg className="h-6 w-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-            </svg>
-            X
-          </a>
+          <div className="mt-4 flex flex-wrap gap-3">
+            <a
+              href={socialLinks.x}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="X / Twitter"
+              className="brut brut-press inline-flex h-12 w-12 items-center justify-center rounded-none bg-primary text-primary-foreground"
+            >
+              <svg className="h-6 w-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+              </svg>
+            </a>
+            <a
+              href={socialLinks.github}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="GitHub"
+              className="brut brut-press inline-flex h-12 w-12 items-center justify-center rounded-none bg-primary text-primary-foreground"
+            >
+              <Github className="h-6 w-6" strokeWidth={2} aria-hidden="true" />
+            </a>
+            <a
+              href={socialLinks.linkedin}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="LinkedIn"
+              className="brut brut-press inline-flex h-12 w-12 items-center justify-center rounded-none bg-primary text-primary-foreground"
+            >
+              <Linkedin className="h-6 w-6" strokeWidth={2} aria-hidden="true" />
+            </a>
+            <a
+              href={`mailto:${socialLinks.email}`}
+              rel="noreferrer"
+              aria-label="Email"
+              className="brut brut-press inline-flex h-12 w-12 items-center justify-center rounded-none bg-primary text-primary-foreground"
+            >
+              <Mail className="h-6 w-6" strokeWidth={2} aria-hidden="true" />
+            </a>
+          </div>
         </section>
 
         <section className="mt-8">
