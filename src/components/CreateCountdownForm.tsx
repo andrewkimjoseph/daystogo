@@ -4,6 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { COUNTDOWNS_QUERY_KEY, countdownsRepo, validateSeconds } from "@/lib/countdownsRepo";
 import { COLOR_TAGS, PALETTE, tagTextColor } from "@/lib/palette";
 import { CATEGORIES, type CountdownCategory } from "@/lib/categories";
+import { RECURRENCE_OPTIONS, type Recurrence } from "@/lib/recurrence";
 import { playSound } from "@/lib/soundManager";
 import { localInputValue, spanFromNow } from "@/lib/localTime";
 import { BrutalCalendar, BrutalTimeField } from "./BrutalDateTimePicker";
@@ -87,9 +88,11 @@ export function CreateCountdownForm({ initialDate }: { initialDate?: string }) {
   const [targetInput, setTargetInput] = useState("");
   const [colorTag, setColorTag] = useState<string>(PALETTE.teal);
   const [category, setCategory] = useState<CountdownCategory>("other");
+  const [recurrence, setRecurrence] = useState<Recurrence>("none");
   const [error, setError] = useState<string | null>(null);
 
   const activeCategory = CATEGORIES.find((c) => c.key === category)!;
+  const activeRecurrence = RECURRENCE_OPTIONS.find((o) => o.key === recurrence)!;
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -113,7 +116,7 @@ export function CreateCountdownForm({ initialDate }: { initialDate?: string }) {
       setError(problem);
       return;
     }
-    await countdownsRepo.create({ mode: "target", title, targetAt, colorTag, category });
+    await countdownsRepo.create({ mode: "target", title, targetAt, colorTag, category, recurrence });
     await queryClient.invalidateQueries({ queryKey: COUNTDOWNS_QUERY_KEY });
 
     playSound("start");
@@ -196,6 +199,30 @@ export function CreateCountdownForm({ initialDate }: { initialDate?: string }) {
           })}
         </div>
         <p className="mt-3 text-sm font-bold text-muted-foreground">{activeCategory.hint}</p>
+
+        <span className="mt-5 mb-2 block text-xs font-bold uppercase sm:mt-6">Repeat</span>
+        <div className="grid grid-cols-2 gap-2">
+          {RECURRENCE_OPTIONS.map((o) => {
+            const on = recurrence === o.key;
+            return (
+              <button
+                key={o.key}
+                type="button"
+                onClick={() => setRecurrence(o.key)}
+                aria-pressed={on}
+                className="brut-thin brut-press min-h-[44px] rounded-none px-2 py-2 text-left text-[11px] font-bold uppercase"
+                style={
+                  on
+                    ? { backgroundColor: PALETTE.teal, color: PALETTE.cream }
+                    : { backgroundColor: "var(--cream)" }
+                }
+              >
+                {o.label}
+              </button>
+            );
+          })}
+        </div>
+        <p className="mt-3 text-sm font-bold text-muted-foreground">{activeRecurrence.hint}</p>
       </div>
 
       {/* Right column: when it lands */}

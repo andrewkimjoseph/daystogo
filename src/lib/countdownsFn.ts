@@ -1,8 +1,9 @@
 import { desc, eq, isNotNull, isNull } from "drizzle-orm";
 import { createServerFn } from "@tanstack/react-start";
-import type { Countdown, CountdownMode, CountdownStatus, DurationType } from "@/lib/db";
+import type { Countdown, CountdownMode, CountdownStatus, DurationType, Recurrence } from "@/lib/db";
 import type { CountdownCategory } from "@/lib/categories";
 import { rollbackColorTag } from "@/lib/palette";
+import { advanceRecurring, isRecurring } from "@/lib/recurrence";
 import { getAuthedDb, runWithClaims, runWithClaimsMany } from "./server/db";
 import { countdowns, type CountdownRow } from "./server/schema";
 
@@ -29,6 +30,7 @@ function fromRow(row: CountdownRow): Countdown {
     category: (row.category as CountdownCategory | null) ?? undefined,
     hasCelebrated: row.hasCelebrated,
     archivedAt: n(row.archivedAt),
+    recurrence: (row.recurrence as Recurrence | null) ?? undefined,
     createdAt: n(row.createdAt) ?? 0,
     updatedAt: n(row.updatedAt) ?? 0,
   };
@@ -52,6 +54,7 @@ function toInsert(row: Countdown, userId: string) {
     category: row.category ?? "other",
     hasCelebrated: row.hasCelebrated,
     archivedAt: row.archivedAt ?? null,
+    recurrence: row.recurrence ?? null,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
   };
@@ -162,6 +165,35 @@ export const markCelebratedFn = createServerFn({ method: "POST" })
     );
   });
 
+export const restartCountdownFn = createServerFn({ method: "POST" })
+  .validator((data: Countdown) => data)
+  .handler(async ({ data }) => {
+    const { db, userId } = await getAuthedDb();
+    const now = Date.now();
+    const rows = await runWithClaims<CountdownRow[]>(
+      db,
+      userId,
+      db
+        .update(countdowns)
+        .set({
+          targetAt: data.targetAt ?? null,
+          durationType: data.durationType,
+          durationValue: data.durationValue,
+          durationSeconds: data.durationSeconds,
+          startedAt: data.startedAt,
+          endsAt: data.endsAt,
+          status: data.status,
+          hasCelebrated: data.hasCelebrated,
+          updatedAt: now,
+        })
+        .where(eq(countdowns.id, data.id))
+        .returning(),
+    );
+    const row = rows[0];
+    if (!row) throw new Error("Failed to restart countdown");
+    return fromRow(row);
+  });
+
 export const removeCountdownFn = createServerFn({ method: "POST" })
   .validator((data: { id: string }) => data)
   .handler(async ({ data }) => {
@@ -214,8 +246,17 @@ export const reconcileCountdownsFn = createServerFn({ method: "POST" }).handler(
     }
 
     if (next.status === "running" && next.endsAt <= now) {
-      next = { ...next, status: "lapsed", updatedAt: now };
+      const advanced = advanceRecurring(next, now);
+      next = advanced ?? { ...next, status: "lapsed", updatedAt: now };
       dirty = true;
+    }
+
+    if (next.status === "lapsed" && isRecurring(next)) {
+      const advanced = advanceRecurring({ ...next, status: "running" }, now);
+      if (advanced) {
+        next = advanced;
+        dirty = true;
+      }
     }
 
     if (next.status === "lapsed" && next.endsAt > now) {
@@ -231,7 +272,12 @@ export const reconcileCountdownsFn = createServerFn({ method: "POST" }).handler(
         .set({
           colorTag: next.colorTag,
           status: next.status,
+          targetAt: next.targetAt ?? null,
+          startedAt: next.startedAt,
           endsAt: next.endsAt,
+          durationType: next.durationType,
+          durationValue: next.durationValue,
+          durationSeconds: next.durationSeconds,
           pausedRemainingMs: next.pausedRemainingMs ?? null,
           hasCelebrated: next.hasCelebrated,
           updatedAt: next.updatedAt,

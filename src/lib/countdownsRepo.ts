@@ -1,7 +1,8 @@
-import { getDb, type Countdown, type DurationType } from "./db";
+import { getDb, type Countdown, type DurationType, type Recurrence } from "./db";
 import type { CountdownCategory } from "./categories";
 import { countdownsLocal } from "./countdownsLocal";
 import { isCloudSync, shouldSkipCloudReconcile } from "./syncMode";
+import { advanceRecurring, describeSeconds } from "./recurrence";
 import {
   archiveCountdownFn,
   createCountdownFn,
@@ -13,6 +14,7 @@ import {
   markLapsedFn,
   reconcileCountdownsFn,
   removeCountdownFn,
+  restartCountdownFn,
   unarchiveCountdownFn,
   updateTagsFn,
 } from "./countdownsFn";
@@ -48,6 +50,7 @@ export interface NewDurationInput {
   durationValue: number;
   colorTag: string;
   category?: CountdownCategory;
+  recurrence?: Recurrence;
 }
 
 export interface NewTargetInput {
@@ -57,17 +60,10 @@ export interface NewTargetInput {
   targetAt: number;
   colorTag: string;
   category?: CountdownCategory;
+  recurrence?: Recurrence;
 }
 
 export type NewCountdownInput = NewDurationInput | NewTargetInput;
-
-/** Best-fit duration unit/value for a raw span, so restart + labels keep working. */
-function describeSeconds(seconds: number): { type: DurationType; value: number } {
-  if (seconds % 86400 === 0) return { type: "days", value: seconds / 86400 };
-  if (seconds % 3600 === 0) return { type: "hours", value: seconds / 3600 };
-  if (seconds % 60 === 0) return { type: "minutes", value: seconds / 60 };
-  return { type: "seconds", value: seconds };
-}
 
 /** Shared validation for both creation modes. Returns null when valid. */
 export function validateSeconds(seconds: number): string | null {
@@ -143,6 +139,10 @@ export const countdownsRepo = {
       colorTag: input.colorTag,
       category: input.category ?? "other",
       hasCelebrated: false,
+      recurrence:
+        input.recurrence === "daily" || input.recurrence === "weekly" || input.recurrence === "monthly"
+          ? input.recurrence
+          : undefined,
       createdAt: now,
       updatedAt: now,
     };
@@ -174,6 +174,17 @@ export const countdownsRepo = {
       return;
     }
     await countdownsLocal.markLapsed(id);
+  },
+
+  async restart(countdown: Countdown): Promise<Countdown | null> {
+    const next = advanceRecurring(countdown, Date.now());
+    if (!next) return null;
+    if (isCloudSync()) {
+      const saved = await restartCountdownFn({ data: next });
+      await mirrorLocal(() => countdownsLocal.put(saved));
+      return saved;
+    }
+    return countdownsLocal.put(next);
   },
 
   async markCelebrated(id: string): Promise<void> {

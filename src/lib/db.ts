@@ -4,6 +4,8 @@ import type { CountdownCategory } from "./categories";
 export type DurationType = "seconds" | "minutes" | "hours" | "days";
 export type CountdownStatus = "running" | "paused" | "lapsed";
 export type CountdownMode = "duration" | "target";
+/** Absent / `"none"` on older rows means the clock does not repeat. */
+export type Recurrence = "none" | "daily" | "weekly" | "monthly";
 
 /**
  * Flat, SQL-friendly shape. Keep it portable: no nested objects, no Dexie-only
@@ -29,6 +31,8 @@ export interface Countdown {
   hasCelebrated: boolean;
   /** Epoch ms the user archived this row; undefined means it's still on the board. */
   archivedAt?: number | undefined;
+  /** Absent on rows created before recurrence existed — treat as `"none"`. */
+  recurrence?: Recurrence | undefined;
   createdAt: number;
   updatedAt: number;
 }
