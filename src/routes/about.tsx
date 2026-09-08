@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Github, ArrowLeft, Shield, FileText } from "lucide-react";
+import { ArrowLeft, Shield, FileText } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { PALETTE } from "@/lib/palette";
 
@@ -30,8 +30,8 @@ export const Route = createFileRoute("/about")({
           "@context": "https://schema.org",
           "@type": "Person",
           name: "Andrew Kim Joseph",
-          url: "https://github.com/andrewkimjoseph",
-          sameAs: ["https://github.com/andrewkimjoseph"],
+          url: "https://x.com/andrewkimjoseph",
+          sameAs: ["https://x.com/andrewkimjoseph"],
         }),
       },
     ],
@@ -94,13 +94,15 @@ function AboutPage() {
             Days To Go is a project by Andrew Kim Joseph. Say hi:
           </p>
           <a
-            href="https://github.com/andrewkimjoseph"
+            href="https://x.com/andrewkimjoseph"
             target="_blank"
             rel="noreferrer"
             className="brut brut-press mt-4 inline-flex items-center gap-3 rounded-none bg-primary px-6 py-4 text-lg font-bold uppercase text-primary-foreground"
           >
-            <Github className="h-6 w-6" strokeWidth={3} />
-            GitHub
+            <svg className="h-6 w-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+            </svg>
+            X
           </a>
         </section>
 
