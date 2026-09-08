@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Github, ArrowLeft, Shield, FileText } from "lucide-react";
+import { ArrowLeft, Shield, FileText } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { PALETTE } from "@/lib/palette";
 
