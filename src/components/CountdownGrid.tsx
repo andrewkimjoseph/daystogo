@@ -28,7 +28,7 @@ export function CountdownGrid({ variant = "active" }: { variant?: "active" | "ar
   };
 
   useEffect(() => {
-    if (!isLoaded) return;
+    if (!isLoaded || isSignedIn) return;
     void (async () => {
       await countdownsRepo.reconcile();
       onChanged();

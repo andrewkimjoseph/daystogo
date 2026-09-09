@@ -1,4 +1,4 @@
-import { desc, eq, isNotNull, isNull } from "drizzle-orm";
+import { desc, eq, inArray, isNotNull, isNull } from "drizzle-orm";
 import { createServerFn } from "@tanstack/react-start";
 import type { Countdown, CountdownMode, CountdownStatus, DurationType, Recurrence } from "@/lib/db";
 import type { CountdownCategory } from "@/lib/categories";
@@ -198,7 +198,32 @@ export const removeCountdownFn = createServerFn({ method: "POST" })
   .validator((data: { id: string }) => data)
   .handler(async ({ data }) => {
     const { db, userId } = await getAuthedDb();
-    await runWithClaims(db, userId, db.delete(countdowns).where(eq(countdowns.id, data.id)));
+    const rows = await runWithClaims<CountdownRow[]>(
+      db,
+      userId,
+      db.delete(countdowns).where(eq(countdowns.id, data.id)).returning(),
+    );
+    if (!rows[0]) throw new Error("Countdown was not deleted");
+  });
+
+export const removeCountdownsFn = createServerFn({ method: "POST" })
+  .validator((data: { ids: string[] }) => data)
+  .handler(async ({ data }) => {
+    const ids = [...new Set(data.ids)].filter(Boolean);
+    if (ids.length === 0) return { deleted: 0 };
+    const { db, userId } = await getAuthedDb();
+    const CHUNK = 50;
+    let deleted = 0;
+    for (let i = 0; i < ids.length; i += CHUNK) {
+      const chunk = ids.slice(i, i + CHUNK);
+      const rows = await runWithClaims<CountdownRow[]>(
+        db,
+        userId,
+        db.delete(countdowns).where(inArray(countdowns.id, chunk)).returning(),
+      );
+      deleted += rows.length;
+    }
+    return { deleted };
   });
 
 export const importLocalCountdownsFn = createServerFn({ method: "POST" })

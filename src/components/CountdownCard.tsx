@@ -388,8 +388,13 @@ export function CountdownCard({
                   <button
                     type="button"
                     onClick={async () => {
-                      await countdownsRepo.remove(countdown.id);
-                      onChanged();
+                      try {
+                        await countdownsRepo.remove(countdown.id);
+                        onChanged();
+                      } catch (error) {
+                        console.error(error);
+                        toast.error("Couldn't delete that countdown. Try again.");
+                      }
                     }}
                     aria-label="Delete countdown"
                     title="Delete"
