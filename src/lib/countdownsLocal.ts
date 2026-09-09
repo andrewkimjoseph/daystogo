@@ -1,4 +1,4 @@
-import { getDb, type Countdown, type SyncMeta } from "./db";
+import { getDb, type Countdown, type DeletedId, type SyncMeta } from "./db";
 import type { CountdownCategory } from "./categories";
 import { rollbackColorTag } from "./palette";
 import { advanceRecurring, isRecurring } from "./recurrence";
@@ -67,7 +67,26 @@ export const countdownsLocal = {
   },
 
   async remove(id: string): Promise<void> {
-    await getDb().countdowns.delete(id);
+    const db = getDb();
+    const tombstone: DeletedId = { id, deletedAt: Date.now() };
+    await db.transaction("rw", db.countdowns, db.deletedIds, async () => {
+      await db.countdowns.delete(id);
+      await db.deletedIds.put(tombstone);
+    });
+  },
+
+  async listDeletedIds(): Promise<string[]> {
+    const rows = await getDb().deletedIds.toArray();
+    return rows.map((row) => row.id);
+  },
+
+  /** Drop tombstones that no longer exist in the cloud pull. */
+  async clearAckedDeleted(cloudIds: Set<string>): Promise<void> {
+    const db = getDb();
+    const rows = await db.deletedIds.toArray();
+    const acked = rows.filter((row) => !cloudIds.has(row.id)).map((row) => row.id);
+    if (acked.length === 0) return;
+    await db.deletedIds.bulkDelete(acked);
   },
 
   /**

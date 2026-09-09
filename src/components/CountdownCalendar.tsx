@@ -113,12 +113,12 @@ function CalendarBody() {
 
 
   useEffect(() => {
-    if (!isLoaded) return;
+    if (!isLoaded || isSignedIn) return;
     void (async () => {
       await countdownsRepo.reconcile();
       await queryClient.invalidateQueries({ queryKey: COUNTDOWNS_QUERY_KEY });
     })();
-  }, [isLoaded, source, queryClient]);
+  }, [isLoaded, isSignedIn, source, queryClient]);
 
   const days = useMemo(() => monthGrid(view.y, view.m), [view]);
   const years = useMemo(() => Array.from({ length: 12 }, (_, i) => yearPage + i), [yearPage]);

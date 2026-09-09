@@ -1,7 +1,7 @@
 import { getDb, type Countdown, type DurationType, type Recurrence } from "./db";
 import type { CountdownCategory } from "./categories";
 import { countdownsLocal } from "./countdownsLocal";
-import { isCloudSync, shouldSkipCloudReconcile } from "./syncMode";
+import { isCloudSync } from "./syncMode";
 import { advanceRecurring, describeSeconds } from "./recurrence";
 import {
   archiveCountdownFn,
@@ -14,6 +14,7 @@ import {
   markLapsedFn,
   reconcileCountdownsFn,
   removeCountdownFn,
+  removeCountdownsFn,
   restartCountdownFn,
   unarchiveCountdownFn,
   updateTagsFn,
@@ -24,8 +25,6 @@ export const COUNTDOWNS_QUERY_KEY = ["countdowns"] as const;
 export const MIN_DURATION_SECONDS = 3;
 /** Sanity bound, not a product limit: ~100 years keeps dates valid. */
 export const MAX_DURATION_SECONDS = 100 * 365 * 24 * 60 * 60;
-/** Skip a full Dexie/Neon round trip when this device last synced this account within 24h. */
-const SYNC_TTL_MS = 24 * 60 * 60 * 1000;
 
 const MULTIPLIER: Record<DurationType, number> = {
   seconds: 1,
@@ -83,9 +82,10 @@ async function mirrorLocal(work: () => Promise<unknown>): Promise<void> {
   }
 }
 
-async function pullCloudIntoDexie(): Promise<void> {
+async function pullCloudIntoDexie(): Promise<Countdown[]> {
   const rows = await listAllCountdownsFn();
-  await mirrorLocal(() => countdownsLocal.replaceAll(rows));
+  await countdownsLocal.replaceAll(rows);
+  return rows;
 }
 
 export const countdownsRepo = {
@@ -199,7 +199,7 @@ export const countdownsRepo = {
   async remove(id: string): Promise<void> {
     if (isCloudSync()) {
       await removeCountdownFn({ data: { id } });
-      await mirrorLocal(() => countdownsLocal.remove(id));
+      await countdownsLocal.remove(id);
       return;
     }
     await countdownsLocal.remove(id);
@@ -211,43 +211,41 @@ export const countdownsRepo = {
   },
 
   /**
-   * Signed-in boot: push this browser's Dexie rows into Neon, then reconcile
-   * and replace Dexie with the cloud set so both stores match.
-   * Skips the round trip when this device already synced this account within TTL.
+   * One merge per account on this browser: push pending deletes, import guest
+   * rows only the first time, then pull Neon into Dexie. Later visits no-op
+   * unless there are tombstones to flush.
    */
   async sync(userId: string): Promise<void> {
     const meta = await countdownsLocal.getSyncMeta();
-    const now = Date.now();
+    const deletedIds = await countdownsLocal.listDeletedIds();
+    const deleted = new Set(deletedIds);
 
-    if (meta?.userId === userId && now - meta.lastSyncedAt < SYNC_TTL_MS) {
+    if (deletedIds.length > 0) {
+      await removeCountdownsFn({ data: { ids: deletedIds } });
+    }
+
+    if (meta?.userId === userId) {
+      if (deletedIds.length > 0) await countdownsLocal.clearAckedDeleted(new Set());
       return;
     }
 
-    // Only push local rows when we know they belong to this account (or no
-    // account is known yet) — never push a previous account's mirrored rows
-    // into a newly signed-in account.
-    if (meta == null || meta.userId === userId) {
-      const rows = await getDb().countdowns.toArray();
+    if (meta == null) {
+      const rows = (await getDb().countdowns.toArray()).filter((row) => !deleted.has(row.id));
       if (rows.length > 0) await importLocalCountdownsFn({ data: rows });
     }
 
     await reconcileCountdownsFn();
-    await pullCloudIntoDexie();
-    await countdownsLocal.setSyncMeta(userId, now);
+    const cloud = await pullCloudIntoDexie();
+    await countdownsLocal.clearAckedDeleted(new Set(cloud.map((row) => row.id)));
+    await countdownsLocal.setSyncMeta(userId, Date.now());
   },
 
   /**
-   * Never trust a stale `status`: reconcile against the wall clock on load.
-   * Legacy paused rows resume where they left off — pausing is no longer offered.
-   * When signed in, Neon is reconciled then Dexie is replaced from the cloud.
+   * Guest boards only: never trust a stale `status` against the wall clock.
+   * Signed-in boards read Neon and skip this.
    */
   async reconcile(): Promise<void> {
-    if (isCloudSync()) {
-      if (shouldSkipCloudReconcile()) return;
-      await reconcileCountdownsFn();
-      await pullCloudIntoDexie();
-      return;
-    }
+    if (isCloudSync()) return;
     await countdownsLocal.reconcile();
   },
 };

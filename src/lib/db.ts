@@ -44,9 +44,16 @@ export interface SyncMeta {
   lastSyncedAt: number;
 }
 
+/** Local log of ids dropped from this browser so a later merge can delete them in Neon. */
+export interface DeletedId {
+  id: string;
+  deletedAt: number;
+}
+
 class DaysToGoDB extends Dexie {
   countdowns!: Table<Countdown, string>;
   syncMeta!: Table<SyncMeta, string>;
+  deletedIds!: Table<DeletedId, string>;
 
   constructor() {
     super("daystogo");
@@ -65,6 +72,11 @@ class DaysToGoDB extends Dexie {
     this.version(5).stores({
       countdowns: "id, status, endsAt, createdAt, targetAt, category, archivedAt",
       syncMeta: "id",
+    });
+    this.version(6).stores({
+      countdowns: "id, status, endsAt, createdAt, targetAt, category, archivedAt",
+      syncMeta: "id",
+      deletedIds: "id",
     });
   }
 }
