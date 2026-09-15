@@ -3,7 +3,7 @@ import { Archive, ArchiveRestore, Check, Download, Pencil, RefreshCw, Trash2, X 
 import { toast } from "sonner";
 import type { Countdown } from "@/lib/db";
 import { countdownsRepo, remainingMs } from "@/lib/countdownsRepo";
-import { isRecurring } from "@/lib/recurrence";
+import { isRecurring, recurrenceBadgeLabel } from "@/lib/recurrence";
 import { formatRemaining, progressPercent } from "@/lib/formatTime";
 import { formatTargetLabel } from "@/lib/localTime";
 import { downloadCountdownImage } from "@/lib/shareImage";
@@ -219,11 +219,14 @@ export function CountdownCard({
             >
               {formatTargetLabel(countdown.targetAt)}
               {recurring && (
-              <RefreshCw
-                className="h-3 w-3 shrink-0"
-                strokeWidth={3}
-                aria-label="Repeats"
-              />
+                <span className="inline-flex items-center gap-1">
+                  <RefreshCw
+                    className="h-3 w-3 shrink-0"
+                    strokeWidth={3}
+                    aria-hidden="true"
+                  />
+                  <span>{recurrenceBadgeLabel(countdown.recurrence)}</span>
+                </span>
               )}
             </p>
           )}

@@ -21,6 +21,11 @@ export function recurrenceLabel(recurrence: Recurrence | undefined): string | nu
   return null;
 }
 
+export function recurrenceBadgeLabel(recurrence: Recurrence | undefined): string | null {
+  const option = RECURRENCE_OPTIONS.find((o) => o.key === recurrence);
+  return option ? option.label.toUpperCase() : null;
+}
+
 /** Best-fit duration unit/value for a raw span, so restart + labels keep working. */
 export function describeSeconds(seconds: number): { type: DurationType; value: number } {
   if (seconds % 86400 === 0) return { type: "days", value: seconds / 86400 };
