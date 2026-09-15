@@ -219,12 +219,11 @@ export function CountdownCard({
             >
               {formatTargetLabel(countdown.targetAt)}
               {recurring && (
-                <RefreshCw
-                  className="h-3 w-3 shrink-0"
-                  strokeWidth={3}
-                  aria-label="Repeats"
-                  title="Repeats"
-                />
+              <RefreshCw
+                className="h-3 w-3 shrink-0"
+                strokeWidth={3}
+                aria-label="Repeats"
+              />
               )}
             </p>
           )}
