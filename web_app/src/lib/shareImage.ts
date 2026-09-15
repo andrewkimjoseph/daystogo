@@ -288,7 +288,7 @@ export async function renderCountdownShareImage(
   });
   // Both timestamps share one row and must stay inside the panel. Shrink the
   // type until CREATED + gap + DOWNLOADED fits the padded content width.
-  const createdText = `CREATED / ${createdDate.toUpperCase()}`;
+  const createdText = `CRTD / ${createdDate.toUpperCase()}`;
   const downloadedDate = new Date(now).toLocaleString(undefined, {
     day: "numeric",
     month: "short",
@@ -297,7 +297,7 @@ export async function renderCountdownShareImage(
     minute: "2-digit",
     second: "2-digit",
   }).toUpperCase();
-  const downloadedText = `DOWNLOADED / ${downloadedDate}`;
+  const downloadedText = `DNLD / ${downloadedDate}`;
   const stampGap = 32;
   let stampSize = 22;
   let fitsOneRow = false;
