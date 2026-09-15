@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Archive, ArchiveRestore, Check, Download, Pencil, Trash2, X } from "lucide-react";
+import { Archive, ArchiveRestore, Check, Download, Pencil, RefreshCw, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import type { Countdown } from "@/lib/db";
 import { countdownsRepo, remainingMs } from "@/lib/countdownsRepo";
-import { isRecurring, recurrenceLabel } from "@/lib/recurrence";
+import { isRecurring } from "@/lib/recurrence";
 import { formatRemaining, progressPercent } from "@/lib/formatTime";
 import { formatTargetLabel } from "@/lib/localTime";
 import { downloadCountdownImage } from "@/lib/shareImage";
@@ -169,7 +169,7 @@ export function CountdownCard({
   const tagColor = lapsed ? PALETTE.red : countdown.colorTag;
   const category = categoryMeta(countdown.category);
   const CategoryIcon = category.icon;
-  const repeats = recurrenceLabel(countdown.recurrence);
+  const recurring = isRecurring(countdown);
 
   return (
     <article
@@ -214,18 +214,17 @@ export function CountdownCard({
           </h2>
           {countdown.targetAt !== undefined && (
             <p
-              className="mt-1 text-xs font-bold uppercase"
+              className="mt-1 flex items-center gap-1.5 text-xs font-bold uppercase"
               style={{ color: lapsed ? PALETTE.cream : "var(--muted-foreground)" }}
             >
               {formatTargetLabel(countdown.targetAt)}
-            </p>
-          )}
-          {repeats && (
-            <p
-              className="mt-1 text-xs font-bold uppercase"
-              style={{ color: lapsed ? PALETTE.cream : "var(--muted-foreground)" }}
-            >
-              {repeats}
+              {recurring && (
+              <RefreshCw
+                className="h-3 w-3 shrink-0"
+                strokeWidth={3}
+                aria-label="Repeats"
+              />
+              )}
             </p>
           )}
         </div>

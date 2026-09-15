@@ -1,10 +1,12 @@
 import { createElement } from "react";
+import { RefreshCw } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import type { Countdown } from "./db";
 import { remainingMs } from "./countdownsRepo";
 import { formatRemaining, progressPercent } from "./formatTime";
 import { formatTargetLabel } from "./localTime";
 import { categoryMeta } from "./categories";
+import { isRecurring } from "./recurrence";
 import { INK, PALETTE } from "./palette";
 
 const SIZE = 1080;
@@ -242,7 +244,18 @@ export async function renderCountdownShareImage(
     y += 52;
     ctx.fillStyle = muted;
     ctx.font = `28px ${SANS}`;
-    ctx.fillText(formatTargetLabel(countdown.targetAt).toUpperCase(), left, y);
+    const label = formatTargetLabel(countdown.targetAt).toUpperCase();
+    ctx.fillText(label, left, y);
+    if (isRecurring(countdown)) {
+      const iconSize = 24;
+      const repeatIcon = await loadCategoryIcon(RefreshCw, muted, iconSize);
+      const textWidth = ctx.measureText(label).width;
+      const iconX = left + textWidth + 12;
+      const iconY = y - iconSize + 4;
+      if (repeatIcon) {
+        ctx.drawImage(repeatIcon, iconX, iconY, iconSize, iconSize);
+      }
+    }
   }
 
   // Big remaining figure. Use one size for every state (running, lapsed,
