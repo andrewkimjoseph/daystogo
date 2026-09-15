@@ -6,7 +6,7 @@ import { remainingMs } from "./countdownsRepo";
 import { formatRemaining, progressPercent } from "./formatTime";
 import { formatTargetLabel } from "./localTime";
 import { categoryMeta } from "./categories";
-import { isRecurring } from "./recurrence";
+import { isRecurring, recurrenceBadgeLabel } from "./recurrence";
 import { INK, PALETTE } from "./palette";
 
 const SIZE = 1080;
@@ -247,7 +247,9 @@ export async function renderCountdownShareImage(
     const label = formatTargetLabel(countdown.targetAt).toUpperCase();
     ctx.fillText(label, left, y);
     if (isRecurring(countdown)) {
+      const badge = recurrenceBadgeLabel(countdown.recurrence)!;
       const iconSize = 24;
+      const gap = 10;
       const repeatIcon = await loadCategoryIcon(RefreshCw, muted, iconSize);
       const textWidth = ctx.measureText(label).width;
       const iconX = left + textWidth + 12;
@@ -255,6 +257,9 @@ export async function renderCountdownShareImage(
       if (repeatIcon) {
         ctx.drawImage(repeatIcon, iconX, iconY, iconSize, iconSize);
       }
+      ctx.textBaseline = "alphabetic";
+      ctx.font = `24px ${SANS}`;
+      ctx.fillText(badge, iconX + iconSize + gap, y);
     }
   }
 
