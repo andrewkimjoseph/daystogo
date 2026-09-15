@@ -1,0 +1,3 @@
+[run]
+install = "bun install --cwd web_app"
+dev = "bun run --cwd web_app dev"
