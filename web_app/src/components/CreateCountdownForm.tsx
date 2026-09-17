@@ -201,16 +201,22 @@ export function CreateCountdownForm({ initialDate }: { initialDate?: string }) {
         <p className="mt-3 text-sm font-bold text-muted-foreground">{activeCategory.hint}</p>
 
         <span className="mt-5 mb-2 block text-xs font-bold uppercase sm:mt-6">Repeat</span>
-        <div className="grid grid-cols-2 gap-2">
-          {RECURRENCE_OPTIONS.map((o) => {
+        <div className="grid grid-cols-6 gap-2">
+          {RECURRENCE_OPTIONS.map((o, i) => {
             const on = recurrence === o.key;
+            const span =
+              i < 3
+                ? "col-span-3 sm:col-span-2"
+                : i === 3
+                  ? "col-span-3 sm:col-span-3"
+                  : "col-span-6 sm:col-span-3";
             return (
               <button
                 key={o.key}
                 type="button"
                 onClick={() => setRecurrence(o.key)}
                 aria-pressed={on}
-                className="brut-thin brut-press min-h-[44px] rounded-none px-2 py-2 text-left text-[11px] font-bold uppercase"
+                className={`brut-thin brut-press min-h-[36px] rounded-none px-2 py-1.5 text-left text-[11px] font-bold uppercase ${span}`}
                 style={
                   on
                     ? { backgroundColor: PALETTE.teal, color: PALETTE.cream }
