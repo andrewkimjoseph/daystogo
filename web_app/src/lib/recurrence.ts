@@ -66,7 +66,12 @@ export function nextOccurrence(fromMs: number, recurrence: Recurrence, now: numb
  */
 export function advanceRecurring(c: Countdown, now: number): Countdown | null {
   const recurrence = c.recurrence;
-  if (recurrence !== "daily" && recurrence !== "weekly" && recurrence !== "monthly") {
+  if (
+    recurrence !== "daily" &&
+    recurrence !== "weekly" &&
+    recurrence !== "monthly" &&
+    recurrence !== "yearly"
+  ) {
     return null;
   }
 
