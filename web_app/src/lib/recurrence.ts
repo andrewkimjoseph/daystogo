@@ -8,16 +8,23 @@ export const RECURRENCE_OPTIONS: { key: Recurrence; label: string; hint: string 
   { key: "daily", label: "Daily", hint: "Same local time, every day." },
   { key: "weekly", label: "Weekly", hint: "Same weekday and time, every week." },
   { key: "monthly", label: "Monthly", hint: "Same time next month — short months clamp to the last day." },
+  { key: "yearly", label: "Yearly", hint: "Same date and time, every year. Feb 29 lands on Feb 28 in non-leap years." },
 ];
 
 export function isRecurring(c: Pick<Countdown, "recurrence">): boolean {
-  return c.recurrence === "daily" || c.recurrence === "weekly" || c.recurrence === "monthly";
+  return (
+    c.recurrence === "daily" ||
+    c.recurrence === "weekly" ||
+    c.recurrence === "monthly" ||
+    c.recurrence === "yearly"
+  );
 }
 
 export function recurrenceLabel(recurrence: Recurrence | undefined): string | null {
   if (recurrence === "daily") return "Repeats daily";
   if (recurrence === "weekly") return "Repeats weekly";
   if (recurrence === "monthly") return "Repeats monthly";
+  if (recurrence === "yearly") return "Repeats yearly";
   return null;
 }
 
@@ -39,6 +46,7 @@ function step(fromMs: number, recurrence: Recurrence): number {
   if (recurrence === "daily") return addDays(from, 1).getTime();
   if (recurrence === "weekly") return addWeeks(from, 1).getTime();
   if (recurrence === "monthly") return addMonths(from, 1).getTime();
+  if (recurrence === "yearly") return addYears(from, 1).getTime();
   return fromMs;
 }
 
