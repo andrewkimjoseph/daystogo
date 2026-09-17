@@ -140,7 +140,10 @@ export const countdownsRepo = {
       category: input.category ?? "other",
       hasCelebrated: false,
       recurrence:
-        input.recurrence === "daily" || input.recurrence === "weekly" || input.recurrence === "monthly"
+        input.recurrence === "daily" ||
+        input.recurrence === "weekly" ||
+        input.recurrence === "monthly" ||
+        input.recurrence === "yearly"
           ? input.recurrence
           : undefined,
       createdAt: now,

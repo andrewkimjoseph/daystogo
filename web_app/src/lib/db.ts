@@ -5,7 +5,7 @@ export type DurationType = "seconds" | "minutes" | "hours" | "days";
 export type CountdownStatus = "running" | "paused" | "lapsed";
 export type CountdownMode = "duration" | "target";
 /** Absent / `"none"` on older rows means the clock does not repeat. */
-export type Recurrence = "none" | "daily" | "weekly" | "monthly";
+export type Recurrence = "none" | "daily" | "weekly" | "monthly" | "yearly";
 
 /**
  * Flat, SQL-friendly shape. Keep it portable: no nested objects, no Dexie-only
