@@ -61,7 +61,8 @@ src/
 │   ├── countdownsFn.ts           # createServerFn RPC (client-callable)
 │   ├── server/
 │   │   ├── schema.ts             # Drizzle users + countdowns tables
-│   │   └── db.ts                 # Neon client with Clerk JWT + user upsert
+│   │   ├── db.ts                 # Neon client with Clerk JWT + user upsert
+│   │   └── fieldCrypto.ts        # AES-256-GCM for titles, email, username
 │   ├── formatTime.ts             # human time formatting (to the second)
 │   ├── localTime.ts              # localized "Ends…" labels with seconds
 │   ├── categories.ts
@@ -89,7 +90,7 @@ npm i
 npm run dev
 ```
 
-The dev server runs on Vite. Scripts:
+The dev server runs on Vite. Copy `.env.local` from a teammate or `vercel env pull` — it needs Clerk keys, `DATABASE_AUTHENTICATED_URL`, and `FIELD_ENCRYPTION_KEY` (32-byte hex, server-only; never prefix with `VITE_`). Scripts:
 
 | Command             | Description                          |
 | ------------------- | ------------------------------------ |
@@ -102,7 +103,7 @@ The dev server runs on Vite. Scripts:
 
 ## Data & privacy
 
-Without an account, countdowns stay in this browser (IndexedDB). Sign in and each create, edit, archive, or delete updates both Dexie and Neon (RLS, scoped to your Clerk account). Opening the app while signed in pushes any local-only clocks to Neon and replaces Dexie with the cloud set. Clearing the browser deletes the local copy; it does not delete cloud timers.
+Without an account, countdowns stay in this browser (IndexedDB, plaintext on your device). Sign in and each create, edit, archive, or delete updates both Dexie and Neon (RLS, scoped to your Clerk account). Synced countdown titles, plus account email and username, are encrypted at rest in Postgres. Opening the app while signed in pushes any local-only clocks to Neon and replaces Dexie with the cloud set. Clearing the browser deletes the local copy; it does not delete cloud timers.
 
 Full details live on the site: [Privacy Policy](https://app.daystogo.xyz/privacy) · [Terms of Service](https://app.daystogo.xyz/terms)
 

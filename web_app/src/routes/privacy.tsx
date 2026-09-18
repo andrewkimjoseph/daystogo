@@ -64,10 +64,14 @@ function PrivacyPage() {
             </p>
             <p className="mt-4 text-base leading-relaxed">
               <span className="font-bold">With an account</span>, we store your account
-              email and name, plus the countdowns you sync: titles, target and end times,
-              colors, categories, status, and timestamps. Accounts are managed by Clerk, and
-              synced timers are stored in a hosted Postgres database scoped to your account
-              with row-level security — only you can read or change your rows.
+              email and username, plus the countdowns you sync: titles, target and end times,
+              colors, categories, status, and timestamps. Email, username, and countdown
+              titles are encrypted at rest in Postgres so a database admin cannot read them.
+              Accounts are managed by Clerk (Clerk still holds your email and username for
+              sign-in), and synced timers are stored in a hosted Postgres database scoped to
+              your account with row-level security — only you can read or change your rows.
+              Guest timers and the signed-in local copy in this browser stay in IndexedDB
+              as plaintext on your device.
             </p>
           </section>
 

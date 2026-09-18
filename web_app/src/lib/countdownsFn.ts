@@ -5,6 +5,7 @@ import type { CountdownCategory } from "@/lib/categories";
 import { rollbackColorTag } from "@/lib/palette";
 import { advanceRecurring, isRecurring } from "@/lib/recurrence";
 import { getAuthedDb, runWithClaims, runWithClaimsMany } from "./server/db";
+import { decryptField, encryptField } from "./server/fieldCrypto";
 import { countdowns, type CountdownRow } from "./server/schema";
 
 function n(value: number | string | null | undefined): number | undefined {
@@ -16,7 +17,7 @@ function n(value: number | string | null | undefined): number | undefined {
 function fromRow(row: CountdownRow): Countdown {
   return {
     id: row.id,
-    title: row.title,
+    title: decryptField(row.title, row.userId),
     mode: (row.mode as CountdownMode | null) ?? undefined,
     targetAt: n(row.targetAt),
     durationType: row.durationType as DurationType,
@@ -40,7 +41,7 @@ function toInsert(row: Countdown, userId: string) {
   return {
     id: row.id,
     userId,
-    title: row.title,
+    title: encryptField(row.title, userId),
     mode: row.mode ?? null,
     targetAt: row.targetAt ?? null,
     durationType: row.durationType,
@@ -105,7 +106,7 @@ export const updateTagsFn = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const { db, userId } = await getAuthedDb();
     const patch: Partial<typeof countdowns.$inferInsert> = { updatedAt: Date.now() };
-    if (data.title !== undefined) patch.title = data.title;
+    if (data.title !== undefined) patch.title = encryptField(data.title, userId);
     if (data.colorTag !== undefined) patch.colorTag = data.colorTag;
     if (data.category !== undefined) patch.category = data.category;
     await runWithClaims(db, userId, db.update(countdowns).set(patch).where(eq(countdowns.id, data.id)));
