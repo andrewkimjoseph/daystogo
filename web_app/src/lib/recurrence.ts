@@ -1,5 +1,5 @@
 import { addDays, addMonths, addWeeks, addYears } from "date-fns";
-import type { Countdown, DurationType, Recurrence } from "./db";
+import type { Countdown, Recurrence } from "./db";
 
 export type { Recurrence };
 
@@ -31,14 +31,6 @@ export function recurrenceLabel(recurrence: Recurrence | undefined): string | nu
 export function recurrenceBadgeLabel(recurrence: Recurrence | undefined): string | null {
   const option = RECURRENCE_OPTIONS.find((o) => o.key === recurrence);
   return option ? option.label.toUpperCase() : null;
-}
-
-/** Best-fit duration unit/value for a raw span, so restart + labels keep working. */
-export function describeSeconds(seconds: number): { type: DurationType; value: number } {
-  if (seconds % 86400 === 0) return { type: "days", value: seconds / 86400 };
-  if (seconds % 3600 === 0) return { type: "hours", value: seconds / 3600 };
-  if (seconds % 60 === 0) return { type: "minutes", value: seconds / 60 };
-  return { type: "seconds", value: seconds };
 }
 
 function step(fromMs: number, recurrence: Recurrence): number {
@@ -75,20 +67,14 @@ export function advanceRecurring(c: Countdown, now: number): Countdown | null {
     return null;
   }
 
-  const isTarget = c.mode === "target" || c.targetAt !== undefined;
   if (c.endsAt > now) return null;
 
-  const fromMs = isTarget ? (c.targetAt ?? c.endsAt) : c.endsAt;
+  const fromMs = c.targetAt ?? c.endsAt;
   const nextAt = nextOccurrence(fromMs, recurrence, now);
-  const durationSeconds = Math.max(1, Math.round((nextAt - now) / 1000));
-  const described = describeSeconds(durationSeconds);
 
   return {
     ...c,
-    targetAt: isTarget ? nextAt : c.targetAt,
-    durationType: isTarget ? described.type : c.durationType,
-    durationValue: isTarget ? described.value : c.durationValue,
-    durationSeconds: isTarget ? durationSeconds : c.durationSeconds,
+    targetAt: nextAt,
     startedAt: now,
     endsAt: nextAt,
     status: "running",

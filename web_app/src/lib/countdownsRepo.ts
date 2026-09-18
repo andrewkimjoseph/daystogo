@@ -1,8 +1,8 @@
-import { getDb, type Countdown, type DurationType, type Recurrence } from "./db";
+import { getDb, type Countdown, type Recurrence } from "./db";
 import type { CountdownCategory } from "./categories";
 import { countdownsLocal } from "./countdownsLocal";
 import { isCloudSync } from "./syncMode";
-import { advanceRecurring, describeSeconds } from "./recurrence";
+import { advanceRecurring } from "./recurrence";
 import {
   archiveCountdownFn,
   createCountdownFn,
@@ -26,34 +26,11 @@ export const MIN_DURATION_SECONDS = 3;
 /** Sanity bound, not a product limit: ~100 years keeps dates valid. */
 export const MAX_DURATION_SECONDS = 100 * 365 * 24 * 60 * 60;
 
-const MULTIPLIER: Record<DurationType, number> = {
-  seconds: 1,
-  minutes: 60,
-  hours: 3600,
-  days: 86400,
-};
-
-export function toSeconds(type: DurationType, value: number): number {
-  return Math.round(value * MULTIPLIER[type]);
-}
-
 export function remainingMs(c: Countdown, now: number): number {
-  if (c.status === "paused") return Math.max(0, c.pausedRemainingMs ?? 0);
   return Math.max(0, c.endsAt - now);
 }
 
-export interface NewDurationInput {
-  mode?: "duration";
-  title: string;
-  durationType: DurationType;
-  durationValue: number;
-  colorTag: string;
-  category?: CountdownCategory;
-  recurrence?: Recurrence;
-}
-
-export interface NewTargetInput {
-  mode: "target";
+export interface NewCountdownInput {
   title: string;
   /** Epoch ms of the exact local moment the countdown should lapse. */
   targetAt: number;
@@ -62,9 +39,7 @@ export interface NewTargetInput {
   recurrence?: Recurrence;
 }
 
-export type NewCountdownInput = NewDurationInput | NewTargetInput;
-
-/** Shared validation for both creation modes. Returns null when valid. */
+/** Returns null when the chosen span is valid. */
 export function validateSeconds(seconds: number): string | null {
   if (!Number.isFinite(seconds)) return "That's not a number we can count down from.";
   if (seconds < MIN_DURATION_SECONDS) return "Give it at least 3 seconds to be a real countdown.";
@@ -119,22 +94,12 @@ export const countdownsRepo = {
 
   async create(input: NewCountdownInput): Promise<Countdown> {
     const now = Date.now();
-    const isTarget = input.mode === "target";
-    const durationSeconds = isTarget
-      ? Math.max(1, Math.round((input.targetAt - now) / 1000))
-      : toSeconds(input.durationType, input.durationValue);
-    const described = describeSeconds(durationSeconds);
     const row: Countdown = {
       id: crypto.randomUUID(),
       title: input.title.trim(),
-      mode: isTarget ? "target" : "duration",
-      targetAt: isTarget ? input.targetAt : undefined,
-      durationType: isTarget ? described.type : input.durationType,
-      durationValue: isTarget ? described.value : input.durationValue,
-      durationSeconds,
+      targetAt: input.targetAt,
       startedAt: now,
-      // Target mode lands on the exact chosen moment; rounding durationSeconds must not shave ms off it.
-      endsAt: isTarget ? input.targetAt : now + durationSeconds * 1000,
+      endsAt: input.targetAt,
       status: "running",
       colorTag: input.colorTag,
       category: input.category ?? "other",

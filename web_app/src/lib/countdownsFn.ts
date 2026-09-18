@@ -1,6 +1,6 @@
 import { desc, eq, inArray, isNotNull, isNull } from "drizzle-orm";
 import { createServerFn } from "@tanstack/react-start";
-import type { Countdown, CountdownMode, CountdownStatus, DurationType, Recurrence } from "@/lib/db";
+import type { Countdown, CountdownStatus, Recurrence } from "@/lib/db";
 import type { CountdownCategory } from "@/lib/categories";
 import { rollbackColorTag } from "@/lib/palette";
 import { advanceRecurring, isRecurring } from "@/lib/recurrence";
@@ -18,15 +18,10 @@ function fromRow(row: CountdownRow): Countdown {
   return {
     id: row.id,
     title: decryptField(row.title, row.userId),
-    mode: (row.mode as CountdownMode | null) ?? undefined,
-    targetAt: n(row.targetAt),
-    durationType: row.durationType as DurationType,
-    durationValue: row.durationValue,
-    durationSeconds: row.durationSeconds,
+    targetAt: n(row.targetAt) ?? n(row.endsAt) ?? 0,
     startedAt: n(row.startedAt) ?? 0,
     endsAt: n(row.endsAt) ?? 0,
     status: row.status as CountdownStatus,
-    pausedRemainingMs: n(row.pausedRemainingMs),
     colorTag: row.colorTag,
     category: (row.category as CountdownCategory | null) ?? undefined,
     hasCelebrated: row.hasCelebrated,
@@ -42,15 +37,10 @@ function toInsert(row: Countdown, userId: string) {
     id: row.id,
     userId,
     title: encryptField(row.title, userId),
-    mode: row.mode ?? null,
-    targetAt: row.targetAt ?? null,
-    durationType: row.durationType,
-    durationValue: row.durationValue,
-    durationSeconds: row.durationSeconds,
+    targetAt: row.targetAt,
     startedAt: row.startedAt,
     endsAt: row.endsAt,
     status: row.status,
-    pausedRemainingMs: row.pausedRemainingMs ?? null,
     colorTag: row.colorTag,
     category: row.category ?? "other",
     hasCelebrated: row.hasCelebrated,
@@ -177,10 +167,7 @@ export const restartCountdownFn = createServerFn({ method: "POST" })
       db
         .update(countdowns)
         .set({
-          targetAt: data.targetAt ?? null,
-          durationType: data.durationType,
-          durationValue: data.durationValue,
-          durationSeconds: data.durationSeconds,
+          targetAt: data.targetAt,
           startedAt: data.startedAt,
           endsAt: data.endsAt,
           status: data.status,
@@ -260,17 +247,6 @@ export const reconcileCountdownsFn = createServerFn({ method: "POST" }).handler(
       dirty = true;
     }
 
-    if (next.status === "paused") {
-      next = {
-        ...next,
-        status: "running",
-        endsAt: now + Math.max(0, next.pausedRemainingMs ?? 0),
-        pausedRemainingMs: undefined,
-        updatedAt: now,
-      };
-      dirty = true;
-    }
-
     if (next.status === "running" && next.endsAt <= now) {
       const advanced = advanceRecurring(next, now);
       next = advanced ?? { ...next, status: "lapsed", updatedAt: now };
@@ -298,13 +274,9 @@ export const reconcileCountdownsFn = createServerFn({ method: "POST" }).handler(
         .set({
           colorTag: next.colorTag,
           status: next.status,
-          targetAt: next.targetAt ?? null,
+          targetAt: next.targetAt,
           startedAt: next.startedAt,
           endsAt: next.endsAt,
-          durationType: next.durationType,
-          durationValue: next.durationValue,
-          durationSeconds: next.durationSeconds,
-          pausedRemainingMs: next.pausedRemainingMs ?? null,
           hasCelebrated: next.hasCelebrated,
           updatedAt: next.updatedAt,
         })

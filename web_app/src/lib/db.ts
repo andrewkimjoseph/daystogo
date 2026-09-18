@@ -1,30 +1,22 @@
 import Dexie, { type Table } from "dexie";
 import type { CountdownCategory } from "./categories";
 
-export type DurationType = "seconds" | "minutes" | "hours" | "days";
-export type CountdownStatus = "running" | "paused" | "lapsed";
-export type CountdownMode = "duration" | "target";
+export type CountdownStatus = "running" | "lapsed";
 /** Absent / `"none"` on older rows means the clock does not repeat. */
 export type Recurrence = "none" | "daily" | "weekly" | "monthly" | "yearly";
 
 /**
  * Flat, SQL-friendly shape. Keep it portable: no nested objects, no Dexie-only
- * types — this maps 1:1 to a future Prisma/Postgres `countdowns` table.
+ * types — this maps 1:1 to the Postgres `countdowns` table.
  */
 export interface Countdown {
   id: string;
   title: string;
-  /** Absent on rows created before target mode existed — treat as "duration". */
-  mode?: CountdownMode | undefined;
-  /** Epoch ms the user picked, only for mode === "target". */
-  targetAt?: number | undefined;
-  durationType: DurationType;
-  durationValue: number;
-  durationSeconds: number;
+  /** Epoch ms the user picked as the landing moment. */
+  targetAt: number;
   startedAt: number;
   endsAt: number;
   status: CountdownStatus;
-  pausedRemainingMs?: number | undefined;
   colorTag: string;
   /** Absent on rows created before categories existed — treat as "other". */
   category?: CountdownCategory | undefined;
@@ -78,6 +70,45 @@ class DaysToGoDB extends Dexie {
       syncMeta: "id",
       deletedIds: "id",
     });
+    this.version(7)
+      .stores({
+        countdowns: "id, status, endsAt, createdAt, targetAt, category, archivedAt",
+        syncMeta: "id",
+        deletedIds: "id",
+      })
+      .upgrade(async (tx) => {
+        const now = Date.now();
+        const table = tx.table("countdowns");
+        const rows = await table.toArray();
+        if (rows.length === 0) return;
+
+        type LegacyRow = Omit<Countdown, "status" | "targetAt"> & {
+          status: string;
+          targetAt?: number;
+          pausedRemainingMs?: number;
+          mode?: string;
+          durationType?: string;
+          durationValue?: number;
+          durationSeconds?: number;
+        };
+
+        const next = rows.map((raw) => {
+          const row: LegacyRow = { ...(raw as LegacyRow) };
+          if (row.status === "paused") {
+            const remaining = Number(row.pausedRemainingMs);
+            row.status = "running";
+            row.endsAt = now + Math.max(0, Number.isFinite(remaining) ? remaining : 0);
+          }
+          if (row.targetAt == null) row.targetAt = row.endsAt;
+          delete row.pausedRemainingMs;
+          delete row.mode;
+          delete row.durationType;
+          delete row.durationValue;
+          delete row.durationSeconds;
+          return row;
+        });
+        await table.bulkPut(next);
+      });
   }
 }
 

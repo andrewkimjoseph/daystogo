@@ -13,13 +13,13 @@ export const Route = createFileRoute("/create-countdown")({
       {
         name: "description",
         content:
-          "Set up a countdown: pick a duration or an exact end time in your local timezone, name it, tag it, and start the clock.",
+          "Set up a countdown: pick an exact end time in your local timezone, name it, tag it, and start the clock.",
       },
       { property: "og:title", content: "New Countdown — Days To Go" },
       {
         property: "og:description",
         content:
-          "Pick a duration or an exact end time, name it, tag it, and watch it tick down to the second.",
+          "Pick an exact end time, name it, tag it, and watch it tick down to the second.",
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://app.daystogo.xyz/create-countdown" },

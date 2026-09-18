@@ -240,27 +240,25 @@ export async function renderCountdownShareImage(
   }
 
   // End moment.
-  if (countdown.targetAt !== undefined) {
-    y += 52;
-    ctx.fillStyle = muted;
-    ctx.font = `28px ${SANS}`;
-    const label = formatTargetLabel(countdown.targetAt).toUpperCase();
-    ctx.fillText(label, left, y);
-    if (isRecurring(countdown)) {
-      const badge = recurrenceBadgeLabel(countdown.recurrence)!;
-      const iconSize = 24;
-      const gap = 10;
-      const repeatIcon = await loadCategoryIcon(RefreshCw, muted, iconSize);
-      const textWidth = ctx.measureText(label).width;
-      const iconX = left + textWidth + 12;
-      const iconY = y - iconSize + 4;
-      if (repeatIcon) {
-        ctx.drawImage(repeatIcon, iconX, iconY, iconSize, iconSize);
-      }
-      ctx.textBaseline = "alphabetic";
-      ctx.font = `24px ${SANS}`;
-      ctx.fillText(badge, iconX + iconSize + gap, y);
+  y += 52;
+  ctx.fillStyle = muted;
+  ctx.font = `28px ${SANS}`;
+  const label = formatTargetLabel(countdown.targetAt).toUpperCase();
+  ctx.fillText(label, left, y);
+  if (isRecurring(countdown)) {
+    const badge = recurrenceBadgeLabel(countdown.recurrence)!;
+    const iconSize = 24;
+    const gap = 10;
+    const repeatIcon = await loadCategoryIcon(RefreshCw, muted, iconSize);
+    const textWidth = ctx.measureText(label).width;
+    const iconX = left + textWidth + 12;
+    const iconY = y - iconSize + 4;
+    if (repeatIcon) {
+      ctx.drawImage(repeatIcon, iconX, iconY, iconSize, iconSize);
     }
+    ctx.textBaseline = "alphabetic";
+    ctx.font = `24px ${SANS}`;
+    ctx.fillText(badge, iconX + iconSize + gap, y);
   }
 
   // Big remaining figure. Use one size for every state (running, lapsed,

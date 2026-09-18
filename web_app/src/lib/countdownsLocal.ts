@@ -91,7 +91,6 @@ export const countdownsLocal = {
 
   /**
    * Never trust a stale `status`: reconcile against the wall clock on load.
-   * Legacy paused rows resume where they left off — pausing is no longer offered.
    */
   async reconcile(): Promise<void> {
     const db = getDb();
@@ -108,23 +107,12 @@ export const countdownsLocal = {
 
     const get = (c: Countdown) => byId.get(c.id) ?? c;
 
-    const patched = rows
-      .filter((c) => c.status === "paused")
-      .map((c) => {
-        const base = get(c);
-        return {
-          ...base,
-          status: "running" as const,
-          endsAt: now + Math.max(0, base.pausedRemainingMs ?? 0),
-          pausedRemainingMs: undefined,
-          updatedAt: now,
-        };
-      });
-    const due = [...patched, ...rows.filter((c) => c.status === "running").map(get)]
-      .filter((c) => c.endsAt <= now)
+    const due = rows
+      .map(get)
+      .filter((c) => c.status === "running" && c.endsAt <= now)
       .map((c) => advanceRecurring(c, now) ?? { ...c, status: "lapsed" as const, updatedAt: now });
 
-    for (const c of [...patched, ...due]) byId.set(c.id, c);
+    for (const c of due) byId.set(c.id, c);
 
     // Same two-way status rule as the cloud reconcile: a lapsed row whose
     // end is still in the future was marked by a stale clock — put it back.

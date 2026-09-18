@@ -56,9 +56,8 @@ function monthGrid(year: number, month: number): Date[] {
   );
 }
 
-/** When a countdown lands: paused rows project their remaining time from now. */
+/** When a countdown lands. */
 function endMoment(c: Countdown): number {
-  if (c.status === "paused") return Date.now() + Math.max(0, c.pausedRemainingMs ?? 0);
   return c.endsAt;
 }
 

@@ -7,7 +7,7 @@ A playful, brutalist countdown timer web app. Run as many clocks as you like —
 ## Features
 
 - **Countdowns that tick to the second** — every card updates live on one shared clock, and the grid is sorted soonest-ending first.
-- **Two modes** — set a **duration** (seconds, minutes, hours; capped at 24 hours) or pick a **specific end date & time** in your local timezone, which has no ceiling at all — seconds out to years.
+- **End date and time** — pick a **specific moment** in your local timezone, from a few seconds out to years.
 - **Celebrate at zero** — a confetti burst and a chime when a timer lapses. Run it again or bin it. (Countdowns can't be paused — once a clock starts, it runs.)
 - **Categories** — tag each countdown (Financial, Health, Work, …) and filter the grid by category.
 - **Inline editing** — rename a goal (always uppercase) and change its color or category from an overlay on the card. It saves and closes when you click away; hovering a swatch or icon names it. The end time stays fixed.

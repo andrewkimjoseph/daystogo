@@ -212,24 +212,22 @@ export function CountdownCard({
           >
             {countdown.title}
           </h2>
-          {countdown.targetAt !== undefined && (
-            <p
-              className="mt-1 flex items-center gap-1.5 text-xs font-bold uppercase"
-              style={{ color: lapsed ? PALETTE.cream : "var(--muted-foreground)" }}
-            >
-              {formatTargetLabel(countdown.targetAt)}
-              {recurring && (
-                <span className="inline-flex items-center gap-1">
-                  <RefreshCw
-                    className="h-3 w-3 shrink-0"
-                    strokeWidth={3}
-                    aria-hidden="true"
-                  />
-                  <span>{recurrenceBadgeLabel(countdown.recurrence)}</span>
-                </span>
-              )}
-            </p>
-          )}
+          <p
+            className="mt-1 flex items-center gap-1.5 text-xs font-bold uppercase"
+            style={{ color: lapsed ? PALETTE.cream : "var(--muted-foreground)" }}
+          >
+            {formatTargetLabel(countdown.targetAt)}
+            {recurring && (
+              <span className="inline-flex items-center gap-1">
+                <RefreshCw
+                  className="h-3 w-3 shrink-0"
+                  strokeWidth={3}
+                  aria-hidden="true"
+                />
+                <span>{recurrenceBadgeLabel(countdown.recurrence)}</span>
+              </span>
+            )}
+          </p>
         </div>
         <img
           src="/hourglass.svg"

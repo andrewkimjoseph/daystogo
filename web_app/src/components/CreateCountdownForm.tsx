@@ -116,7 +116,7 @@ export function CreateCountdownForm({ initialDate }: { initialDate?: string }) {
       setError(problem);
       return;
     }
-    await countdownsRepo.create({ mode: "target", title, targetAt, colorTag, category, recurrence });
+    await countdownsRepo.create({ title, targetAt, colorTag, category, recurrence });
     await queryClient.invalidateQueries({ queryKey: COUNTDOWNS_QUERY_KEY });
 
     playSound("start");
