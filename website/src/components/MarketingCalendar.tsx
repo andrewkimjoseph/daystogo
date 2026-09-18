@@ -1,0 +1,310 @@
+import { useMemo, useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useHydrated } from "#/hooks/useHydrated";
+import { PALETTE } from "#/lib/palette";
+import { createCountdownUrl } from "#/lib/urls";
+
+const WEEKDAYS = ["M", "T", "W", "T", "F", "S", "S"];
+const MONTHS = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+const MONTHS_SHORT = MONTHS.map((m) => m.slice(0, 3));
+
+type Pane = "days" | "months" | "years";
+
+const pad = (n: number) => String(n).padStart(2, "0");
+
+function dayKey(d: Date): string {
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
+function sameDay(a: Date, b: Date): boolean {
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  );
+}
+
+function monthGrid(year: number, month: number): Date[] {
+  const first = new Date(year, month, 1);
+  const offset = (first.getDay() + 6) % 7;
+  const start = new Date(year, month, 1 - offset);
+  return Array.from(
+    { length: 42 },
+    (_, i) => new Date(start.getFullYear(), start.getMonth(), start.getDate() + i),
+  );
+}
+
+export function MarketingCalendar() {
+  const hydrated = useHydrated();
+  if (!hydrated) return <CalendarSkeleton />;
+  return <CalendarBody />;
+}
+
+function CalendarSkeleton() {
+  return (
+    <div className="grid gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
+      <div className="brut bg-card p-3 sm:p-4">
+        <div className="mb-2 h-9 bg-cream/60" />
+        <div className="mb-2 h-9 bg-cream/60" />
+        <div className="grid grid-cols-7 gap-1">
+          {Array.from({ length: 42 }, (_, i) => (
+            <div key={i} className="h-12 bg-cream/40 sm:h-16" />
+          ))}
+        </div>
+      </div>
+      <div className="brut bg-card p-4">
+        <div className="h-6 w-2/3 bg-cream/60" />
+      </div>
+    </div>
+  );
+}
+
+function CalendarBody() {
+  const [today] = useState(() => new Date());
+  const [selected, setSelected] = useState(() => new Date());
+  const [view, setView] = useState(() => ({ y: today.getFullYear(), m: today.getMonth() }));
+  const [pane, setPane] = useState<Pane>("days");
+  const [yearPage, setYearPage] = useState(() => today.getFullYear());
+  const [dir, setDir] = useState<-1 | 0 | 1>(0);
+  const swapClass = dir === 1 ? "swap-right" : dir === -1 ? "swap-left" : "swap-zoom";
+
+  const days = useMemo(() => monthGrid(view.y, view.m), [view]);
+  const years = useMemo(() => Array.from({ length: 12 }, (_, i) => yearPage + i), [yearPage]);
+
+  const minY = today.getFullYear();
+  const minM = today.getMonth();
+  const atFloor = view.y === minY && view.m === minM;
+  const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+  const clamp = (y: number, m: number) =>
+    y < minY || (y === minY && m < minM) ? { y: minY, m: minM } : { y, m };
+
+  function shiftMonth(delta: number) {
+    const d = new Date(view.y, view.m + delta, 1);
+    const next = clamp(d.getFullYear(), d.getMonth());
+    if (next.y === view.y && next.m === view.m) return;
+    setDir(delta > 0 ? 1 : -1);
+    setView(next);
+  }
+
+  function shiftYear(delta: number) {
+    const next = clamp(view.y + delta, view.m);
+    if (next.y === view.y && next.m === view.m) return;
+    setDir(delta > 0 ? 1 : -1);
+    setView(next);
+  }
+
+  function togglePane(next: Pane) {
+    setDir(0);
+    setPane((p) => (p === next ? "days" : next));
+  }
+
+  function jumpTo(y: number, m: number) {
+    setDir(0);
+    setView(clamp(y, m));
+    setPane("days");
+  }
+
+  const arrow = (label: string, side: "l" | "r", onClick: () => void, disabled = false) => (
+    <button
+      type="button"
+      aria-label={label}
+      onClick={onClick}
+      disabled={disabled}
+      className="brut-thin brut-press flex h-9 w-9 shrink-0 items-center justify-center bg-cream disabled:pointer-events-none disabled:opacity-35"
+    >
+      {side === "l" ? (
+        <ChevronLeft className="h-4 w-4" strokeWidth={3} />
+      ) : (
+        <ChevronRight className="h-4 w-4" strokeWidth={3} />
+      )}
+    </button>
+  );
+
+  return (
+    <div className="grid gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
+      <div className="brut bg-card p-3 sm:p-4">
+        <div className="mb-2 flex items-center justify-between gap-2">
+          {arrow("Previous year", "l", () => shiftYear(-1), view.y <= minY)}
+          <button
+            type="button"
+            onClick={() => {
+              setYearPage(view.y - 5);
+              togglePane("years");
+            }}
+            aria-pressed={pane === "years"}
+            className="brut-thin brut-press tick-numerals flex-1 bg-cream py-2 text-center text-lg"
+          >
+            <span key={view.y} className="tick-bump inline-block">
+              {view.y}
+            </span>
+          </button>
+          {arrow("Next year", "r", () => shiftYear(1))}
+        </div>
+
+        <div className="mb-2 flex items-center justify-between gap-2">
+          {arrow("Previous month", "l", () => shiftMonth(-1), atFloor)}
+          <button
+            type="button"
+            onClick={() => togglePane("months")}
+            aria-pressed={pane === "months"}
+            className="brut-thin brut-press flex-1 bg-cream py-2 text-center text-sm font-bold uppercase"
+          >
+            <span key={view.m} className="tick-bump inline-block">
+              {MONTHS[view.m]}
+            </span>
+          </button>
+          {arrow("Next month", "r", () => shiftMonth(1))}
+        </div>
+
+        {pane === "years" && (
+          <div>
+            <div className="mb-2 flex items-center justify-between gap-2">
+              {arrow(
+                "Previous years",
+                "l",
+                () => {
+                  setDir(-1);
+                  setYearPage((y) => Math.max(minY, y - 12));
+                },
+                yearPage <= minY,
+              )}
+              <span className="tick-numerals flex-1 text-center text-xs">
+                {years[0]} – {years[years.length - 1]}
+              </span>
+              {arrow("Next years", "r", () => {
+                setDir(1);
+                setYearPage((y) => y + 12);
+              })}
+            </div>
+            <div key={`years-${yearPage}`} className={`grid grid-cols-4 gap-1 ${swapClass}`}>
+              {years.map((y) => {
+                const on = y === view.y;
+                const past = y < minY;
+                return (
+                  <button
+                    key={y}
+                    type="button"
+                    onClick={() => jumpTo(y, view.m)}
+                    disabled={past}
+                    aria-pressed={on}
+                    className={`tick-numerals h-11 text-base ${on ? "brut-thin" : ""} ${past ? "pointer-events-none opacity-30" : ""}`}
+                    style={on ? { backgroundColor: PALETTE.teal, color: PALETTE.cream } : undefined}
+                  >
+                    {y}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {pane === "months" && (
+          <div key={`months-${view.y}`} className={`grid grid-cols-3 gap-1 ${swapClass}`}>
+            {MONTHS_SHORT.map((label, i) => {
+              const on = i === view.m;
+              const past = view.y === minY && i < minM;
+              return (
+                <button
+                  key={label}
+                  type="button"
+                  onClick={() => jumpTo(view.y, i)}
+                  disabled={past}
+                  aria-pressed={on}
+                  className={`h-11 text-xs font-bold uppercase ${on ? "brut-thin" : ""} ${past ? "pointer-events-none opacity-30" : ""}`}
+                  style={on ? { backgroundColor: PALETTE.teal, color: PALETTE.cream } : undefined}
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        {pane === "days" && (
+          <div key={`days-${view.y}-${view.m}`} className={`grid grid-cols-7 gap-1 ${swapClass}`}>
+            {WEEKDAYS.map((w, i) => (
+              <span
+                key={i}
+                className="pb-1 text-center text-[10px] font-bold uppercase text-muted-foreground"
+              >
+                {w}
+              </span>
+            ))}
+            {days.map((d) => {
+              const isSelected = sameDay(d, selected);
+              const isToday = sameDay(d, today);
+              const outside = d.getMonth() !== view.m;
+              const past = d.getTime() < todayStart;
+              return (
+                <button
+                  key={d.getTime()}
+                  type="button"
+                  onClick={() => setSelected(new Date(d))}
+                  disabled={past}
+                  aria-pressed={isSelected}
+                  aria-label={d.toDateString()}
+                  className={`tick-numerals relative flex h-12 flex-col items-center justify-center text-sm sm:h-16 sm:text-base ${
+                    isSelected ? "brut-thin" : ""
+                  } ${past ? "pointer-events-none opacity-25" : outside && !isSelected ? "opacity-35" : ""}`}
+                  style={
+                    isSelected
+                      ? { backgroundColor: PALETTE.teal, color: PALETTE.cream }
+                      : isToday
+                        ? { boxShadow: "0 0 0 2px var(--ink) inset" }
+                        : undefined
+                  }
+                >
+                  <span>{d.getDate()}</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      <DayPanel date={selected} />
+    </div>
+  );
+}
+
+function DayPanel({ date }: { date: Date }) {
+  const heading = date.toLocaleDateString(undefined, {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+
+  return (
+    <div className="brut flex flex-col gap-3 bg-card p-4">
+      <div>
+        <h2 className="text-lg uppercase sm:text-xl">{heading}</h2>
+        <p className="text-xs font-bold uppercase text-muted-foreground">Nothing lands here</p>
+      </div>
+      <p className="font-bold text-muted-foreground">
+        A blank day. Suspiciously calm — want to put a clock on something?
+      </p>
+      <a
+        href={createCountdownUrl(dayKey(date))}
+        target="_blank"
+        rel="noreferrer"
+        className="brut-thin brut-press inline-flex bg-primary px-4 py-2 text-xs font-bold text-primary-foreground uppercase"
+      >
+        Create countdown
+      </a>
+    </div>
+  );
+}
