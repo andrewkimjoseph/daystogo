@@ -1,7 +1,7 @@
 {
   "name": "daystogo-root",
   "private": true,
-  "workspaces": ["web_app"],
+  "workspaces": ["web_app", "website"],
   "scripts": {
     "dev": "bun run --cwd web_app dev",
     "build": "bun run --cwd web_app build",
