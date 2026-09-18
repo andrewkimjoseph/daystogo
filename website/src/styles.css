@@ -1,0 +1,354 @@
+@import "tailwindcss" source(none);
+@source "../src";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Days To Go — "Playful Brutalism" design system.
+ * Copied from web_app so the marketing site matches 1:1.
+ * Palette is fixed: cream base, teal, mauve, red, slate blue.
+ */
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ink: var(--ink);
+  --color-teal: var(--teal);
+  --color-mauve: var(--mauve);
+  --color-red: var(--red);
+  --color-slate: var(--slate);
+  --color-cream: var(--cream);
+
+  --font-display: "Archivo Black", "Arial Black", sans-serif;
+  --font-sans: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --animate-pop-in: pop-in 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  --animate-wiggle: wiggle 0.6s ease-in-out infinite;
+  --animate-pulse-hard: pulse-hard 1s steps(2, end) infinite;
+  --animate-slide-up: slide-up 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes pop-in {
+  0% {
+    transform: scale(0.7) rotate(-3deg);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+@keyframes wiggle {
+  0%,
+  100% {
+    transform: rotate(-2deg);
+  }
+  50% {
+    transform: rotate(2deg);
+  }
+}
+
+@keyframes pulse-hard {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+:root {
+  --radius: 0.5rem;
+
+  /* palette */
+  --cream: oklch(0.941 0.021 89.5); /* #EFEADD */
+  --teal: oklch(0.634 0.086 205.2); /* #2E9EAC */
+  --mauve: oklch(0.478 0.099 5.6); /* #A24962 */
+  --red: oklch(0.53 0.203 19.1); /* #CD2744 */
+  --slate: oklch(0.505 0.055 245.7); /* #426A85 */
+  --ink: oklch(0.16 0.01 260);
+
+  /* brutalist drop-shadow scale */
+  --shadow-brut: 3px 3px 0 0 var(--ink);
+  --shadow-brut-sm: 2px 2px 0 0 var(--ink);
+  --shadow-brut-hover: 4px 4px 0 0 var(--ink);
+  --shadow-brut-none: 0 0 0 0 var(--ink);
+  --shadow-brut-slate: 3px 3px 0 0 var(--slate);
+
+  --background: var(--cream);
+  --foreground: var(--ink);
+  --card: oklch(0.985 0.008 90);
+  --card-foreground: var(--ink);
+  --popover: var(--cream);
+  --popover-foreground: var(--ink);
+  --primary: var(--teal);
+  --primary-foreground: oklch(0.985 0.008 90);
+  --secondary: var(--slate);
+  --secondary-foreground: oklch(0.985 0.008 90);
+  --muted: oklch(0.905 0.022 89);
+  --muted-foreground: var(--slate);
+  --accent: var(--mauve);
+  --accent-foreground: oklch(0.985 0.008 90);
+  --destructive: var(--red);
+  --destructive-foreground: oklch(0.985 0.008 90);
+  --border: var(--ink);
+  --input: var(--ink);
+  --ring: var(--teal);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html {
+    scrollbar-gutter: stable;
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    background-image: radial-gradient(
+      color-mix(in oklab, var(--color-slate) 22%, transparent) 1px,
+      transparent 1px
+    );
+    background-size: 28px 28px;
+    background-position: -1px -1px;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
+}
+
+/* --- Brutalist primitives --- */
+
+@utility brut {
+  border: 4px solid var(--color-ink);
+  box-shadow: var(--shadow-brut);
+  border-radius: 0;
+}
+
+@utility brut-thin {
+  border: 3px solid var(--color-ink);
+  box-shadow: var(--shadow-brut-sm);
+  border-radius: 0;
+}
+
+@utility brut-slate {
+  border: 4px solid var(--color-slate);
+  box-shadow: var(--shadow-brut-slate);
+  border-radius: 0;
+}
+
+/* Single shared interaction behaviour for every clickable element:
+   hover lifts out with the 4px shadow, active presses inward and flattens. */
+@utility brut-press {
+  transition:
+    transform 0.14s var(--ease-bounce),
+    box-shadow 0.14s var(--ease-bounce);
+  &:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: var(--shadow-brut-hover);
+  }
+  &:active {
+    transform: translate(2px, 2px);
+    box-shadow: var(--shadow-brut-none);
+  }
+}
+
+@utility brut-pop {
+  transition:
+    transform 0.14s var(--ease-bounce),
+    box-shadow 0.14s var(--ease-bounce);
+  &:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: var(--shadow-brut-hover);
+  }
+  &:active {
+    transform: translate(2px, 2px);
+    box-shadow: var(--shadow-brut-none);
+  }
+}
+
+@utility brut-lift {
+  transition:
+    transform 0.18s var(--ease-bounce),
+    box-shadow 0.18s var(--ease-bounce);
+  &:hover {
+    transform: translate(-1px, -2px) rotate(-0.6deg);
+    box-shadow: var(--shadow-brut-hover);
+  }
+}
+
+@utility hero-gradient {
+  background-image: linear-gradient(100deg, var(--color-red), var(--color-mauve), var(--color-teal));
+  background-clip: text;
+  color: transparent;
+}
+
+@utility tick-numerals {
+  font-family: var(--font-display);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+}
+
+/* --- Motion: view transitions & panel swaps --- */
+
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-group(root) {
+  animation-duration: 0.24s;
+  animation-timing-function: var(--ease-bounce);
+}
+
+::view-transition-old(page) {
+  animation: page-out 0.16s ease-in both;
+}
+
+::view-transition-new(page) {
+  animation: page-in 0.26s var(--ease-bounce) both;
+}
+
+::view-transition-group(site-header) {
+  animation-duration: 0.2s;
+}
+
+@keyframes page-out {
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+@keyframes swap-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(14px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes swap-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-14px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes swap-in-zoom {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes tick-bump {
+  0% {
+    transform: translateY(-4px) scale(0.94);
+    opacity: 0.4;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@utility view-page {
+  view-transition-name: page;
+}
+
+@utility view-header {
+  view-transition-name: site-header;
+}
+
+@utility swap-right {
+  animation: swap-in-right 0.2s var(--ease-bounce) both;
+}
+
+@utility swap-left {
+  animation: swap-in-left 0.2s var(--ease-bounce) both;
+}
+
+@utility swap-zoom {
+  animation: swap-in-zoom 0.18s var(--ease-bounce) both;
+}
+
+@utility tick-bump {
+  animation: tick-bump 0.16s var(--ease-bounce) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+
+  .swap-right,
+  .swap-left,
+  .swap-zoom,
+  .tick-bump {
+    animation: none !important;
+  }
+}
