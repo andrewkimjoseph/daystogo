@@ -1,4 +1,21 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "framework": "tanstack-start"
+  "framework": "tanstack-start",
+  "redirects": [
+    {
+      "source": "/about",
+      "destination": "https://daystogo.xyz/about",
+      "permanent": true
+    },
+    {
+      "source": "/privacy",
+      "destination": "https://daystogo.xyz/privacy",
+      "permanent": true
+    },
+    {
+      "source": "/terms",
+      "destination": "https://daystogo.xyz/terms",
+      "permanent": true
+    }
+  ]
 }

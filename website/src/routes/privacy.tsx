@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
-import { SiteHeader } from "@/components/SiteHeader";
+import { SiteHeader } from "#/components/SiteHeader";
+import { SITE_URL } from "#/lib/urls";
 
 export const Route = createFileRoute("/privacy")({
   head: () => ({
@@ -18,11 +19,10 @@ export const Route = createFileRoute("/privacy")({
           "How Days To Go handles your data: countdowns stay in your browser, and signed-in timers sync only to your own account.",
       },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "https://app.daystogo.xyz/privacy" },
+      { property: "og:url", content: `${SITE_URL}/privacy` },
     ],
-    links: [{ rel: "canonical", href: "https://app.daystogo.xyz/privacy" }],
+    links: [{ rel: "canonical", href: `${SITE_URL}/privacy` }],
   }),
-
   component: PrivacyPage,
 });
 
@@ -36,10 +36,10 @@ function PrivacyPage() {
           <Link
             to="/"
             viewTransition
-            className="brut brut-press inline-flex items-center gap-2 rounded-none bg-cream px-3 py-2.5 text-xs font-bold uppercase text-ink sm:px-4 sm:py-3 sm:text-sm"
+            className="brut brut-press inline-flex items-center gap-2 rounded-none bg-cream px-3 py-2.5 text-xs font-bold text-ink uppercase sm:px-4 sm:py-3 sm:text-sm"
           >
             <ArrowLeft className="h-4 w-4" strokeWidth={3} />
-            Back to the timers
+            Back
           </Link>
         </div>
 
@@ -49,29 +49,27 @@ function PrivacyPage() {
         </h1>
 
         <p className="mt-4 text-lg font-bold text-muted-foreground">
-          Short version: your countdowns are yours. Guests stay on your device, and
-          signed-in timers sync only to your own account.
+          Short version: your countdowns are yours. Guests stay on your device, and signed-in timers
+          sync only to your own account.
         </p>
 
         <div className="brut mt-6 space-y-6 bg-card p-4 text-foreground sm:mt-8 sm:p-6">
           <section>
             <h2 className="text-xl uppercase">What we store</h2>
             <p className="mt-2 text-base leading-relaxed">
-              <span className="font-bold">Without an account</span>, your countdowns live
-              only in this browser (in your browser's local storage). They never leave your
-              device. Clearing your browser data deletes them — and it does not delete cloud
-              timers saved under an account.
+              <span className="font-bold">Without an account</span>, your countdowns live only in this
+              browser (in your browser's local storage). They never leave your device. Clearing your
+              browser data deletes them — and it does not delete cloud timers saved under an account.
             </p>
             <p className="mt-4 text-base leading-relaxed">
-              <span className="font-bold">With an account</span>, we store your account
-              email and username, plus the countdowns you sync: titles, target and end times,
-              colors, categories, status, and timestamps. Email, username, and countdown
-              titles are encrypted at rest in Postgres so a database admin cannot read them.
-              Accounts are managed by Clerk (Clerk still holds your email and username for
-              sign-in), and synced timers are stored in a hosted Postgres database scoped to
-              your account with row-level security — only you can read or change your rows.
-              Guest timers and the signed-in local copy in this browser stay in IndexedDB
-              as plaintext on your device.
+              <span className="font-bold">With an account</span>, we store your account email and
+              username, plus the countdowns you sync: titles, target and end times, colors, categories,
+              status, and timestamps. Email, username, and countdown titles are encrypted at rest in
+              Postgres so a database admin cannot read them. Accounts are managed by Clerk (Clerk still
+              holds your email and username for sign-in), and synced timers are stored in a hosted
+              Postgres database scoped to your account with row-level security — only you can read or
+              change your rows. Guest timers and the signed-in local copy in this browser stay in
+              IndexedDB as plaintext on your device.
             </p>
           </section>
 
@@ -80,16 +78,19 @@ function PrivacyPage() {
             <ul className="mt-2 list-disc space-y-1 pl-6 text-base leading-relaxed">
               <li>We don't sell your data.</li>
               <li>We don't run advertising or ad trackers.</li>
-              <li>We don't read the contents of your countdowns beyond what the app needs to run them for you.</li>
+              <li>
+                We don't read the contents of your countdowns beyond what the app needs to run them for
+                you.
+              </li>
             </ul>
           </section>
 
           <section>
             <h2 className="text-xl uppercase">Deleting your data</h2>
             <p className="mt-2 text-base leading-relaxed">
-              Deleting a countdown in the app removes it from your board and, if you're
-              signed in, from your synced account. If you'd like your whole account and its
-              synced timers removed, reach out and we'll take care of it.
+              Deleting a countdown in the app removes it from your board and, if you're signed in, from
+              your synced account. If you'd like your whole account and its synced timers removed,
+              reach out and we'll take care of it.
             </p>
           </section>
 

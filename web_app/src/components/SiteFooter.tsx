@@ -1,7 +1,7 @@
-import { Link } from "@tanstack/react-router";
 import pkg from "../../package.json";
 
 const APP_VERSION = pkg.version;
+const SITE_URL = "https://daystogo.xyz";
 
 const linkClass = "underline hover:text-ink";
 
@@ -17,18 +17,18 @@ export function SiteFooter() {
           <span title={`Days To Go ${APP_VERSION}`}>{APP_VERSION}</span>
         </p>
         <nav className="flex flex-wrap justify-center gap-x-4 gap-y-1" aria-label="Footer">
-          <a href="https://daystogo.xyz" target="_blank" rel="noreferrer" className={linkClass}>
+          <a href={SITE_URL} target="_blank" rel="noreferrer" className={linkClass}>
             Website
           </a>
-          <Link to="/about" viewTransition className={linkClass}>
+          <a href={`${SITE_URL}/about`} target="_blank" rel="noreferrer" className={linkClass}>
             About
-          </Link>
-          <Link to="/privacy" viewTransition className={linkClass}>
+          </a>
+          <a href={`${SITE_URL}/privacy`} target="_blank" rel="noreferrer" className={linkClass}>
             Privacy
-          </Link>
-          <Link to="/terms" viewTransition className={linkClass}>
+          </a>
+          <a href={`${SITE_URL}/terms`} target="_blank" rel="noreferrer" className={linkClass}>
             Terms
-          </Link>
+          </a>
         </nav>
       </div>
     </footer>

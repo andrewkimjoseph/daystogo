@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { APP_URL, GITHUB_URL } from "#/lib/urls";
+import { GITHUB_URL } from "#/lib/urls";
 
 export function SiteFooter() {
   return (
@@ -12,12 +12,12 @@ export function SiteFooter() {
         <Link to="/about" viewTransition className="underline hover:text-ink">
           About
         </Link>
-        <a href={`${APP_URL}/privacy`} className="underline hover:text-ink">
+        <Link to="/privacy" viewTransition className="underline hover:text-ink">
           Privacy
-        </a>
-        <a href={`${APP_URL}/terms`} className="underline hover:text-ink">
+        </Link>
+        <Link to="/terms" viewTransition className="underline hover:text-ink">
           Terms
-        </a>
+        </Link>
         <a href={GITHUB_URL} target="_blank" rel="noreferrer" className="underline hover:text-ink">
           GitHub
         </a>

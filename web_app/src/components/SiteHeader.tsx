@@ -47,16 +47,17 @@ export function SiteHeader() {
                 <CalendarIcon className="h-4 w-4 sm:hidden" strokeWidth={3} />
                 <span className="hidden sm:inline">Calendar</span>
               </Link>
-              <Link
-                to="/about"
-                viewTransition
+              <a
+                href="https://daystogo.xyz/about"
+                target="_blank"
+                rel="noreferrer"
                 aria-label="About"
                 title="About"
                 className="brut brut-press inline-flex h-10 items-center justify-center rounded-none bg-cream px-2.5 text-xs font-bold text-ink uppercase sm:px-4 sm:text-sm"
               >
                 <Info className="h-4 w-4 sm:hidden" strokeWidth={3} />
                 <span className="hidden sm:inline">About</span>
-              </Link>
+              </a>
             </>
           ) : (
             <Link

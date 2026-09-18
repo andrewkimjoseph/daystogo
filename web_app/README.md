@@ -82,9 +82,6 @@ src/
     ├── create-countdown.tsx      # new countdown flow (accepts ?date=)
     ├── calendar.tsx              # calendar explorer
     ├── archived.tsx              # archived clocks
-    ├── about.tsx                 # about + link to GitHub
-    ├── privacy.tsx
-    ├── terms.tsx
     └── sitemap[.]xml.ts          # generated /sitemap.xml
 ```
 
@@ -114,7 +111,7 @@ The dev server runs on Vite. Copy `.env.local` from a teammate or `vercel env pu
 
 Without an account, countdowns stay in this browser (IndexedDB, plaintext on your device). Sign in and each create, edit, archive, or delete updates both Dexie and Neon (RLS, scoped to your Clerk account). Synced countdown titles, plus account email and username, are encrypted at rest in Postgres. Opening the app while signed in pushes any local-only clocks to Neon and replaces Dexie with the cloud set. Clearing the browser deletes the local copy; it does not delete cloud timers.
 
-Full details live on the site: [Privacy Policy](https://app.daystogo.xyz/privacy) · [Terms of Service](https://app.daystogo.xyz/terms)
+Full details live on the site: [Privacy Policy](https://daystogo.xyz/privacy) · [Terms of Service](https://daystogo.xyz/terms)
 
 ## Author
 

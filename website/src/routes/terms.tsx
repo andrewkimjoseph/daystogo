@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
-import { SiteHeader } from "@/components/SiteHeader";
+import { SiteHeader } from "#/components/SiteHeader";
+import { SITE_URL } from "#/lib/urls";
 
 export const Route = createFileRoute("/terms")({
   head: () => ({
@@ -18,11 +19,10 @@ export const Route = createFileRoute("/terms")({
           "The plain-language terms for using Days To Go: a free, playful countdown timer provided as is.",
       },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "https://app.daystogo.xyz/terms" },
+      { property: "og:url", content: `${SITE_URL}/terms` },
     ],
-    links: [{ rel: "canonical", href: "https://app.daystogo.xyz/terms" }],
+    links: [{ rel: "canonical", href: `${SITE_URL}/terms` }],
   }),
-
   component: TermsPage,
 });
 
@@ -36,10 +36,10 @@ function TermsPage() {
           <Link
             to="/"
             viewTransition
-            className="brut brut-press inline-flex items-center gap-2 rounded-none bg-cream px-3 py-2.5 text-xs font-bold uppercase text-ink sm:px-4 sm:py-3 sm:text-sm"
+            className="brut brut-press inline-flex items-center gap-2 rounded-none bg-cream px-3 py-2.5 text-xs font-bold text-ink uppercase sm:px-4 sm:py-3 sm:text-sm"
           >
             <ArrowLeft className="h-4 w-4" strokeWidth={3} />
-            Back to the timers
+            Back
           </Link>
         </div>
 
@@ -56,28 +56,28 @@ function TermsPage() {
           <section>
             <h2 className="text-xl uppercase">The service</h2>
             <p className="mt-2 text-base leading-relaxed">
-              Days To Go is a free, playful countdown timer web app. You can run as many
-              countdowns as you like — locally in your browser, or synced to an account if
-              you sign in. Use it for anything legal; don't use it to break the law, abuse
-              the service, or interfere with other people's use of it.
+              Days To Go is a free, playful countdown timer web app. You can run as many countdowns as
+              you like — locally in your browser, or synced to an account if you sign in. Use it for
+              anything legal; don't use it to break the law, abuse the service, or interfere with other
+              people's use of it.
             </p>
           </section>
 
           <section>
             <h2 className="text-xl uppercase">Your content</h2>
             <p className="mt-2 text-base leading-relaxed">
-              The countdowns you create — titles, dates, tags — are yours. Guest timers stay
-              in your browser; signed-in timers are stored in your account. You're
-              responsible for what you put in them.
+              The countdowns you create — titles, dates, tags — are yours. Guest timers stay in your
+              browser; signed-in timers are stored in your account. You're responsible for what you put
+              in them.
             </p>
           </section>
 
           <section>
             <h2 className="text-xl uppercase">Accounts</h2>
             <p className="mt-2 text-base leading-relaxed">
-              An account is optional. If you create one, keep your credentials safe —
-              accounts are managed by a third-party authentication provider. You can stop
-              using your account at any time.
+              An account is optional. If you create one, keep your credentials safe — accounts are
+              managed by a third-party authentication provider. You can stop using your account at any
+              time.
             </p>
           </section>
 
@@ -85,26 +85,26 @@ function TermsPage() {
             <h2 className="text-xl uppercase">No warranty</h2>
             <p className="mt-2 text-base leading-relaxed">
               Days To Go is provided <span className="font-bold">“as is”</span> and{" "}
-              <span className="font-bold">“as available”</span>, without warranties of any
-              kind. It may change, break, or be discontinued. Don't rely on it for anything
-              critical — if a countdown matters, keep your own backup of the date.
+              <span className="font-bold">“as available”</span>, without warranties of any kind. It may
+              change, break, or be discontinued. Don't rely on it for anything critical — if a
+              countdown matters, keep your own backup of the date.
             </p>
           </section>
 
           <section>
             <h2 className="text-xl uppercase">Limitation of liability</h2>
             <p className="mt-2 text-base leading-relaxed">
-              To the maximum extent permitted by law, Days To Go and its author are not
-              liable for any lost timers, missed events, lost data, or other damages arising
-              from your use of the service.
+              To the maximum extent permitted by law, Days To Go and its author are not liable for any
+              lost timers, missed events, lost data, or other damages arising from your use of the
+              service.
             </p>
           </section>
 
           <section>
             <h2 className="text-xl uppercase">Changes to these terms</h2>
             <p className="mt-2 text-base leading-relaxed">
-              These terms may be updated from time to time. The current version lives on
-              this page, and continuing to use Days To Go after a change means you accept it.
+              These terms may be updated from time to time. The current version lives on this page, and
+              continuing to use Days To Go after a change means you accept it.
             </p>
           </section>
 

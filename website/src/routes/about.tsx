@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, FileText, Github, Linkedin, Mail, Shield } from "lucide-react";
 import { SiteHeader } from "#/components/SiteHeader";
 import { PALETTE } from "#/lib/palette";
-import { APP_URL, SITE_URL, socialLinks } from "#/lib/urls";
+import { SITE_URL, socialLinks } from "#/lib/urls";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -135,20 +135,22 @@ function AboutPage() {
         <section className="mt-8">
           <h2 className="text-2xl uppercase">The fine print</h2>
           <div className="mt-3 flex flex-wrap gap-3">
-            <a
-              href={`${APP_URL}/privacy`}
+            <Link
+              to="/privacy"
+              viewTransition
               className="brut brut-press inline-flex items-center gap-2 rounded-none bg-cream px-4 py-3 text-sm font-bold text-ink uppercase"
             >
               <Shield className="h-4 w-4 shrink-0" strokeWidth={3} />
               Privacy
-            </a>
-            <a
-              href={`${APP_URL}/terms`}
+            </Link>
+            <Link
+              to="/terms"
+              viewTransition
               className="brut brut-press inline-flex items-center gap-2 rounded-none bg-cream px-4 py-3 text-sm font-bold text-ink uppercase"
             >
               <FileText className="h-4 w-4 shrink-0" strokeWidth={3} />
               Terms
-            </a>
+            </Link>
           </div>
         </section>
       </main>
