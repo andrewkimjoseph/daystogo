@@ -3,8 +3,8 @@
   "private": true,
   "scripts": {
     "dev": "bun run --cwd web_app dev",
-    "build": "bun run --cwd web_app build",
-    "build:dev": "bun run --cwd web_app build:dev",
+    "build": "bun run --cwd web_app build && rm -rf dist && cp -r web_app/dist dist",
+    "build:dev": "bun run --cwd web_app build:dev && rm -rf dist && cp -r web_app/dist dist",
     "preview": "bun run --cwd web_app preview"
   },
   "workspaces": ["web_app"]
