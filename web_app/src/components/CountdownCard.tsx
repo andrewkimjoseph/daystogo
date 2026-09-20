@@ -240,7 +240,7 @@ export function CountdownCard({
 
 
       <p
-        className={`tick-numerals w-full text-center whitespace-nowrap text-xl sm:text-2xl ${urgent ? "animate-pulse-hard" : ""}`}
+        className={`tick-numerals whitespace-nowrap text-xl sm:text-2xl ${urgent ? "animate-pulse-hard" : ""}`}
         style={{ color: lapsed ? PALETTE.cream : urgent ? PALETTE.red : "var(--ink)" }}
       >
         {text}
