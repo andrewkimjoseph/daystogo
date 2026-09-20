@@ -1,5 +1,11 @@
 {
   "extends": "./web_app/tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./web_app/src/*"],
+      "vite/client": ["./web_app/node_modules/vite/client.d.ts"]
+    }
+  },
   "include": [
     "web_app/src/**/*.ts",
     "web_app/src/**/*.tsx",
