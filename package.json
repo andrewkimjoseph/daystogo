@@ -2,10 +2,10 @@
   "name": "daystogo-root",
   "private": true,
   "scripts": {
-    "dev": "web_app/node_modules/.bin/vite dev web_app",
-    "build": "web_app/node_modules/.bin/vite build web_app && node web_app/scripts/patch-vercel-asset-404.mjs",
-    "build:dev": "web_app/node_modules/.bin/vite build web_app --mode development",
-    "preview": "web_app/node_modules/.bin/vite preview web_app"
+    "dev": "bun run --cwd web_app dev",
+    "build": "bun run --cwd web_app build",
+    "build:dev": "bun run --cwd web_app build:dev",
+    "preview": "bun run --cwd web_app preview"
   },
   "workspaces": ["web_app"]
 }
