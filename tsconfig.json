@@ -1,0 +1,8 @@
+{
+  "extends": "./web_app/tsconfig.json",
+  "include": [
+    "web_app/src/**/*.ts",
+    "web_app/src/**/*.tsx",
+    "web_app/vite.config.ts"
+  ]
+}
