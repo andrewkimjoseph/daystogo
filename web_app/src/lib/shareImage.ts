@@ -271,7 +271,9 @@ export async function renderCountdownShareImage(
   const midY = (y + 24 + (stripY - 40)) / 2;
   ctx.fillStyle = lapsed ? PALETTE.cream : INK;
   ctx.font = `${clock.size}px ${DISPLAY}`;
-  ctx.fillText(clock.lines[0]!, left, midY + clock.size * 0.36);
+  ctx.textAlign = "center";
+  ctx.fillText(clock.lines[0] ?? text, left + contentW / 2, midY + clock.size * 0.36);
+  ctx.textAlign = "left";
 
   // Created date — small and silent, sitting in the gap between the timer and
   // the progress strip.
