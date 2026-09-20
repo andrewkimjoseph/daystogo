@@ -80,10 +80,14 @@ export function formatRemaining(ms: number, now?: number, endsAt?: number): Form
   const clock = `${pad(Math.floor(rest / 3600))}:${pad(Math.floor((rest % 3600) / 60))}:${pad(rest % 60)}`;
   if (total < 86400) return done(clock);
 
+  const weeks = Math.floor(days / 7);
+  days %= 7;
+
   const head = [
     years > 0 ? `${years}y` : null,
     months > 0 ? `${months}mo` : null,
-    days > 0 || (years === 0 && months === 0) ? `${days}d` : null,
+    weeks > 0 ? `${weeks}wk` : null,
+    days > 0 || (years === 0 && months === 0 && weeks === 0) ? `${days}d` : null,
   ]
     .filter(Boolean)
     .join(" ");
