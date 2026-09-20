@@ -10,7 +10,7 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 
-const configPath = resolve(process.cwd(), "../dist/config.json");
+const configPath = resolve(process.cwd(), ".vercel/output/config.json");
 if (!existsSync(configPath)) {
   console.log("[patch-vercel-asset-404] no Vercel output detected, skipping");
   process.exit(0);
