@@ -6,5 +6,6 @@
     "build": "bun run --cwd web_app build",
     "build:dev": "bun run --cwd web_app build:dev",
     "preview": "bun run --cwd web_app preview"
-  }
+  },
+  "workspaces": ["web_app"]
 }
