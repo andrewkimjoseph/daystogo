@@ -534,14 +534,6 @@ export function CountdownCard({
             second: "2-digit",
           })}
         </p>
-        {isSignedIn && (
-          <p
-            className="mt-0.5 break-all pr-8 text-[9px] font-bold uppercase"
-            style={{ color: lapsed ? PALETTE.cream : "var(--muted-foreground)" }}
-          >
-            ID / {countdown.id}
-          </p>
-        )}
         </div>
         <img
           src="/logo.png"
@@ -549,6 +541,14 @@ export function CountdownCard({
           className="h-10 w-auto opacity-80"
         />
       </div>
+        {isSignedIn && (
+          <p
+            className="-mt-1 break-all pr-8 text-[9px] font-bold uppercase"
+            style={{ color: lapsed ? PALETTE.cream : "var(--muted-foreground)" }}
+          >
+            ID / {countdown.id}
+          </p>
+        )}
     </article>
   );
 }
