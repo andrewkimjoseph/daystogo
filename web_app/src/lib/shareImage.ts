@@ -356,7 +356,7 @@ export async function renderCountdownShareImage(
     ctx.font = `${idSize}px ${SANS}`;
     ctx.fillStyle = muted;
     ctx.textAlign = "left";
-    ctx.fillText(idText, left, stripY + stripH + 40);
+    ctx.fillText(idText, left, panelY + panelH - 44);
   }
 
   // Footer: logo + URL.
