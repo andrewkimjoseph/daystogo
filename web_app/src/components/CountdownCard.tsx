@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Archive, ArchiveRestore, Check, Download, Pencil, RefreshCw, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
+import { useAuth } from "@clerk/tanstack-react-start";
 import type { Countdown } from "@/lib/db";
 import { countdownsRepo, remainingMs } from "@/lib/countdownsRepo";
 import { isRecurring, recurrenceBadgeLabel } from "@/lib/recurrence";
@@ -33,6 +34,7 @@ export function CountdownCard({
   onChanged: () => void;
   variant?: "active" | "archived";
 }) {
+  const { isSignedIn } = useAuth();
   const isArchived = variant === "archived";
   const cardRef = useRef<HTMLElement | null>(null);
   const controlsRef = useRef<HTMLDivElement | null>(null);
@@ -463,7 +465,7 @@ export function CountdownCard({
                   onClick={async () => {
                     setSaving(true);
                     try {
-                      await downloadCountdownImage(countdown, now);
+                      await downloadCountdownImage(countdown, now, { showId: !!isSignedIn });
                       toast.success("Share image downloaded");
                     } catch {
                       toast.error("Couldn't make the image. Try again.");
@@ -518,6 +520,7 @@ export function CountdownCard({
       </div>
 
       <div className="flex items-center justify-between gap-2">
+        <div className="min-w-0">
         <p
           className="text-[10px] font-bold uppercase"
           style={{ color: lapsed ? PALETTE.cream : "var(--muted-foreground)" }}
@@ -531,6 +534,15 @@ export function CountdownCard({
             second: "2-digit",
           })}
         </p>
+        {isSignedIn && (
+          <p
+            className="mt-0.5 break-all pr-8 text-[9px] font-bold uppercase"
+            style={{ color: lapsed ? PALETTE.cream : "var(--muted-foreground)" }}
+          >
+            ID / {countdown.id}
+          </p>
+        )}
+        </div>
         <img
           src="/logo.png"
           alt="Days To Go"

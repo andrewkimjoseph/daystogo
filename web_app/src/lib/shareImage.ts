@@ -135,6 +135,7 @@ function drawPanel(
 export async function renderCountdownShareImage(
   countdown: Countdown,
   now = Date.now(),
+  opts: { showId?: boolean } = {},
 ): Promise<Blob> {
   if (typeof document === "undefined") throw new Error("Share images render in the browser only.");
 
@@ -343,6 +344,21 @@ export async function renderCountdownShareImage(
     ctx.strokeRect(x + 2.5, stripY + 2.5, segW - 5, stripH - 5);
   }
 
+  // Countdown ID, beneath the strip, clear of the colour corner.
+  if (opts.showId) {
+    const idText = `ID / ${countdown.id.toUpperCase()}`;
+    const maxW = contentW - flash;
+    let idSize = 20;
+    for (; idSize > 12; idSize -= 1) {
+      ctx.font = `${idSize}px ${SANS}`;
+      if (ctx.measureText(idText).width <= maxW) break;
+    }
+    ctx.font = `${idSize}px ${SANS}`;
+    ctx.fillStyle = muted;
+    ctx.textAlign = "left";
+    ctx.fillText(idText, left, stripY + stripH + 40);
+  }
+
   // Footer: logo + URL.
   const footY = panelY + panelH + 30;
   const footH = 130;
@@ -378,8 +394,12 @@ function timestampSuffix(): string {
   return `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`;
 }
 
-export async function downloadCountdownImage(countdown: Countdown, now = Date.now()) {
-  const blob = await renderCountdownShareImage(countdown, now);
+export async function downloadCountdownImage(
+  countdown: Countdown,
+  now = Date.now(),
+  opts: { showId?: boolean } = {},
+) {
+  const blob = await renderCountdownShareImage(countdown, now, opts);
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
