@@ -26,5 +26,8 @@ const csrfMiddleware = createCsrfMiddleware({
 });
 
 export const startInstance = createStart(() => ({
-  requestMiddleware: [errorMiddleware, clerkMiddleware(), csrfMiddleware],
+  // Without Clerk keys (e.g. a fresh preview sandbox) skip auth instead of 500ing.
+  requestMiddleware: process.env.CLERK_SECRET_KEY
+    ? [errorMiddleware, clerkMiddleware(), csrfMiddleware]
+    : [errorMiddleware, csrfMiddleware],
 }));
