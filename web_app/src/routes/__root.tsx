@@ -127,6 +127,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   errorComponent: ErrorComponent,
 });
 
+/** Publishable keys are public by design; dev key is the fallback. */
+const CLERK_PUBLISHABLE_KEY =
+  import.meta.env["VITE_PUBLIC_CLERK_PUBLISHABLE_KEY"] ??
+  import.meta.env["VITE_CLERK_PUBLISHABLE_KEY"] ??
+  "pk_test_Y29tcG9zZWQtYnVnLTUzLmNsZXJrLmFjY291bnRzLmRldiQ";
+
 function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
@@ -135,6 +141,7 @@ function RootShell({ children }: { children: ReactNode }) {
       </head>
       <body>
         <ClerkProvider
+          publishableKey={CLERK_PUBLISHABLE_KEY}
           appearance={{
             theme: shadcn as never,
             variables: {
