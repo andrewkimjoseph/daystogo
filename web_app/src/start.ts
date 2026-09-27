@@ -30,8 +30,8 @@ export const startInstance = createStart(() => ({
     errorMiddleware,
     clerkMiddleware({
       publishableKey:
-        process.env.VITE_PUBLIC_CLERK_PUBLISHABLE_KEY ??
-        process.env.CLERK_PUBLISHABLE_KEY ??
+        process.env["VITE_PUBLIC_CLERK_PUBLISHABLE_KEY"] ??
+        process.env["CLERK_PUBLISHABLE_KEY"] ??
         "pk_test_Y29tcG9zZWQtYnVnLTUzLmNsZXJrLmFjY291bnRzLmRldiQ",
     }),
     csrfMiddleware,
