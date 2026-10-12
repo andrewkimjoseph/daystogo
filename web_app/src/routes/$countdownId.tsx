@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuthState } from "@/lib/useAuthState";
-import { ArrowLeft, Download, Link2, RefreshCw } from "lucide-react";
+import { ArrowLeft, Download, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { SiteHeader } from "@/components/SiteHeader";
 import { HourglassLoader } from "@/components/HourglassLoader";
@@ -120,15 +120,6 @@ function BigCountdown({ countdown, showId }: { countdown: Countdown; showId: boo
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lapsed, countdown.id]);
 
-  const copyLink = async () => {
-    try {
-      await navigator.clipboard.writeText(window.location.href);
-      toast.success("Link copied");
-    } catch {
-      toast.error("Couldn't copy the link");
-    }
-  };
-
   const download = async () => {
     try {
       await downloadCountdownImage(countdown, Date.now(), { showId });
@@ -227,14 +218,6 @@ function BigCountdown({ countdown, showId }: { countdown: Countdown; showId: boo
             className="brut brut-press inline-flex h-10 w-10 items-center justify-center rounded-none bg-cream text-ink"
           >
             <Download className="h-4 w-4" strokeWidth={3} />
-          </button>
-          <button
-            type="button"
-            onClick={copyLink}
-            aria-label="Copy link"
-            className="brut brut-press inline-flex h-10 w-10 items-center justify-center rounded-none bg-cream text-ink"
-          >
-            <Link2 className="h-4 w-4" strokeWidth={3} />
           </button>
         </div>
       </footer>
