@@ -15,6 +15,7 @@ import appCss from "../styles.css?url";
 import { Toaster } from "../components/ui/sonner";
 import { SiteFooter } from "../components/SiteFooter";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { CLERK_ENABLED } from "../lib/authMode";
 
 function NotFoundComponent() {
   return (
@@ -134,26 +135,33 @@ function RootShell({ children }: { children: ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <ClerkProvider
-          appearance={{
-            theme: shadcn as never,
-            variables: {
-              colorInput: "var(--card)",
-              colorInputForeground: "var(--ink)",
-              colorBackground: "var(--card)",
-              borderRadius: "0px",
-            },
-            elements: {
-              input:
-                "bg-card text-ink placeholder:text-slate border-ink rounded-none",
-              formFieldInput:
-                "bg-card text-ink placeholder:text-slate border-ink rounded-none",
-            },
-          }}
-        >
-          {children}
-          <Scripts />
-        </ClerkProvider>
+        {CLERK_ENABLED ? (
+          <ClerkProvider
+            appearance={{
+              theme: shadcn as never,
+              variables: {
+                colorInput: "var(--card)",
+                colorInputForeground: "var(--ink)",
+                colorBackground: "var(--card)",
+                borderRadius: "0px",
+              },
+              elements: {
+                input:
+                  "bg-card text-ink placeholder:text-slate border-ink rounded-none",
+                formFieldInput:
+                  "bg-card text-ink placeholder:text-slate border-ink rounded-none",
+              },
+            }}
+          >
+            {children}
+            <Scripts />
+          </ClerkProvider>
+        ) : (
+          <>
+            {children}
+            <Scripts />
+          </>
+        )}
       </body>
     </html>
   );

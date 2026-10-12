@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useAuth } from "@clerk/tanstack-react-start";
+import { useAuthState } from "@/lib/useAuthState";
 import { ArrowLeft, Download, Link2, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -40,7 +40,7 @@ const SEGMENTS = 24;
 function CountdownPage() {
   const { countdownId } = Route.useParams();
   const hydrated = useHydrated();
-  const { isSignedIn, isLoaded } = useAuth();
+  const { isSignedIn, isLoaded } = useAuthState();
   const source = isSignedIn ? "cloud" : "local";
   const { data, isLoading } = useQuery({
     queryKey: [...COUNTDOWNS_QUERY_KEY, source, "one", countdownId],

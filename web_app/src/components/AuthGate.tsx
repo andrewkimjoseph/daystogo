@@ -1,5 +1,5 @@
 import { useEffect, useRef, type ReactNode } from "react";
-import { useAuth } from "@clerk/tanstack-react-start";
+import { useAuthState } from "@/lib/useAuthState";
 import { useQueryClient } from "@tanstack/react-query";
 import { COUNTDOWNS_QUERY_KEY } from "@/lib/countdownsRepo";
 import { setUsesCloud } from "@/lib/syncMode";
@@ -7,7 +7,7 @@ import { LocalImport } from "./LocalImport";
 import { HourglassLoader } from "./HourglassLoader";
 
 export function AuthGate({ children }: { children: ReactNode }) {
-  const { isSignedIn, isLoaded } = useAuth();
+  const { isSignedIn, isLoaded } = useAuthState();
   const queryClient = useQueryClient();
   const prevSignedIn = useRef<boolean | undefined>(undefined);
 

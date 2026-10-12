@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useState, type ReactNode } from "react";
-import { useAuth } from "@clerk/tanstack-react-start";
+import { useAuthState } from "@/lib/useAuthState";
 import { useQueryClient } from "@tanstack/react-query";
 import { COUNTDOWNS_QUERY_KEY, countdownsRepo } from "@/lib/countdownsRepo";
 import { resetSessionSync, runSessionSync } from "@/lib/syncMode";
 
 export function LocalImport({ children }: { children: ReactNode }) {
-  const { userId, isLoaded } = useAuth();
+  const { userId, isLoaded } = useAuthState();
   const queryClient = useQueryClient();
   const [failed, setFailed] = useState(false);
   const [attempt, setAttempt] = useState(0);

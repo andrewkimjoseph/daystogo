@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Archive, ArchiveRestore, Check, Download, Maximize2, Pencil, RefreshCw, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import { Link } from "@tanstack/react-router";
-import { useAuth } from "@clerk/tanstack-react-start";
+import { useAuthState } from "@/lib/useAuthState";
 import type { Countdown } from "@/lib/db";
 import { countdownsRepo, remainingMs } from "@/lib/countdownsRepo";
 import { isRecurring, recurrenceBadgeLabel } from "@/lib/recurrence";
@@ -35,7 +35,7 @@ export function CountdownCard({
   onChanged: () => void;
   variant?: "active" | "archived";
 }) {
-  const { isSignedIn } = useAuth();
+  const { isSignedIn } = useAuthState();
   const isArchived = variant === "archived";
   const cardRef = useRef<HTMLElement | null>(null);
   const controlsRef = useRef<HTMLDivElement | null>(null);
