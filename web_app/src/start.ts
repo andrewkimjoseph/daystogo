@@ -25,6 +25,19 @@ const csrfMiddleware = createCsrfMiddleware({
   filter: (ctx) => ctx.handlerType === "serverFn",
 });
 
+/**
+ * Clerk's middleware throws on every request when no secret key is set, which
+ * would blank the whole site. With no key it is simply left out and the app
+ * serves its local-only mode; a deployment that sets the key is unchanged.
+ */
+function hasClerkSecret(): boolean {
+  return Boolean(process.env["CLERK_SECRET_KEY"]?.trim());
+}
+
 export const startInstance = createStart(() => ({
-  requestMiddleware: [errorMiddleware, clerkMiddleware(), csrfMiddleware],
+  requestMiddleware: [
+    errorMiddleware,
+    ...(hasClerkSecret() ? [clerkMiddleware()] : []),
+    csrfMiddleware,
+  ],
 }));

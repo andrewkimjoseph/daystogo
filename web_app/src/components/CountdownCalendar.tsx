@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useAuth } from "@clerk/tanstack-react-start";
+import { useAuthState } from "@/lib/useAuthState";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -95,7 +95,7 @@ function CalendarSkeleton() {
 
 function CalendarBody() {
   const queryClient = useQueryClient();
-  const { isSignedIn, isLoaded } = useAuth();
+  const { isSignedIn, isLoaded } = useAuthState();
   const source = isSignedIn ? "cloud" : "local";
   const { data: countdowns } = useQuery({
     queryKey: [...COUNTDOWNS_QUERY_KEY, source, "active"],

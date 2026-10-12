@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Archive, ArchiveRestore, Check, Download, Pencil, RefreshCw, Trash2, X } from "lucide-react";
+import { Archive, ArchiveRestore, Check, Download, Maximize2, Pencil, RefreshCw, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import { Link } from "@tanstack/react-router";
-import { useAuth } from "@clerk/tanstack-react-start";
+import { useAuthState } from "@/lib/useAuthState";
 import type { Countdown } from "@/lib/db";
 import { countdownsRepo, remainingMs } from "@/lib/countdownsRepo";
 import { isRecurring, recurrenceBadgeLabel } from "@/lib/recurrence";
@@ -35,7 +35,7 @@ export function CountdownCard({
   onChanged: () => void;
   variant?: "active" | "archived";
 }) {
-  const { isSignedIn } = useAuth();
+  const { isSignedIn } = useAuthState();
   const isArchived = variant === "archived";
   const cardRef = useRef<HTMLElement | null>(null);
   const controlsRef = useRef<HTMLDivElement | null>(null);
@@ -456,6 +456,16 @@ export function CountdownCard({
               </div>
             ) : (
               <div className="flex flex-nowrap gap-2">
+                <Link
+                  to="/$countdownId"
+                  params={{ countdownId: countdown.id }}
+                  viewTransition
+                  aria-label="Open countdown"
+                  title="Open"
+                  className="brut-thin brut-press flex h-11 w-11 shrink-0 items-center justify-center rounded-none bg-cream"
+                >
+                  <Maximize2 className="h-4 w-4" strokeWidth={3} aria-hidden="true" />
+                </Link>
                 {!lapsed && (
                   <button
                     type="button"

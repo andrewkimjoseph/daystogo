@@ -1,10 +1,13 @@
 import { LogIn, UserPlus } from "lucide-react";
 import { Show, SignInButton, SignUpButton, UserButton } from "@clerk/tanstack-react-start";
+import { CLERK_ENABLED } from "@/lib/authMode";
 
 const brutBtn =
   "brut brut-press inline-flex h-10 items-center justify-center rounded-none px-2.5 text-xs font-bold uppercase sm:px-4 sm:text-sm";
 
 export function AuthControls() {
+  if (!CLERK_ENABLED) return null;
+
   return (
     <>
       <Show when="signed-out">
