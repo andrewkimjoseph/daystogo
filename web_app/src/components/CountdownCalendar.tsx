@@ -428,7 +428,13 @@ function DayPanelRow({ countdown }: { countdown: Countdown }) {
         <Icon className="h-4 w-4" strokeWidth={3} />
       </span>
       <span className="min-w-0 flex-1">
-        <span className="block text-sm font-bold uppercase break-words">{countdown.title}</span>
+        <Link
+          to="/$countdownId"
+          params={{ countdownId: countdown.id }}
+          className="block text-sm font-bold uppercase break-words hover:underline"
+        >
+          {countdown.title}
+        </Link>
         <span className="block text-xs tabular-nums text-muted-foreground">
           {lapsed ? "Lapsed" : `${landing} · ${text} to go`}
         </span>

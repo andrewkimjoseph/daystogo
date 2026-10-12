@@ -74,6 +74,12 @@ export const countdownsRepo = {
     return isCloudSync() ? listArchivedCountdownsFn() : countdownsLocal.archived();
   },
 
+  /** One countdown by id, active or archived; null when it isn't ours. */
+  async byId(id: string): Promise<Countdown | null> {
+    const [active, archived] = await Promise.all([this.all(), this.archived()]);
+    return active.find((c) => c.id === id) ?? archived.find((c) => c.id === id) ?? null;
+  },
+
   async archive(id: string): Promise<void> {
     if (isCloudSync()) {
       await archiveCountdownFn({ data: { id } });
