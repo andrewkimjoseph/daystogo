@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Archive, ArchiveRestore, Check, Download, Pencil, RefreshCw, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
+import { Link } from "@tanstack/react-router";
 import { useAuth } from "@clerk/tanstack-react-start";
 import type { Countdown } from "@/lib/db";
 import { countdownsRepo, remainingMs } from "@/lib/countdownsRepo";
@@ -212,7 +213,14 @@ export function CountdownCard({
             className="text-base leading-tight break-words uppercase sm:text-lg"
             style={lapsed ? { color: PALETTE.cream } : undefined}
           >
-            {countdown.title}
+            <Link
+              to="/$countdownId"
+              params={{ countdownId: countdown.id }}
+              viewTransition
+              className="hover:underline"
+            >
+              {countdown.title}
+            </Link>
           </h2>
           <p
             className="mt-1 flex items-center gap-1.5 text-xs font-bold uppercase"
