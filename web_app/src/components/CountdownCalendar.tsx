@@ -429,7 +429,7 @@ function DayPanelRow({ countdown }: { countdown: Countdown }) {
       </span>
       <span className="min-w-0 flex-1">
         <Link
-          to="/$countdownId"
+          to="/countdowns/$countdownId"
           params={{ countdownId: countdown.id }}
           className="block text-sm font-bold uppercase break-words hover:underline"
         >

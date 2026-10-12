@@ -18,7 +18,7 @@ import { burstConfetti } from "@/lib/confetti";
 import { playSound } from "@/lib/soundManager";
 import { PALETTE } from "@/lib/palette";
 
-export const Route = createFileRoute("/$countdownId")({
+export const Route = createFileRoute("/countdowns/$countdownId")({
   head: () => ({
     meta: [
       { title: "Countdown — Days To Go" },

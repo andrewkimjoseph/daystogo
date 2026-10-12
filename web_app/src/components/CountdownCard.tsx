@@ -214,7 +214,7 @@ export function CountdownCard({
             style={lapsed ? { color: PALETTE.cream } : undefined}
           >
             <Link
-              to="/$countdownId"
+              to="/countdowns/$countdownId"
               params={{ countdownId: countdown.id }}
               viewTransition
               className="hover:underline"
@@ -457,7 +457,7 @@ export function CountdownCard({
             ) : (
               <div className="flex flex-nowrap gap-2">
                 <Link
-                  to="/$countdownId"
+                  to="/countdowns/$countdownId"
                   params={{ countdownId: countdown.id }}
                   viewTransition
                   aria-label="Open countdown"

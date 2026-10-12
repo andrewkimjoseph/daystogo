@@ -10,22 +10,17 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as CountdownIdRouteImport } from './routes/$countdownId'
 import { Route as ArchivedRouteImport } from './routes/archived'
 import { Route as CalendarRouteImport } from './routes/calendar'
 import { Route as CreateCountdownRouteImport } from './routes/create-countdown'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as CountdownsCountdownIdRouteImport } from './routes/countdowns.$countdownId'
 import { Route as SignInSplatRouteImport } from './routes/sign-in.$'
 import { Route as SignUpSplatRouteImport } from './routes/sign-up.$'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CountdownIdRoute = CountdownIdRouteImport.update({
-  id: '/$countdownId',
-  path: '/$countdownId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ArchivedRoute = ArchivedRouteImport.update({
@@ -48,6 +43,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CountdownsCountdownIdRoute = CountdownsCountdownIdRouteImport.update({
+  id: '/countdowns/$countdownId',
+  path: '/countdowns/$countdownId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SignInSplatRoute = SignInSplatRouteImport.update({
   id: '/sign-in/$',
   path: '/sign-in/$',
@@ -61,32 +61,32 @@ const SignUpSplatRoute = SignUpSplatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/$countdownId': typeof CountdownIdRoute
   '/archived': typeof ArchivedRoute
   '/calendar': typeof CalendarRoute
   '/create-countdown': typeof CreateCountdownRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/countdowns/$countdownId': typeof CountdownsCountdownIdRoute
   '/sign-in/$': typeof SignInSplatRoute
   '/sign-up/$': typeof SignUpSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/$countdownId': typeof CountdownIdRoute
   '/archived': typeof ArchivedRoute
   '/calendar': typeof CalendarRoute
   '/create-countdown': typeof CreateCountdownRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/countdowns/$countdownId': typeof CountdownsCountdownIdRoute
   '/sign-in/$': typeof SignInSplatRoute
   '/sign-up/$': typeof SignUpSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/$countdownId': typeof CountdownIdRoute
   '/archived': typeof ArchivedRoute
   '/calendar': typeof CalendarRoute
   '/create-countdown': typeof CreateCountdownRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/countdowns/$countdownId': typeof CountdownsCountdownIdRoute
   '/sign-in/$': typeof SignInSplatRoute
   '/sign-up/$': typeof SignUpSplatRoute
 }
@@ -94,42 +94,42 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/$countdownId'
     | '/archived'
     | '/calendar'
     | '/create-countdown'
     | '/sitemap.xml'
+    | '/countdowns/$countdownId'
     | '/sign-in/$'
     | '/sign-up/$'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/$countdownId'
     | '/archived'
     | '/calendar'
     | '/create-countdown'
     | '/sitemap.xml'
+    | '/countdowns/$countdownId'
     | '/sign-in/$'
     | '/sign-up/$'
   id:
     | '__root__'
     | '/'
-    | '/$countdownId'
     | '/archived'
     | '/calendar'
     | '/create-countdown'
     | '/sitemap.xml'
+    | '/countdowns/$countdownId'
     | '/sign-in/$'
     | '/sign-up/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  CountdownIdRoute: typeof CountdownIdRoute
   ArchivedRoute: typeof ArchivedRoute
   CalendarRoute: typeof CalendarRoute
   CreateCountdownRoute: typeof CreateCountdownRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  CountdownsCountdownIdRoute: typeof CountdownsCountdownIdRoute
   SignInSplatRoute: typeof SignInSplatRoute
   SignUpSplatRoute: typeof SignUpSplatRoute
 }
@@ -141,13 +141,6 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/$countdownId': {
-      id: '/$countdownId'
-      path: '/$countdownId'
-      fullPath: '/$countdownId'
-      preLoaderRoute: typeof CountdownIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/archived': {
@@ -178,6 +171,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/countdowns/$countdownId': {
+      id: '/countdowns/$countdownId'
+      path: '/countdowns/$countdownId'
+      fullPath: '/countdowns/$countdownId'
+      preLoaderRoute: typeof CountdownsCountdownIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sign-in/$': {
       id: '/sign-in/$'
       path: '/sign-in/$'
@@ -197,11 +197,11 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  CountdownIdRoute: CountdownIdRoute,
   ArchivedRoute: ArchivedRoute,
   CalendarRoute: CalendarRoute,
   CreateCountdownRoute: CreateCountdownRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  CountdownsCountdownIdRoute: CountdownsCountdownIdRoute,
   SignInSplatRoute: SignInSplatRoute,
   SignUpSplatRoute: SignUpSplatRoute,
 }
