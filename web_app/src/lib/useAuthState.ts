@@ -15,5 +15,5 @@ export function useAuthState(): AuthState {
   if (!CLERK_ENABLED) return { isLoaded: true, isSignedIn: false, userId: null };
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const { isLoaded, isSignedIn, userId } = useAuth();
-  return { isLoaded, isSignedIn, userId };
+  return { isLoaded, isSignedIn: !!isSignedIn, userId: userId ?? null };
 }

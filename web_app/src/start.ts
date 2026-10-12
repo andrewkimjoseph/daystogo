@@ -31,7 +31,7 @@ const csrfMiddleware = createCsrfMiddleware({
  * serves its local-only mode; a deployment that sets the key is unchanged.
  */
 function hasClerkSecret(): boolean {
-  return Boolean(process.env.CLERK_SECRET_KEY?.trim());
+  return Boolean(process.env["CLERK_SECRET_KEY"]?.trim());
 }
 
 export const startInstance = createStart(() => ({

@@ -4,8 +4,8 @@
  * Read once at build time, so it never flips while a page is open.
  */
 const publishableKey =
-  import.meta.env.VITE_PUBLIC_CLERK_PUBLISHABLE_KEY ??
-  import.meta.env.VITE_CLERK_PUBLISHABLE_KEY ??
+  import.meta.env["VITE_PUBLIC_CLERK_PUBLISHABLE_KEY"] ??
+  import.meta.env["VITE_CLERK_PUBLISHABLE_KEY"] ??
   "";
 
 export const CLERK_ENABLED = publishableKey.trim().length > 0;
