@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CountdownIdRouteImport } from './routes/$countdownId'
 import { Route as ArchivedRouteImport } from './routes/archived'
 import { Route as CalendarRouteImport } from './routes/calendar'
 import { Route as CreateCountdownRouteImport } from './routes/create-countdown'
@@ -20,6 +21,11 @@ import { Route as SignUpSplatRouteImport } from './routes/sign-up.$'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CountdownIdRoute = CountdownIdRouteImport.update({
+  id: '/$countdownId',
+  path: '/$countdownId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ArchivedRoute = ArchivedRouteImport.update({
@@ -55,6 +61,7 @@ const SignUpSplatRoute = SignUpSplatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/$countdownId': typeof CountdownIdRoute
   '/archived': typeof ArchivedRoute
   '/calendar': typeof CalendarRoute
   '/create-countdown': typeof CreateCountdownRoute
@@ -64,6 +71,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/$countdownId': typeof CountdownIdRoute
   '/archived': typeof ArchivedRoute
   '/calendar': typeof CalendarRoute
   '/create-countdown': typeof CreateCountdownRoute
@@ -74,6 +82,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/$countdownId': typeof CountdownIdRoute
   '/archived': typeof ArchivedRoute
   '/calendar': typeof CalendarRoute
   '/create-countdown': typeof CreateCountdownRoute
@@ -85,6 +94,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/$countdownId'
     | '/archived'
     | '/calendar'
     | '/create-countdown'
@@ -94,6 +104,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/$countdownId'
     | '/archived'
     | '/calendar'
     | '/create-countdown'
@@ -103,6 +114,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/$countdownId'
     | '/archived'
     | '/calendar'
     | '/create-countdown'
@@ -113,6 +125,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CountdownIdRoute: typeof CountdownIdRoute
   ArchivedRoute: typeof ArchivedRoute
   CalendarRoute: typeof CalendarRoute
   CreateCountdownRoute: typeof CreateCountdownRoute
@@ -128,6 +141,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$countdownId': {
+      id: '/$countdownId'
+      path: '/$countdownId'
+      fullPath: '/$countdownId'
+      preLoaderRoute: typeof CountdownIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/archived': {
@@ -177,6 +197,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CountdownIdRoute: CountdownIdRoute,
   ArchivedRoute: ArchivedRoute,
   CalendarRoute: CalendarRoute,
   CreateCountdownRoute: CreateCountdownRoute,
