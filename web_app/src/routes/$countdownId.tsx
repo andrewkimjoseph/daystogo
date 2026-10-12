@@ -2,8 +2,7 @@ import { useEffect, useRef } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuthState } from "@/lib/useAuthState";
-import { ArrowLeft, Download, RefreshCw } from "lucide-react";
-import { toast } from "sonner";
+import { ArrowLeft, RefreshCw } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { HourglassLoader } from "@/components/HourglassLoader";
 import { Sparkle } from "@/components/Sparkle";
@@ -15,7 +14,6 @@ import { formatRemaining, progressPercent } from "@/lib/formatTime";
 import { formatTargetLabel } from "@/lib/localTime";
 import { isRecurring, recurrenceBadgeLabel } from "@/lib/recurrence";
 import { categoryMeta } from "@/lib/categories";
-import { downloadCountdownImage } from "@/lib/shareImage";
 import { burstConfetti } from "@/lib/confetti";
 import { playSound } from "@/lib/soundManager";
 import { PALETTE } from "@/lib/palette";
@@ -120,13 +118,6 @@ function BigCountdown({ countdown, showId }: { countdown: Countdown; showId: boo
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lapsed, countdown.id]);
 
-  const download = async () => {
-    try {
-      await downloadCountdownImage(countdown, Date.now(), { showId });
-    } catch {
-      toast.error("Couldn't make the image");
-    }
-  };
 
   return (
     <article
@@ -205,21 +196,9 @@ function BigCountdown({ countdown, showId }: { countdown: Countdown; showId: boo
         </div>
       </section>
 
-      <footer className="flex flex-wrap items-end justify-between gap-4 pr-12 sm:pr-16">
-        <div className="text-[10px] font-bold uppercase sm:text-xs" style={{ color: fg }}>
-          <p>Created on {formatTargetLabel(countdown.createdAt)}</p>
-          {showId && <p className="mt-1 break-all">ID / {countdown.id}</p>}
-        </div>
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={download}
-            aria-label="Download as PNG"
-            className="brut brut-press inline-flex h-10 w-10 items-center justify-center rounded-none bg-cream text-ink"
-          >
-            <Download className="h-4 w-4" strokeWidth={3} />
-          </button>
-        </div>
+      <footer className="pr-12 text-[10px] font-bold uppercase sm:pr-16 sm:text-xs" style={{ color: fg }}>
+        <p>Created on {formatTargetLabel(countdown.createdAt)}</p>
+        {showId && <p className="mt-1 break-all">ID / {countdown.id}</p>}
       </footer>
     </article>
   );
