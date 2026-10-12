@@ -1,6 +1,8 @@
 import type { LucideIcon } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useAuth, SignInButton } from "@clerk/tanstack-react-start";
+import { SignInButton } from "@clerk/tanstack-react-start";
+import { CLERK_ENABLED } from "@/lib/authMode";
+import { useAuthState } from "@/lib/useAuthState";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { COUNTDOWNS_QUERY_KEY, countdownsRepo } from "@/lib/countdownsRepo";
@@ -14,7 +16,7 @@ export function CountdownGrid({ variant = "active" }: { variant?: "active" | "ar
   const archived = variant === "archived";
   const now = useCountdownTick();
   const queryClient = useQueryClient();
-  const { isSignedIn, isLoaded } = useAuth();
+  const { isSignedIn, isLoaded } = useAuthState();
   const source = isSignedIn ? "cloud" : "local";
   const { data: countdowns } = useQuery({
     queryKey: [...COUNTDOWNS_QUERY_KEY, source, archived ? "archived" : "active"],
@@ -49,7 +51,9 @@ export function CountdownGrid({ variant = "active" }: { variant?: "active" | "ar
           {archived
             ? "Once a clock hits zero, hit Archive on the card and it lands here for keeps."
             : isLoaded && !isSignedIn
-              ? "This board lives in this browser. Sign in later if you want the same clocks everywhere."
+              ? CLERK_ENABLED
+                ? "This board lives in this browser. Sign in later if you want the same clocks everywhere."
+                : "This board lives in this browser."
               : "What are you waiting for? Pick something, put a clock on it, watch it sweat."}
         </p>
         <Link
@@ -70,7 +74,7 @@ export function CountdownGrid({ variant = "active" }: { variant?: "active" | "ar
 
   return (
     <div className="flex flex-col gap-6">
-      {!archived && isLoaded && !isSignedIn && (
+      {!archived && isLoaded && !isSignedIn && CLERK_ENABLED && (
         <div className="brut-thin flex flex-wrap items-center justify-between gap-3 bg-card px-4 py-3">
           <p className="font-bold text-muted-foreground">
             This board lives in this browser. Sign in to sync it everywhere.
