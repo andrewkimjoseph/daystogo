@@ -5,6 +5,7 @@ import { useAuthState } from "@/lib/useAuthState";
 import { ArrowLeft, RefreshCw } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { HourglassLoader } from "@/components/HourglassLoader";
+import { FittedCountdownTimer } from "@/components/FittedCountdownTimer";
 import { Sparkle } from "@/components/Sparkle";
 import { useHydrated } from "@/hooks/useHydrated";
 import { useCountdownTick } from "@/hooks/useCountdownTick";
@@ -169,14 +170,7 @@ function BigCountdown({ countdown, showId }: { countdown: Countdown; showId: boo
         />
       </header>
 
-      <div className="my-auto w-full min-w-0 overflow-hidden [container-type:inline-size]">
-        <p
-          className="tick-numerals whitespace-nowrap text-[clamp(1.25rem,6.2cqi,6rem)] leading-none"
-          style={{ color: lapsed ? PALETTE.cream : "var(--ink)" }}
-        >
-          {text}
-        </p>
-      </div>
+      <FittedCountdownTimer text={text} lapsed={lapsed} />
 
       <section>
         <div className="mb-2 flex items-end justify-between gap-3 text-xs font-bold uppercase sm:text-sm" style={{ color: fg }}>
