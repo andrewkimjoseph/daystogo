@@ -171,7 +171,7 @@ function BigCountdown({ countdown, showId }: { countdown: Countdown; showId: boo
 
       <div className="my-auto w-full min-w-0 overflow-hidden [container-type:inline-size]">
         <p
-          className="tick-numerals whitespace-nowrap text-[clamp(1.25rem,8cqi,6rem)] leading-none"
+          className="tick-numerals whitespace-nowrap text-[clamp(1.25rem,6.2cqi,6rem)] leading-none"
           style={{ color: lapsed ? PALETTE.cream : "var(--ink)" }}
         >
           {text}
