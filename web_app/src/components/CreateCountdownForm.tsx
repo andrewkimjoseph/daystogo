@@ -1,7 +1,11 @@
 import { useEffect, useLayoutEffect, useState } from "react";
-import { useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
+import { SignUpButton } from "@clerk/tanstack-react-start";
 import { COUNTDOWNS_QUERY_KEY, countdownsRepo, validateSeconds } from "@/lib/countdownsRepo";
+import { countdownsLocal } from "@/lib/countdownsLocal";
+import { useAuthState } from "@/lib/useAuthState";
+import { CLERK_ENABLED } from "@/lib/authMode";
 import { COLOR_TAGS, PALETTE, tagTextColor } from "@/lib/palette";
 import { CATEGORIES, type CountdownCategory } from "@/lib/categories";
 import { RECURRENCE_OPTIONS, type Recurrence } from "@/lib/recurrence";
@@ -90,6 +94,8 @@ export function CreateCountdownForm({ initialDate }: { initialDate?: string }) {
   const [category, setCategory] = useState<CountdownCategory>("other");
   const [recurrence, setRecurrence] = useState<Recurrence>("none");
   const [error, setError] = useState<string | null>(null);
+  const [limitHit, setLimitHit] = useState(false);
+  const { isSignedIn } = useAuthState();
 
   const activeCategory = CATEGORIES.find((c) => c.key === category)!;
   const activeRecurrence = RECURRENCE_OPTIONS.find((o) => o.key === recurrence)!;
@@ -116,12 +122,24 @@ export function CreateCountdownForm({ initialDate }: { initialDate?: string }) {
       setError(problem);
       return;
     }
+    if (!isSignedIn) {
+      const [active, archived] = await Promise.all([
+        countdownsLocal.all(),
+        countdownsLocal.archived(),
+      ]);
+      if (active.length + archived.length >= 1) {
+        setLimitHit(true);
+        return;
+      }
+    }
     await countdownsRepo.create({ title, targetAt, colorTag, category, recurrence });
     await queryClient.invalidateQueries({ queryKey: COUNTDOWNS_QUERY_KEY });
 
     playSound("start");
     void navigate({ to: "/" });
   }
+
+  if (limitHit) return <GuestLimitPanel onDismiss={() => setLimitHit(false)} />;
 
   return (
     <form onSubmit={submit} className="grid gap-4 sm:gap-6 lg:grid-cols-2 lg:items-stretch">
@@ -250,6 +268,43 @@ export function CreateCountdownForm({ initialDate }: { initialDate?: string }) {
         <SubmitBlock error={error} />
       </div>
     </form>
+  );
+}
+
+function GuestLimitPanel({ onDismiss }: { onDismiss: () => void }) {
+  return (
+    <div className="brut mx-auto flex max-w-lg flex-col items-center gap-5 bg-card p-6 text-center sm:p-8">
+      <h1 className="hero-gradient text-3xl uppercase sm:text-4xl">One clock per stranger.</h1>
+      <p className="font-bold text-muted-foreground">
+        Guests get a single countdown. Make a free account and the clocks never stop — unlimited
+        countdowns, synced to every device you own.
+      </p>
+      <div className="flex flex-wrap items-center justify-center gap-3">
+        {CLERK_ENABLED && (
+          <SignUpButton>
+            <button
+              type="button"
+              className="brut brut-press rounded-none bg-primary px-5 py-3 font-bold text-primary-foreground uppercase"
+            >
+              Sign up free
+            </button>
+          </SignUpButton>
+        )}
+        <Link
+          to="/"
+          className="brut-thin brut-press rounded-none bg-cream px-5 py-3 font-bold text-ink uppercase"
+        >
+          Back to the board
+        </Link>
+      </div>
+      <button
+        type="button"
+        onClick={onDismiss}
+        className="text-xs font-bold text-muted-foreground uppercase underline underline-offset-4"
+      >
+        Keep editing this one
+      </button>
+    </div>
   );
 }
 
