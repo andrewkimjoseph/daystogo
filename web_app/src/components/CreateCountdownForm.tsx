@@ -94,6 +94,8 @@ export function CreateCountdownForm({ initialDate }: { initialDate?: string }) {
   const [category, setCategory] = useState<CountdownCategory>("other");
   const [recurrence, setRecurrence] = useState<Recurrence>("none");
   const [error, setError] = useState<string | null>(null);
+  const [limitHit, setLimitHit] = useState(false);
+  const { isSignedIn } = useAuthState();
 
   const activeCategory = CATEGORIES.find((c) => c.key === category)!;
   const activeRecurrence = RECURRENCE_OPTIONS.find((o) => o.key === recurrence)!;
