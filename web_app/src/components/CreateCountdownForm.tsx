@@ -271,6 +271,43 @@ export function CreateCountdownForm({ initialDate }: { initialDate?: string }) {
   );
 }
 
+function GuestLimitPanel({ onDismiss }: { onDismiss: () => void }) {
+  return (
+    <div className="brut mx-auto flex max-w-lg flex-col items-center gap-5 bg-card p-6 text-center sm:p-8">
+      <h1 className="hero-gradient text-3xl uppercase sm:text-4xl">One clock per stranger.</h1>
+      <p className="font-bold text-muted-foreground">
+        Guests get a single countdown. Make a free account and the clocks never stop — unlimited
+        countdowns, synced to every device you own.
+      </p>
+      <div className="flex flex-wrap items-center justify-center gap-3">
+        {CLERK_ENABLED && (
+          <SignUpButton>
+            <button
+              type="button"
+              className="brut brut-press rounded-none bg-primary px-5 py-3 font-bold text-primary-foreground uppercase"
+            >
+              Sign up free
+            </button>
+          </SignUpButton>
+        )}
+        <Link
+          to="/"
+          className="brut-thin brut-press rounded-none bg-cream px-5 py-3 font-bold text-ink uppercase"
+        >
+          Back to the board
+        </Link>
+      </div>
+      <button
+        type="button"
+        onClick={onDismiss}
+        className="text-xs font-bold text-muted-foreground uppercase underline underline-offset-4"
+      >
+        Keep editing this one
+      </button>
+    </div>
+  );
+}
+
 function SubmitBlock({ error }: { error: string | null }) {
   return (
     <>
