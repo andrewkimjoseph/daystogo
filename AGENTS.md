@@ -8,6 +8,11 @@
   into `/dev-server/dist`. Keep them working; don't move the app to the root.
 - `web_app/src/lib/formatTime.ts` has a second copy under `website/` that must
   be edited in the same change, so both sites format durations identically.
+- The shared shell (`web_app/src/routes/__root.tsx`) renders the page outlet
+  inside a flex column, so a route fills the space above the footer with
+  `flex-1` on its own wrapper rather than a viewport-height class like
+  `min-h-screen`. Keeps full-height pages (e.g. a centred panel) from pushing
+  the footer below the fold.
 
 ## Sign-in
 

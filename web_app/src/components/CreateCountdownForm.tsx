@@ -139,7 +139,12 @@ export function CreateCountdownForm({ initialDate }: { initialDate?: string }) {
     void navigate({ to: "/" });
   }
 
-  if (limitHit) return <GuestLimitPanel onDismiss={() => setLimitHit(false)} />;
+  if (limitHit)
+    return (
+      <div className="flex flex-1 items-center justify-center py-6">
+        <GuestLimitPanel onDismiss={() => setLimitHit(false)} />
+      </div>
+    );
 
   return (
     <form onSubmit={submit} className="grid gap-4 sm:gap-6 lg:grid-cols-2 lg:items-stretch">
@@ -273,7 +278,7 @@ export function CreateCountdownForm({ initialDate }: { initialDate?: string }) {
 
 function GuestLimitPanel({ onDismiss }: { onDismiss: () => void }) {
   return (
-    <div className="brut mx-auto flex max-w-lg flex-col items-center gap-5 bg-card p-6 text-center sm:p-8">
+    <div className="brut mx-auto flex w-full max-w-lg flex-col items-center gap-5 bg-card p-6 text-center sm:p-8">
       <h1 className="hero-gradient text-3xl uppercase sm:text-4xl">One clock per stranger.</h1>
       <p className="font-bold text-muted-foreground">
         Guests get a single countdown. Make a free account and the clocks never stop — unlimited
