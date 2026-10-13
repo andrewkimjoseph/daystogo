@@ -342,6 +342,20 @@
   letter-spacing: -0.03em;
 }
 
+.expanded-timer .tick-numerals {
+  letter-spacing: 0;
+}
+
+.expanded-timer-measure {
+  font-size: 100px;
+  line-height: 1.15;
+}
+
+.expanded-timer-readout {
+  font-size: 6.2cqi;
+  line-height: 1.15;
+}
+
 /* --- Motion: view transitions & panel swaps --- */
 
 @view-transition {
