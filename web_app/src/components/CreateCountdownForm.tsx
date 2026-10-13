@@ -1,7 +1,11 @@
 import { useEffect, useLayoutEffect, useState } from "react";
-import { useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
+import { SignUpButton } from "@clerk/tanstack-react-start";
 import { COUNTDOWNS_QUERY_KEY, countdownsRepo, validateSeconds } from "@/lib/countdownsRepo";
+import { countdownsLocal } from "@/lib/countdownsLocal";
+import { useAuthState } from "@/lib/useAuthState";
+import { CLERK_ENABLED } from "@/lib/authMode";
 import { COLOR_TAGS, PALETTE, tagTextColor } from "@/lib/palette";
 import { CATEGORIES, type CountdownCategory } from "@/lib/categories";
 import { RECURRENCE_OPTIONS, type Recurrence } from "@/lib/recurrence";
