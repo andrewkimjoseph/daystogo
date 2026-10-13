@@ -34,10 +34,10 @@ export const Route = createFileRoute("/create-countdown")({
 function CreateCountdownPage() {
   const { date } = Route.useSearch();
   return (
-    <div className="min-h-screen">
+    <div className="flex min-h-svh flex-col">
       <SiteHeader />
 
-      <main className="view-page mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
+      <main className="view-page mx-auto flex w-full max-w-6xl flex-1 flex-col px-4 py-8 sm:px-6 sm:py-10">
         <div className="mb-4 flex justify-end sm:mb-6">
           <Link
             to="/"
@@ -48,9 +48,11 @@ function CreateCountdownPage() {
           </Link>
         </div>
 
-        <AuthGate>
-          <CreateCountdownForm initialDate={date ?? ""} />
-        </AuthGate>
+        <div className="flex flex-1 flex-col">
+          <AuthGate>
+            <CreateCountdownForm initialDate={date ?? ""} />
+          </AuthGate>
+        </div>
       </main>
 
     </div>
