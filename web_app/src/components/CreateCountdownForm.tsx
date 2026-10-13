@@ -139,6 +139,8 @@ export function CreateCountdownForm({ initialDate }: { initialDate?: string }) {
     void navigate({ to: "/" });
   }
 
+  if (limitHit) return <GuestLimitPanel onDismiss={() => setLimitHit(false)} />;
+
   return (
     <form onSubmit={submit} className="grid gap-4 sm:gap-6 lg:grid-cols-2 lg:items-stretch">
       {/* Heading row: the submit button rides along so it never needs scrolling to. */}
