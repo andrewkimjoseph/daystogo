@@ -169,12 +169,14 @@ function BigCountdown({ countdown, showId }: { countdown: Countdown; showId: boo
         />
       </header>
 
-      <p
-        className="tick-numerals my-auto whitespace-nowrap text-[clamp(1.75rem,7vw,6rem)] leading-none"
-        style={{ color: lapsed ? PALETTE.cream : "var(--ink)" }}
-      >
-        {text}
-      </p>
+      <div className="my-auto w-full min-w-0 overflow-hidden [container-type:inline-size]">
+        <p
+          className="tick-numerals whitespace-nowrap text-[clamp(1.25rem,8cqi,6rem)] leading-none"
+          style={{ color: lapsed ? PALETTE.cream : "var(--ink)" }}
+        >
+          {text}
+        </p>
+      </div>
 
       <section>
         <div className="mb-2 flex items-end justify-between gap-3 text-xs font-bold uppercase sm:text-sm" style={{ color: fg }}>
