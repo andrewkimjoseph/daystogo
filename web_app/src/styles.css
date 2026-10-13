@@ -376,6 +376,12 @@
 }
 
 /* The header stays put across navigations. */
+html:has(.countdown-static-page)::view-transition-group(root),
+html:has(.countdown-static-page)::view-transition-old(root),
+html:has(.countdown-static-page)::view-transition-new(root) {
+  animation: none;
+}
+
 ::view-transition-group(site-header) {
   animation-duration: 0.2s;
 }

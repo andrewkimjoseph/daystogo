@@ -16,7 +16,7 @@
 
 ## Sign-in
 
-- Expanded countdown typography is fitted by `FittedCountdownTimer` using rendered text measurement and container observation, so long and short readouts fill the card without clipping or changing size each second.
+- Expanded countdown typography is fitted before paint by `FittedCountdownTimer` using untransformed layout measurements and container observation, so entry transforms cannot distort the fitted size and ticking stays stable.
 
 - Sign-in is optional, never fatal. Clerk's middleware (`web_app/src/start.ts`)
   and `ClerkProvider` (`web_app/src/routes/__root.tsx`) are mounted only when

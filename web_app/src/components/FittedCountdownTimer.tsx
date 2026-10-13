@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 
 /** Fit the expanded readout, measuring a stable digit pattern instead of every tick. */
 export function FittedCountdownTimer({ text, lapsed }: { text: string; lapsed: boolean }) {
@@ -7,7 +7,7 @@ export function FittedCountdownTimer({ text, lapsed }: { text: string; lapsed: b
   const [fontSize, setFontSize] = useState<number>();
   const pattern = text.replace(/\d/g, "8");
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const container = containerRef.current;
     const measure = measureRef.current;
     if (!container || !measure) return;
@@ -15,7 +15,7 @@ export function FittedCountdownTimer({ text, lapsed }: { text: string; lapsed: b
     const fit = () => {
       if (disposed) return;
       const width = container.clientWidth;
-      const measuredWidth = measure.getBoundingClientRect().width;
+      const measuredWidth = measure.offsetWidth;
       if (width > 0 && measuredWidth > 0) {
         // Leave a little room for glyph overhang and fractional layout rounding.
         setFontSize(Math.floor(((width - 4) / measuredWidth) * 100 * 10) / 10);
@@ -39,7 +39,7 @@ export function FittedCountdownTimer({ text, lapsed }: { text: string; lapsed: b
         {pattern}
       </span>
       <p
-        className={`expanded-timer-readout tick-numerals whitespace-nowrap ${lapsed ? "text-cream" : "text-ink"}`}
+        className={`expanded-timer-readout tick-numerals whitespace-nowrap ${fontSize === undefined ? "invisible" : ""} ${lapsed ? "text-cream" : "text-ink"}`}
         style={fontSize === undefined ? undefined : { fontSize }}
       >
         {text}

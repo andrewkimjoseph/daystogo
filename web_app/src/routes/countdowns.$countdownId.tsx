@@ -50,7 +50,7 @@ function CountdownPage() {
   return (
     <div className="min-h-screen">
       <SiteHeader />
-      <main className="view-page mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
+      <main className="countdown-static-page mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
         <div className="mb-4 flex justify-end sm:mb-6">
           <Link
             to="/"
@@ -123,7 +123,7 @@ function BigCountdown({ countdown, showId }: { countdown: Countdown; showId: boo
   return (
     <article
       ref={ref}
-      className="brut animate-pop-in relative flex min-h-[70vh] flex-col gap-6 bg-card p-6 sm:gap-8 sm:p-12"
+      className="brut relative flex min-h-[70vh] flex-col gap-6 bg-card p-6 sm:gap-8 sm:p-12"
       style={lapsed ? { backgroundImage: `linear-gradient(140deg, ${PALETTE.mauve}, ${PALETTE.red})` } : undefined}
     >
       {lapsed && (
