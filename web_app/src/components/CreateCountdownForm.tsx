@@ -122,6 +122,16 @@ export function CreateCountdownForm({ initialDate }: { initialDate?: string }) {
       setError(problem);
       return;
     }
+    if (!isSignedIn) {
+      const [active, archived] = await Promise.all([
+        countdownsLocal.all(),
+        countdownsLocal.archived(),
+      ]);
+      if (active.length + archived.length >= 1) {
+        setLimitHit(true);
+        return;
+      }
+    }
     await countdownsRepo.create({ title, targetAt, colorTag, category, recurrence });
     await queryClient.invalidateQueries({ queryKey: COUNTDOWNS_QUERY_KEY });
 
