@@ -1,8 +1,10 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuthState } from "@/lib/useAuthState";
-import { ArrowLeft, RefreshCw } from "lucide-react";
+import { ArrowLeft, Download, RefreshCw } from "lucide-react";
+import { toast } from "sonner";
+import { downloadCountdownImage } from "@/lib/shareImage";
 import { SiteHeader } from "@/components/SiteHeader";
 import { HourglassLoader } from "@/components/HourglassLoader";
 import { FittedCountdownTimer } from "@/components/FittedCountdownTimer";
@@ -41,17 +43,43 @@ function CountdownPage() {
   const hydrated = useHydrated();
   const { isSignedIn, isLoaded } = useAuthState();
   const source = isSignedIn ? "cloud" : "local";
+  const [saving, setSaving] = useState(false);
   const { data, isLoading } = useQuery({
     queryKey: [...COUNTDOWNS_QUERY_KEY, source, "one", countdownId],
     queryFn: () => countdownsRepo.byId(countdownId),
     enabled: hydrated && isLoaded,
   });
 
+  const handleDownload = async () => {
+    if (!data) return;
+    setSaving(true);
+    try {
+      await downloadCountdownImage(data, Date.now(), { showId: !!isSignedIn });
+      toast.success("Share image downloaded");
+    } catch {
+      toast.error("Couldn't make the image. Try again.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <div className="min-h-screen">
       <SiteHeader />
       <main className="countdown-static-page mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
-        <div className="mb-4 flex justify-end sm:mb-6">
+        <div className="mb-4 flex justify-end gap-3 sm:mb-6">
+          {data && (
+            <button
+              type="button"
+              onClick={handleDownload}
+              disabled={saving}
+              aria-label="Download countdown as PNG"
+              title="Download as PNG"
+              className="brut brut-press inline-flex items-center gap-2 rounded-none bg-cream px-3 py-2.5 text-xs font-bold text-ink uppercase disabled:opacity-60 sm:px-4 sm:py-3 sm:text-sm"
+            >
+              <Download className="h-4 w-4" strokeWidth={3} /> Save PNG
+            </button>
+          )}
           <Link
             to="/"
             viewTransition
