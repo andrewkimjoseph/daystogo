@@ -28,10 +28,9 @@ export const Route = createFileRoute("/about")({
         type: "application/ld+json",
         children: JSON.stringify({
           "@context": "https://schema.org",
-          "@type": "Person",
-          name: "Andrew Kim Joseph",
-          url: socialLinks.x,
-          sameAs: [socialLinks.x, socialLinks.github, socialLinks.linkedin],
+          "@type": "Organization",
+          name: "CNV Labs KO XYZ",
+          url: "https://github.com/thecanvassing",
         }),
       },
     ],
@@ -89,7 +88,15 @@ function AboutPage() {
         <section className="mt-8">
           <h2 className="text-2xl uppercase">Built by</h2>
           <p className="mt-2 text-base text-muted-foreground">
-            Days To Go is a project by Andrew Kim Joseph. Say hi:
+            Days To Go is a project by{" "}
+            <a
+              href="https://github.com/thecanvassing"
+              target="_blank"
+              rel="noreferrer"
+              className="font-bold underline hover:text-ink"
+            >
+              CNV Labs KO XYZ
+            </a>. Say hi:
           </p>
           <div className="mt-4 flex flex-wrap gap-3">
             <a

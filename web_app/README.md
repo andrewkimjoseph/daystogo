@@ -115,4 +115,4 @@ Full details live on the site: [Privacy Policy](https://daystogo.xyz/privacy) ·
 
 ## Author
 
-Built by **Andrew Kim Joseph** — [github.com/andrewkimjoseph](https://github.com/andrewkimjoseph).
+Built by **CNV Labs KO XYZ** — [github.com/thecanvassing](https://github.com/thecanvassing).

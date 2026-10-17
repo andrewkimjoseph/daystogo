@@ -30,3 +30,7 @@ npm run dev
 ```
 
 Full docs: [`web_app/README.md`](web_app/README.md) · [`website/README.md`](website/README.md).
+
+## License
+
+Copyright (c) 2026 CNV Labs KO XYZ. [github.com/thecanvassing](https://github.com/thecanvassing). The repository is [github.com/andrewkimjoseph/daystogo](https://github.com/andrewkimjoseph/daystogo).
