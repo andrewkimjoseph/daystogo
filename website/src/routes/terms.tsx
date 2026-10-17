@@ -111,9 +111,9 @@ function TermsPage() {
           <section>
             <h2 className="text-xl uppercase">Contact</h2>
             <p className="mt-2 text-base leading-relaxed">
-              Days To Go is a project by Andrew Kim Joseph. Questions? Say hi on{" "}
+              Days To Go is a project by CNV Labs KO XYZ. Questions? Say hi on{" "}
               <a
-                href="https://github.com/andrewkimjoseph"
+                href="https://github.com/thecanvassing"
                 target="_blank"
                 rel="noreferrer"
                 className="font-bold underline"

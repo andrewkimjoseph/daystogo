@@ -99,14 +99,14 @@ function PrivacyPage() {
             <p className="mt-2 text-base leading-relaxed">
               Questions about any of this? Say hi on{" "}
               <a
-                href="https://github.com/andrewkimjoseph"
+                href="https://github.com/thecanvassing"
                 target="_blank"
                 rel="noreferrer"
                 className="font-bold underline"
               >
                 GitHub
               </a>{" "}
-              — Days To Go is a project by Andrew Kim Joseph.
+              — Days To Go is a project by CNV Labs KO XYZ.
             </p>
           </section>
         </div>

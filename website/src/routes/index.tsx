@@ -245,7 +245,15 @@ function Home() {
         <section id="about" className="mt-12 scroll-mt-8">
           <h2 className="text-2xl uppercase sm:text-3xl">Built by</h2>
           <p className="mt-2 text-base text-muted-foreground">
-            Days To Go is a project by Andrew Kim Joseph.{" "}
+            Days To Go is a project by{" "}
+            <a
+              href="https://github.com/thecanvassing"
+              target="_blank"
+              rel="noreferrer"
+              className="font-bold underline hover:text-ink"
+            >
+              CNV Labs KO XYZ
+            </a>.{" "}
             <Link to="/about" viewTransition className="font-bold uppercase underline hover:text-ink">
               More about
             </Link>
