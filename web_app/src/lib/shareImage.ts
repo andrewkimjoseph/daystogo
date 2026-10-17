@@ -28,7 +28,7 @@ function pickScale(): number {
 const SEGMENTS = 16;
 
 const DISPLAY = '"Archivo Black", "Arial Black", system-ui, sans-serif';
-const SANS = '"Space Grotesk", ui-sans-serif, system-ui, sans-serif';
+const SANS = '"Sen", ui-sans-serif, system-ui, sans-serif';
 
 /** Rasterise a lucide icon component into an <img> we can draw on canvas. */
 async function loadCategoryIcon(
