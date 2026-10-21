@@ -247,7 +247,7 @@ function Home() {
           <p className="mt-2 text-base text-muted-foreground">
             Days To Go is a project by{" "}
             <a
-              href="https://github.com/thecanvassing"
+              href="https://thecanvassing.xyz"
               target="_blank"
               rel="noreferrer"
               className="font-bold underline hover:text-ink"
