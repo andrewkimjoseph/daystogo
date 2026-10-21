@@ -30,7 +30,7 @@ export const Route = createFileRoute("/about")({
           "@context": "https://schema.org",
           "@type": "Organization",
           name: "CNV Labs KO XYZ",
-          url: "https://github.com/thecanvassing",
+          url: "https://thecanvassing.xyz",
         }),
       },
     ],
@@ -90,7 +90,7 @@ function AboutPage() {
           <p className="mt-2 text-base text-muted-foreground">
             Days To Go is a project by{" "}
             <a
-              href="https://github.com/thecanvassing"
+              href="https://thecanvassing.xyz"
               target="_blank"
               rel="noreferrer"
               className="font-bold underline hover:text-ink"

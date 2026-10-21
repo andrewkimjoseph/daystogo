@@ -97,14 +97,14 @@ function PrivacyPage() {
           <section>
             <h2 className="text-xl uppercase">Contact</h2>
             <p className="mt-2 text-base leading-relaxed">
-              Questions about any of this? Say hi on{" "}
+              Questions about any of this? Say hi at{" "}
               <a
-                href="https://github.com/thecanvassing"
+                href="https://thecanvassing.xyz"
                 target="_blank"
                 rel="noreferrer"
                 className="font-bold underline"
               >
-                GitHub
+                thecanvassing.xyz
               </a>{" "}
               — Days To Go is a project by CNV Labs KO XYZ.
             </p>
