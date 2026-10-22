@@ -12,7 +12,7 @@ import type { Countdown } from "@/lib/db";
 import { useHydrated } from "@/hooks/useHydrated";
 import { useCountdownTick } from "@/hooks/useCountdownTick";
 
-const WEEKDAYS = ["M", "T", "W", "T", "F", "S", "S"];
+const WEEKDAYS = ["S", "M", "T", "W", "T", "F", "S"];
 const MONTHS = [
   "January",
   "February",
@@ -48,7 +48,7 @@ function sameDay(a: Date, b: Date): boolean {
 /** Monday-first grid of 42 dates covering the given month. */
 function monthGrid(year: number, month: number): Date[] {
   const first = new Date(year, month, 1);
-  const offset = (first.getDay() + 6) % 7;
+  const offset = first.getDay();
   const start = new Date(year, month, 1 - offset);
   return Array.from(
     { length: 42 },

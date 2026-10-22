@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown } from "lucide-react"
 import { PALETTE } from "@/lib/palette";
 import { localInputValue } from "@/lib/localTime";
 
-const WEEKDAYS = ["M", "T", "W", "T", "F", "S", "S"];
+const WEEKDAYS = ["S", "M", "T", "W", "T", "F", "S"];
 const MONTHS = [
   "January",
   "February",
@@ -38,7 +38,7 @@ function sameDay(a: Date, b: Date): boolean {
 /** Monday-first grid of 42 dates covering the given month. */
 function monthGrid(year: number, month: number): Date[] {
   const first = new Date(year, month, 1);
-  const offset = (first.getDay() + 6) % 7;
+  const offset = first.getDay();
   const start = new Date(year, month, 1 - offset);
   return Array.from({ length: 42 }, (_, i) => new Date(start.getFullYear(), start.getMonth(), start.getDate() + i));
 }
