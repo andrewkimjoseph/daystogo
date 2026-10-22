@@ -4,7 +4,7 @@ import { useHydrated } from "#/hooks/useHydrated";
 import { PALETTE } from "#/lib/palette";
 import { createCountdownUrl } from "#/lib/urls";
 
-const WEEKDAYS = ["M", "T", "W", "T", "F", "S", "S"];
+const WEEKDAYS = ["S", "M", "T", "W", "T", "F", "S"];
 const MONTHS = [
   "January",
   "February",
@@ -39,7 +39,7 @@ function sameDay(a: Date, b: Date): boolean {
 
 function monthGrid(year: number, month: number): Date[] {
   const first = new Date(year, month, 1);
-  const offset = (first.getDay() + 6) % 7;
+  const offset = first.getDay();
   const start = new Date(year, month, 1 - offset);
   return Array.from(
     { length: 42 },
