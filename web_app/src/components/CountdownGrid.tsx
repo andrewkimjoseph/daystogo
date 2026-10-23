@@ -1,4 +1,5 @@
-import type { LucideIcon } from "lucide-react";
+import { CalendarDays, Clock, type LucideIcon } from "lucide-react";
+import { useTimerFormat } from "@/hooks/useTimerFormat";
 import { useEffect } from "react";
 import { SignInButton } from "@clerk/tanstack-react-start";
 import { CLERK_ENABLED } from "@/lib/authMode";
@@ -15,6 +16,7 @@ import { HourglassLoader } from "./HourglassLoader";
 export function CountdownGrid({ variant = "active" }: { variant?: "active" | "archived" }) {
   const archived = variant === "archived";
   const now = useCountdownTick();
+  const { format: timerFormat, toggle: toggleFormat } = useTimerFormat();
   const queryClient = useQueryClient();
   const { isSignedIn, isLoaded } = useAuthState();
   const source = isSignedIn ? "cloud" : "local";
