@@ -3,7 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useBackClick } from "@/hooks/useBackClick";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuthState } from "@/lib/useAuthState";
-import { ArrowLeft, Download, RefreshCw } from "lucide-react";
+import { ArrowLeft, Check, Copy, Download, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { downloadCountdownImage } from "@/lib/shareImage";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -111,6 +111,35 @@ function CountdownPage() {
         )}
       </main>
     </div>
+  );
+}
+
+function CopyableId({ id }: { id: string }) {
+  const [copied, setCopied] = useState(false);
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(id);
+      setCopied(true);
+      toast.success("ID copied");
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      toast.error("Couldn't copy the ID");
+    }
+  };
+  const IconEl = copied ? Check : Copy;
+  return (
+    <p className="mt-1 flex items-center gap-1.5">
+      <span className="break-all">ID / {id}</span>
+      <button
+        type="button"
+        onClick={copy}
+        aria-label="Copy countdown ID"
+        title="Copy ID"
+        className="inline-flex shrink-0 cursor-pointer items-center p-0.5 hover:opacity-70"
+      >
+        <IconEl className="h-3.5 w-3.5" strokeWidth={3} />
+      </button>
+    </p>
   );
 }
 
@@ -225,7 +254,7 @@ function BigCountdown({ countdown, showId }: { countdown: Countdown; showId: boo
 
       <footer className="pr-12 text-[10px] font-bold uppercase sm:pr-16 sm:text-xs" style={{ color: fg }}>
         <p>Created on {formatTargetLabel(countdown.createdAt)}</p>
-        {showId && <p className="mt-1 break-all">ID / {countdown.id}</p>}
+        {showId && <CopyableId id={countdown.id} />}
       </footer>
     </article>
   );
