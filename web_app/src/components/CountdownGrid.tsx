@@ -1,4 +1,5 @@
-import type { LucideIcon } from "lucide-react";
+import { CalendarDays, Clock, type LucideIcon } from "lucide-react";
+import { useTimerFormat } from "@/hooks/useTimerFormat";
 import { useEffect } from "react";
 import { SignInButton } from "@clerk/tanstack-react-start";
 import { CLERK_ENABLED } from "@/lib/authMode";
@@ -15,6 +16,7 @@ import { HourglassLoader } from "./HourglassLoader";
 export function CountdownGrid({ variant = "active" }: { variant?: "active" | "archived" }) {
   const archived = variant === "archived";
   const now = useCountdownTick();
+  const { format: timerFormat, toggle: toggleFormat } = useTimerFormat();
   const queryClient = useQueryClient();
   const { isSignedIn, isLoaded } = useAuthState();
   const source = isSignedIn ? "cloud" : "local";
@@ -102,9 +104,9 @@ export function CountdownGrid({ variant = "active" }: { variant?: "active" | "ar
           </SignInButton>
         </div>
       )}
-      {used.length > 1 && (
-        <div className="flex flex-wrap gap-2">
-        {(
+      <div className="flex items-start gap-2">
+        <div className="flex min-w-0 flex-1 flex-wrap gap-2">
+        {used.length > 1 && (
           [
             { key: "all" as const, label: "All", icon: null },
             ...used,
@@ -132,7 +134,24 @@ export function CountdownGrid({ variant = "active" }: { variant?: "active" | "ar
             );
           })}
         </div>
-      )}
+        <button
+          type="button"
+          onClick={toggleFormat}
+          aria-pressed={timerFormat === "days"}
+          aria-label={timerFormat === "days" ? "Show full breakdown" : "Show days remaining"}
+          title={timerFormat === "days" ? "Show full breakdown" : "Show days remaining"}
+          className="brut-thin brut-press ml-auto shrink-0 rounded-none bg-cream px-3 py-2 text-xs font-bold text-ink uppercase"
+        >
+          <span className="flex items-center gap-1.5">
+            {timerFormat === "days" ? (
+              <Clock className="h-3.5 w-3.5 shrink-0" strokeWidth={3} />
+            ) : (
+              <CalendarDays className="h-3.5 w-3.5 shrink-0" strokeWidth={3} />
+            )}
+            <span className="hidden sm:inline">{timerFormat === "days" ? "Full" : "Days"}</span>
+          </span>
+        </button>
+      </div>
 
       <div className="grid grid-cols-1 items-start gap-6 sm:grid-cols-2 xl:grid-cols-3">
         {visible.map((c) => (

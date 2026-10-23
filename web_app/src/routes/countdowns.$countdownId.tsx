@@ -12,6 +12,7 @@ import { FittedCountdownTimer } from "@/components/FittedCountdownTimer";
 import { Sparkle } from "@/components/Sparkle";
 import { useHydrated } from "@/hooks/useHydrated";
 import { useCountdownTick } from "@/hooks/useCountdownTick";
+import { useTimerFormat } from "@/hooks/useTimerFormat";
 import { COUNTDOWNS_QUERY_KEY, countdownsRepo, remainingMs } from "@/lib/countdownsRepo";
 import type { Countdown } from "@/lib/db";
 import { formatRemaining, progressPercent, type TimerFormat } from "@/lib/formatTime";
@@ -46,15 +47,7 @@ function CountdownPage() {
   const { isSignedIn, isLoaded } = useAuthState();
   const source = isSignedIn ? "cloud" : "local";
   const [saving, setSaving] = useState(false);
-  const [format, setFormat] = useState<TimerFormat>("full");
-  useEffect(() => {
-    if (localStorage.getItem("dtg-timer-format") === "days") setFormat("days");
-  }, []);
-  const toggleFormat = () => {
-    const next: TimerFormat = format === "days" ? "full" : "days";
-    setFormat(next);
-    localStorage.setItem("dtg-timer-format", next);
-  };
+  const { format, toggle: toggleFormat } = useTimerFormat();
   const { data, isLoading } = useQuery({
     queryKey: [...COUNTDOWNS_QUERY_KEY, source, "one", countdownId],
     queryFn: () => countdownsRepo.byId(countdownId),

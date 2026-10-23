@@ -7,6 +7,7 @@ import type { Countdown } from "@/lib/db";
 import { countdownsRepo, remainingMs } from "@/lib/countdownsRepo";
 import { isRecurring, recurrenceBadgeLabel } from "@/lib/recurrence";
 import { formatRemaining, progressPercent } from "@/lib/formatTime";
+import { useTimerFormat } from "@/hooks/useTimerFormat";
 import { formatTargetLabel } from "@/lib/localTime";
 import { downloadCountdownImage } from "@/lib/shareImage";
 
@@ -126,9 +127,10 @@ export function CountdownCard({
   };
 
 
+  const { format: timerFormat } = useTimerFormat();
   const remaining = remainingMs(countdown, now);
   const lapsed = remaining <= 0;
-  const { text } = formatRemaining(remaining, now, countdown.endsAt);
+  const { text } = formatRemaining(remaining, now, countdown.endsAt, timerFormat);
   const pct = lapsed ? 100 : progressPercent(countdown.startedAt, countdown.endsAt, remaining);
   const filled = Math.round((pct / 100) * SEGMENTS);
   const urgent = !lapsed && countdown.status === "running" && remaining <= 60_000;
@@ -483,7 +485,7 @@ export function CountdownCard({
                   onClick={async () => {
                     setSaving(true);
                     try {
-                      await downloadCountdownImage(countdown, now, { showId: !!isSignedIn });
+                      await downloadCountdownImage(countdown, now, { showId: !!isSignedIn, format: timerFormat });
                       toast.success("Share image downloaded");
                     } catch {
                       toast.error("Couldn't make the image. Try again.");
