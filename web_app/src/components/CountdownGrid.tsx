@@ -28,7 +28,12 @@ export function CountdownGrid({ variant = "active" }: { variant?: "active" | "ar
   const setFilter = (key: CountdownCategory | "all") =>
     void navigate({
       to: ".",
-      search: (prev: Record<string, unknown>) => ({ ...prev, category: key === "all" ? undefined : key }),
+      search: (prev: Record<string, unknown>) => {
+        const next = { ...prev };
+        if (key === "all") delete next["category"];
+        else next["category"] = key;
+        return next as never;
+      },
     });
 
   const onChanged = () => {

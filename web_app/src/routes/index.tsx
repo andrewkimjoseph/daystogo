@@ -3,8 +3,8 @@ import { AppShell } from "@/components/AppShell";
 import { CountdownGrid } from "@/components/CountdownGrid";
 
 export const Route = createFileRoute("/")({
-  validateSearch: (s: Record<string, unknown>): { category?: string } =>
-    typeof s.category === "string" && s.category ? { category: s.category } : {},
+  validateSearch: (s: Record<string, unknown>): { category?: string | undefined } =>
+    typeof s["category"] === "string" && s["category"] ? { category: s["category"] } : {},
   head: () => ({
     meta: [
       { title: "Days To Go — Playful Countdown Timers" },

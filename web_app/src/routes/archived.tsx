@@ -7,8 +7,8 @@ const DESCRIPTION =
   "Every countdown you've already crossed off, tucked away in one place. Revisit the moment, save it as a PNG, or put it back on the board.";
 
 export const Route = createFileRoute("/archived")({
-  validateSearch: (s: Record<string, unknown>): { category?: string } =>
-    typeof s.category === "string" && s.category ? { category: s.category } : {},
+  validateSearch: (s: Record<string, unknown>): { category?: string | undefined } =>
+    typeof s["category"] === "string" && s["category"] ? { category: s["category"] } : {},
   head: () => ({
     meta: [
       { title: TITLE },
