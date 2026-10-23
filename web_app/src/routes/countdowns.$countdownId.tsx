@@ -3,7 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useBackClick } from "@/hooks/useBackClick";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuthState } from "@/lib/useAuthState";
-import { ArrowLeft, Check, Copy, Download, RefreshCw } from "lucide-react";
+import { ArrowLeft, CalendarDays, Check, Clock, Copy, Download, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { downloadCountdownImage } from "@/lib/shareImage";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -14,7 +14,7 @@ import { useHydrated } from "@/hooks/useHydrated";
 import { useCountdownTick } from "@/hooks/useCountdownTick";
 import { COUNTDOWNS_QUERY_KEY, countdownsRepo, remainingMs } from "@/lib/countdownsRepo";
 import type { Countdown } from "@/lib/db";
-import { formatRemaining, progressPercent } from "@/lib/formatTime";
+import { formatRemaining, progressPercent, type TimerFormat } from "@/lib/formatTime";
 import { formatTargetLabel } from "@/lib/localTime";
 import { isRecurring, recurrenceBadgeLabel } from "@/lib/recurrence";
 import { categoryMeta } from "@/lib/categories";
@@ -46,6 +46,15 @@ function CountdownPage() {
   const { isSignedIn, isLoaded } = useAuthState();
   const source = isSignedIn ? "cloud" : "local";
   const [saving, setSaving] = useState(false);
+  const [format, setFormat] = useState<TimerFormat>("full");
+  useEffect(() => {
+    if (localStorage.getItem("dtg-timer-format") === "days") setFormat("days");
+  }, []);
+  const toggleFormat = () => {
+    const next: TimerFormat = format === "days" ? "full" : "days";
+    setFormat(next);
+    localStorage.setItem("dtg-timer-format", next);
+  };
   const { data, isLoading } = useQuery({
     queryKey: [...COUNTDOWNS_QUERY_KEY, source, "one", countdownId],
     queryFn: () => countdownsRepo.byId(countdownId),
@@ -56,7 +65,7 @@ function CountdownPage() {
     if (!data) return;
     setSaving(true);
     try {
-      await downloadCountdownImage(data, Date.now(), { showId: !!isSignedIn });
+      await downloadCountdownImage(data, Date.now(), { showId: !!isSignedIn, format });
       toast.success("Share image downloaded");
     } catch {
       toast.error("Couldn't make the image. Try again.");
@@ -70,6 +79,18 @@ function CountdownPage() {
       <SiteHeader />
       <main className="countdown-static-page mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
         <div className="mb-4 flex justify-end gap-3 sm:mb-6">
+          {data && (
+            <button
+              type="button"
+              onClick={toggleFormat}
+              aria-pressed={format === "days"}
+              aria-label={format === "days" ? "Show full breakdown" : "Show days remaining"}
+              className="brut brut-press inline-flex items-center gap-2 rounded-none bg-cream px-3 py-2.5 text-xs font-bold text-ink uppercase sm:px-4 sm:py-3 sm:text-sm"
+            >
+              {format === "days" ? <Clock className="h-4 w-4" strokeWidth={3} /> : <CalendarDays className="h-4 w-4" strokeWidth={3} />}
+              {format === "days" ? "Full" : "Days"}
+            </button>
+          )}
           {data && (
             <button
               type="button"
@@ -94,7 +115,7 @@ function CountdownPage() {
         {!hydrated || !isLoaded || isLoading || data === undefined ? (
           <HourglassLoader />
         ) : data ? (
-          <BigCountdown countdown={data} showId={!!isSignedIn} />
+          <BigCountdown countdown={data} showId={!!isSignedIn} format={format} />
         ) : (
           <div className="brut bg-card p-8 sm:p-12">
             <h1 className="text-3xl uppercase sm:text-5xl">Countdown not found</h1>
@@ -145,13 +166,13 @@ function CopyableId({ id }: { id: string }) {
 
 const celebrated = new Set<string>();
 
-function BigCountdown({ countdown, showId }: { countdown: Countdown; showId: boolean }) {
+function BigCountdown({ countdown, showId, format }: { countdown: Countdown; showId: boolean; format: TimerFormat }) {
   const now = useCountdownTick();
   const queryClient = useQueryClient();
   const ref = useRef<HTMLElement | null>(null);
   const remaining = remainingMs(countdown, now);
   const lapsed = remaining <= 0;
-  const { text } = formatRemaining(remaining, now, countdown.endsAt);
+  const { text } = formatRemaining(remaining, now, countdown.endsAt, format);
   const pct = lapsed ? 100 : progressPercent(countdown.startedAt, countdown.endsAt, remaining);
   const filled = Math.round((pct / 100) * SEGMENTS);
   const category = categoryMeta(countdown.category);

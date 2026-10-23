@@ -48,7 +48,9 @@ function calendarParts(from: number, to: number) {
  * @param now optional current timestamp; with `endsAt` it enables years/months
  * @param endsAt optional end timestamp
  */
-export function formatRemaining(ms: number, now?: number, endsAt?: number): Formatted {
+export type TimerFormat = "full" | "days";
+
+export function formatRemaining(ms: number, now?: number, endsAt?: number, mode: TimerFormat = "full"): Formatted {
   const total = Math.max(0, Math.ceil(ms / 1000));
   if (total === 0) return { text: "00:00:00", dramatic: true, length: 8 };
 
@@ -59,6 +61,13 @@ export function formatRemaining(ms: number, now?: number, endsAt?: number): Form
   });
 
   if (total < 60) return done(`${pad(0)}:${pad(Math.floor(total / 60))}:${pad(total % 60)}`, true);
+
+  if (mode === "days") {
+    const d = Math.floor(total / 86400);
+    const r = total % 86400;
+    const c = `${pad(Math.floor(r / 3600))}:${pad(Math.floor((r % 3600) / 60))}:${pad(r % 60)}`;
+    return done(d > 0 ? `${d} ${d === 1 ? "day" : "days"} ${c}` : c);
+  }
 
   const useCalendar =
     now !== undefined && endsAt !== undefined && endsAt > now && total >= 28 * 86400;
