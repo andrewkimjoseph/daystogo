@@ -33,6 +33,7 @@ export const Route = createFileRoute("/create-countdown")({
 });
 
 function CreateCountdownPage() {
+  const onBack = useBackClick();
   const { date } = Route.useSearch();
   return (
     <div className="flex flex-1 flex-col">

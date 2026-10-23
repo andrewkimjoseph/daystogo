@@ -40,6 +40,7 @@ export const Route = createFileRoute("/countdowns/$countdownId")({
 const SEGMENTS = 24;
 
 function CountdownPage() {
+  const onBack = useBackClick();
   const { countdownId } = Route.useParams();
   const hydrated = useHydrated();
   const { isSignedIn, isLoaded } = useAuthState();
