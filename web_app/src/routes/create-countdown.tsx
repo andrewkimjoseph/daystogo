@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useBackClick } from "@/hooks/useBackClick";
 import { ArrowLeft } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { AuthGate } from "@/components/AuthGate";
@@ -32,6 +33,7 @@ export const Route = createFileRoute("/create-countdown")({
 });
 
 function CreateCountdownPage() {
+  const onBack = useBackClick();
   const { date } = Route.useSearch();
   return (
     <div className="flex flex-1 flex-col">
@@ -41,6 +43,7 @@ function CreateCountdownPage() {
         <div className="mb-4 flex justify-end sm:mb-6">
           <Link
             to="/"
+            onClick={onBack}
             viewTransition
             className="brut brut-press inline-flex items-center gap-2 rounded-none bg-cream px-3 py-2.5 text-xs font-bold text-ink uppercase sm:px-4 sm:py-3 sm:text-sm"
           >
