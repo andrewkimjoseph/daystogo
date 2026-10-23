@@ -135,7 +135,7 @@ function drawPanel(
 export async function renderCountdownShareImage(
   countdown: Countdown,
   now = Date.now(),
-  opts: { showId?: boolean } = {},
+  opts: { showId?: boolean; format?: "full" | "days" } = {},
 ): Promise<Blob> {
   if (typeof document === "undefined") throw new Error("Share images render in the browser only.");
 
@@ -157,7 +157,7 @@ export async function renderCountdownShareImage(
 
   const remaining = remainingMs(countdown, now);
   const lapsed = remaining <= 0;
-  const { text } = formatRemaining(remaining, now, countdown.endsAt);
+  const { text } = formatRemaining(remaining, now, countdown.endsAt, opts.format);
   const pct = lapsed ? 100 : progressPercent(countdown.startedAt, countdown.endsAt, remaining);
   const filled = Math.round((pct / 100) * SEGMENTS);
   const tagColor = lapsed ? PALETTE.red : countdown.colorTag;
@@ -397,7 +397,7 @@ function timestampSuffix(): string {
 export async function downloadCountdownImage(
   countdown: Countdown,
   now = Date.now(),
-  opts: { showId?: boolean } = {},
+  opts: { showId?: boolean; format?: "full" | "days" } = {},
 ) {
   const blob = await renderCountdownShareImage(countdown, now, opts);
   const url = URL.createObjectURL(blob);
