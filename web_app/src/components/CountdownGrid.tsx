@@ -1,10 +1,10 @@
 import type { LucideIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { SignInButton } from "@clerk/tanstack-react-start";
 import { CLERK_ENABLED } from "@/lib/authMode";
 import { useAuthState } from "@/lib/useAuthState";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { COUNTDOWNS_QUERY_KEY, countdownsRepo } from "@/lib/countdownsRepo";
 import { CATEGORIES, categoryMeta, type CountdownCategory } from "@/lib/categories";
 import { PALETTE } from "@/lib/palette";
@@ -23,7 +23,13 @@ export function CountdownGrid({ variant = "active" }: { variant?: "active" | "ar
     queryFn: () => (archived ? countdownsRepo.archived() : countdownsRepo.all()),
     enabled: isLoaded,
   });
-  const [filter, setFilter] = useState<CountdownCategory | "all">("all");
+  const search = useSearch({ strict: false }) as { category?: string };
+  const navigate = useNavigate();
+  const setFilter = (key: CountdownCategory | "all") =>
+    void navigate({
+      to: ".",
+      search: (prev: Record<string, unknown>) => ({ ...prev, category: key === "all" ? undefined : key }),
+    });
 
   const onChanged = () => {
     void queryClient.invalidateQueries({ queryKey: COUNTDOWNS_QUERY_KEY });
@@ -69,6 +75,8 @@ export function CountdownGrid({ variant = "active" }: { variant?: "active" | "ar
   const used = CATEGORIES.filter((cat) =>
     countdowns.some((c) => categoryMeta(c.category).key === cat.key),
   );
+  const filter: CountdownCategory | "all" =
+    used.find((c) => c.key === search.category)?.key ?? "all";
   const visible =
     filter === "all" ? countdowns : countdowns.filter((c) => categoryMeta(c.category).key === filter);
 
