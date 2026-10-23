@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useBackClick } from "@/hooks/useBackClick";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuthState } from "@/lib/useAuthState";
 import { ArrowLeft, Download, RefreshCw } from "lucide-react";
@@ -82,6 +83,7 @@ function CountdownPage() {
           )}
           <Link
             to="/"
+            onClick={onBack}
             viewTransition
             className="brut brut-press inline-flex items-center gap-2 rounded-none bg-cream px-3 py-2.5 text-xs font-bold text-ink uppercase sm:px-4 sm:py-3 sm:text-sm"
           >
