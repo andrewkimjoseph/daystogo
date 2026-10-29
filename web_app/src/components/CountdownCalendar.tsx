@@ -2,12 +2,13 @@ import { useEffect, useMemo, useState } from "react";
 import { useAuthState } from "@/lib/useAuthState";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { CalendarDays, ChevronLeft, ChevronRight, Clock } from "lucide-react";
 import { COUNTDOWNS_QUERY_KEY, countdownsRepo, remainingMs } from "@/lib/countdownsRepo";
 import { categoryMeta } from "@/lib/categories";
 import { PALETTE, tagTextColor } from "@/lib/palette";
 import { formatTargetLabel } from "@/lib/localTime";
-import { formatRemaining } from "@/lib/formatTime";
+import { formatRemaining, type TimerFormat } from "@/lib/formatTime";
+import { useTimerFormat } from "@/hooks/useTimerFormat";
 import type { Countdown } from "@/lib/db";
 import { useHydrated } from "@/hooks/useHydrated";
 import { useCountdownTick } from "@/hooks/useCountdownTick";
@@ -351,6 +352,7 @@ function CalendarBody() {
 }
 
 function DayPanel({ date, items }: { date: Date; items: Countdown[] }) {
+  const { format: timerFormat, toggle: toggleFormat } = useTimerFormat();
   // Only ever rendered after hydration, so viewer-locale formatting is safe here.
   const heading = date.toLocaleDateString(undefined, {
     weekday: "long",
@@ -372,13 +374,32 @@ function DayPanel({ date, items }: { date: Date; items: Countdown[] }) {
 
   return (
     <div className="brut flex flex-col gap-3 bg-card p-4">
-      <div>
-        <h2 className="text-lg uppercase sm:text-xl">{heading}</h2>
-        <p className="text-xs font-bold uppercase text-muted-foreground">
-          {items.length === 0
-            ? "Nothing lands here"
-            : `${items.length} countdown${items.length === 1 ? "" : "s"} lands here`}
-        </p>
+      <div className="flex items-start gap-3">
+        <div className="min-w-0 flex-1">
+          <h2 className="text-lg uppercase sm:text-xl">{heading}</h2>
+          <p className="text-xs font-bold uppercase text-muted-foreground">
+            {items.length === 0
+              ? "Nothing lands here"
+              : `${items.length} countdown${items.length === 1 ? "" : "s"} lands here`}
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={toggleFormat}
+          aria-pressed={timerFormat === "days"}
+          aria-label={timerFormat === "days" ? "Show full breakdown" : "Show days remaining"}
+          title={timerFormat === "days" ? "Show full breakdown" : "Show days remaining"}
+          className="brut-thin brut-press shrink-0 rounded-none bg-cream px-3 py-2 text-xs font-bold text-ink uppercase"
+        >
+          <span className="flex items-center gap-1.5">
+            {timerFormat === "days" ? (
+              <Clock className="h-3.5 w-3.5 shrink-0" strokeWidth={3} />
+            ) : (
+              <CalendarDays className="h-3.5 w-3.5 shrink-0" strokeWidth={3} />
+            )}
+            <span className="hidden sm:inline">{timerFormat === "days" ? "Full" : "Days"}</span>
+          </span>
+        </button>
       </div>
 
       {items.length === 0 ? (
@@ -395,7 +416,7 @@ function DayPanel({ date, items }: { date: Date; items: Countdown[] }) {
         <ul className="flex max-h-72 flex-col gap-2 overflow-y-auto pr-1 sm:max-h-[380px]">
           {items.map((c) => (
             <li key={c.id}>
-              <DayPanelRow countdown={c} />
+              <DayPanelRow countdown={c} format={timerFormat} />
             </li>
           ))}
         </ul>
@@ -407,13 +428,13 @@ function DayPanel({ date, items }: { date: Date; items: Countdown[] }) {
 }
 
 /** One row in the day panel: static landing moment plus a live to-the-second ticker. */
-function DayPanelRow({ countdown }: { countdown: Countdown }) {
+function DayPanelRow({ countdown, format }: { countdown: Countdown; format: TimerFormat }) {
   const now = useCountdownTick();
   const meta = categoryMeta(countdown.category);
   const Icon = meta.icon;
   const remaining = remainingMs(countdown, now);
   const lapsed = remaining <= 0;
-  const { text } = formatRemaining(remaining, now, countdown.endsAt);
+  const { text } = formatRemaining(remaining, now, countdown.endsAt, format);
   const landing = new Date(Math.round(endMoment(countdown) / 1000) * 1000).toLocaleTimeString(
     undefined,
     { hour: "2-digit", minute: "2-digit", second: "2-digit" },
