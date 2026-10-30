@@ -247,10 +247,6 @@ function BigCountdown({ countdown, showId, format }: { countdown: Countdown; sho
       <FittedCountdownTimer text={text} lapsed={lapsed} />
 
       <section>
-        <div className="mb-2 flex items-end justify-between gap-3 text-xs font-bold uppercase sm:text-sm" style={{ color: fg }}>
-          <span>How far along</span>
-          <span className="tabular-nums">{Math.floor(pct)}%</span>
-        </div>
         <div className="flex gap-1 sm:gap-1.5" aria-label={`${Math.floor(pct)}% elapsed`}>
           {Array.from({ length: SEGMENTS }, (_, i) => (
             <span
