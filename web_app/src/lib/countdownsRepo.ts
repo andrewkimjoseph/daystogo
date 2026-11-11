@@ -33,7 +33,7 @@ export function remainingMs(c: Countdown, now: number): number {
 export interface NewCountdownInput {
   title: string;
   /** Epoch ms of the exact local moment the countdown should lapse. */
-  targetAt: number;
+  endsAt: number;
   colorTag: string;
   category?: CountdownCategory;
   recurrence?: Recurrence;
@@ -103,9 +103,8 @@ export const countdownsRepo = {
     const row: Countdown = {
       id: crypto.randomUUID(),
       title: input.title.trim(),
-      targetAt: input.targetAt,
       startedAt: now,
-      endsAt: input.targetAt,
+      endsAt: input.endsAt,
       status: "running",
       colorTag: input.colorTag,
       category: input.category ?? "other",

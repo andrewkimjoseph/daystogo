@@ -69,12 +69,10 @@ export function advanceRecurring(c: Countdown, now: number): Countdown | null {
 
   if (c.endsAt > now) return null;
 
-  const fromMs = c.targetAt ?? c.endsAt;
-  const nextAt = nextOccurrence(fromMs, recurrence, now);
+  const nextAt = nextOccurrence(c.endsAt, recurrence, now);
 
   return {
     ...c,
-    targetAt: nextAt,
     startedAt: now,
     endsAt: nextAt,
     status: "running",

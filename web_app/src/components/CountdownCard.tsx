@@ -228,7 +228,7 @@ export function CountdownCard({
             className="mt-1 flex items-center gap-1.5 text-xs font-bold uppercase"
             style={{ color: lapsed ? PALETTE.cream : "var(--muted-foreground)" }}
           >
-            {formatTargetLabel(countdown.targetAt)}
+            {formatTargetLabel(countdown.endsAt)}
             {recurring && (
               <span className="inline-flex items-center gap-1">
                 <RefreshCw

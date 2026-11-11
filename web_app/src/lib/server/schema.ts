@@ -29,7 +29,6 @@ export const countdowns = pgTable(
       .default(sql`(auth.user_id())`)
       .references(() => users.id, { onDelete: "cascade" }),
     title: text("title").notNull(),
-    targetAt: bigint("target_at", { mode: "number" }).notNull(),
     startedAt: bigint("started_at", { mode: "number" }).notNull(),
     endsAt: bigint("ends_at", { mode: "number" }).notNull(),
     status: text("status").notNull(),

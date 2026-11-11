@@ -18,7 +18,6 @@ function fromRow(row: CountdownRow): Countdown {
   return {
     id: row.id,
     title: decryptField(row.title, row.userId),
-    targetAt: n(row.targetAt) ?? n(row.endsAt) ?? 0,
     startedAt: n(row.startedAt) ?? 0,
     endsAt: n(row.endsAt) ?? 0,
     status: row.status as CountdownStatus,
@@ -37,7 +36,6 @@ function toInsert(row: Countdown, userId: string) {
     id: row.id,
     userId,
     title: encryptField(row.title, userId),
-    targetAt: row.targetAt,
     startedAt: row.startedAt,
     endsAt: row.endsAt,
     status: row.status,
@@ -167,7 +165,6 @@ export const restartCountdownFn = createServerFn({ method: "POST" })
       db
         .update(countdowns)
         .set({
-          targetAt: data.targetAt,
           startedAt: data.startedAt,
           endsAt: data.endsAt,
           status: data.status,
@@ -274,7 +271,6 @@ export const reconcileCountdownsFn = createServerFn({ method: "POST" }).handler(
         .set({
           colorTag: next.colorTag,
           status: next.status,
-          targetAt: next.targetAt,
           startedAt: next.startedAt,
           endsAt: next.endsAt,
           hasCelebrated: next.hasCelebrated,
