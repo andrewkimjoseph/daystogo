@@ -63,7 +63,7 @@ function PrivacyPage() {
             </p>
             <p className="mt-4 text-base leading-relaxed">
               <span className="font-bold">With an account</span>, we store your account email and
-              username, plus the countdowns you sync: titles, target and end times, colors, categories,
+              username, plus the countdowns you sync: titles, end times, colors, categories,
               status, and timestamps. Email, username, and countdown titles are encrypted at rest in
               Postgres so a database admin cannot read them. Accounts are managed by Clerk (Clerk still
               holds your email and username for sign-in), and synced timers are stored in a hosted

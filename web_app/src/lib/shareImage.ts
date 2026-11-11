@@ -244,7 +244,7 @@ export async function renderCountdownShareImage(
   y += 52;
   ctx.fillStyle = muted;
   ctx.font = `28px ${SANS}`;
-  const label = formatTargetLabel(countdown.targetAt).toUpperCase();
+  const label = formatTargetLabel(countdown.endsAt).toUpperCase();
   ctx.fillText(label, left, y);
   if (isRecurring(countdown)) {
     const badge = recurrenceBadgeLabel(countdown.recurrence)!;

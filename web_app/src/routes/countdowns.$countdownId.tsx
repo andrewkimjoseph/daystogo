@@ -228,7 +228,7 @@ function BigCountdown({ countdown, showId, format }: { countdown: Countdown; sho
             {countdown.title}
           </h1>
           <p className="mt-3 flex flex-wrap items-center gap-2 text-sm font-bold uppercase sm:text-lg" style={{ color: fg }}>
-            {formatTargetLabel(countdown.targetAt)}
+            {formatTargetLabel(countdown.endsAt)}
             {recurring && (
               <span className="inline-flex items-center gap-1.5">
                 <RefreshCw className="h-4 w-4" strokeWidth={3} aria-hidden="true" />

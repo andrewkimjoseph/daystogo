@@ -107,12 +107,12 @@ export function CreateCountdownForm({ initialDate }: { initialDate?: string }) {
       return;
     }
 
-    const targetAt = new Date(targetInput).getTime();
-    if (!Number.isFinite(targetAt)) {
+    const endsAt = new Date(targetInput).getTime();
+    if (!Number.isFinite(endsAt)) {
       setError("Pick a date and time we can actually count to.");
       return;
     }
-    const seconds = Math.round((targetAt - Date.now()) / 1000);
+    const seconds = Math.round((endsAt - Date.now()) / 1000);
     if (seconds <= 0) {
       setError("That moment has already been and gone. Pick a future one.");
       return;
@@ -132,7 +132,7 @@ export function CreateCountdownForm({ initialDate }: { initialDate?: string }) {
         return;
       }
     }
-    await countdownsRepo.create({ title, targetAt, colorTag, category, recurrence });
+    await countdownsRepo.create({ title, endsAt, colorTag, category, recurrence });
     await queryClient.invalidateQueries({ queryKey: COUNTDOWNS_QUERY_KEY });
 
     playSound("start");

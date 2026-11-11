@@ -12,9 +12,8 @@ export type Recurrence = "none" | "daily" | "weekly" | "monthly" | "yearly";
 export interface Countdown {
   id: string;
   title: string;
-  /** Epoch ms the user picked as the landing moment. */
-  targetAt: number;
   startedAt: number;
+  /** Epoch ms the countdown lapses — the moment the user picked. */
   endsAt: number;
   status: CountdownStatus;
   colorTag: string;
@@ -82,7 +81,7 @@ class DaysToGoDB extends Dexie {
         const rows = await table.toArray();
         if (rows.length === 0) return;
 
-        type LegacyRow = Omit<Countdown, "status" | "targetAt"> & {
+        type LegacyRow = Omit<Countdown, "status"> & {
           status: string;
           targetAt?: number;
           pausedRemainingMs?: number;
@@ -105,6 +104,26 @@ class DaysToGoDB extends Dexie {
           delete row.durationType;
           delete row.durationValue;
           delete row.durationSeconds;
+          return row;
+        });
+        await table.bulkPut(next);
+      });
+    this.version(8)
+      .stores({
+        countdowns: "id, status, endsAt, createdAt, category, archivedAt",
+        syncMeta: "id",
+        deletedIds: "id",
+      })
+      .upgrade(async (tx) => {
+        const table = tx.table("countdowns");
+        const rows = await table.toArray();
+        if (rows.length === 0) return;
+
+        type StoredRow = Countdown & { targetAt?: number };
+        const next = rows.map((raw) => {
+          const row: StoredRow = { ...(raw as StoredRow) };
+          if (row.endsAt == null && row.targetAt != null) row.endsAt = row.targetAt;
+          delete row.targetAt;
           return row;
         });
         await table.bulkPut(next);
