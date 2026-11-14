@@ -99,8 +99,13 @@ function CalendarBody() {
   const { isSignedIn, isLoaded } = useAuthState();
   const source = isSignedIn ? "cloud" : "local";
   const { data: countdowns } = useQuery({
-    queryKey: [...COUNTDOWNS_QUERY_KEY, source, "active"],
-    queryFn: () => countdownsRepo.all(),
+    queryKey: [...COUNTDOWNS_QUERY_KEY, source, "calendar-all"],
+    queryFn: async () => {
+      const [active, archived] = await Promise.all([countdownsRepo.all(), countdownsRepo.archived()]);
+      const byId = new Map<string, Countdown>();
+      for (const c of [...active, ...archived]) byId.set(c.id, c);
+      return [...byId.values()];
+    },
     enabled: isLoaded,
   });
   const [today] = useState(() => new Date());
@@ -141,10 +146,8 @@ function CalendarBody() {
   // The past is not bookable: navigation floors at the current month.
   const minY = today.getFullYear();
   const minM = today.getMonth();
-  const atFloor = view.y === minY && view.m === minM;
   const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
-  const clamp = (y: number, m: number) =>
-    y < minY || (y === minY && m < minM) ? { y: minY, m: minM } : { y, m };
+  const clamp = (y: number, m: number) => ({ y, m });
 
   function shiftMonth(delta: number) {
     const d = new Date(view.y, view.m + delta, 1);
@@ -193,7 +196,7 @@ function CalendarBody() {
       <div className="brut bg-card p-3 sm:p-4">
         {/* Year row */}
         <div className="mb-2 flex items-center justify-between gap-2">
-          {arrow("Previous year", "l", () => shiftYear(-1), view.y <= minY)}
+          {arrow("Previous year", "l", () => shiftYear(-1), )}
 
           <button
             type="button"
@@ -213,7 +216,7 @@ function CalendarBody() {
 
         {/* Month row */}
         <div className="mb-2 flex items-center justify-between gap-2">
-          {arrow("Previous month", "l", () => shiftMonth(-1), atFloor)}
+          {arrow("Previous month", "l", () => shiftMonth(-1))}
           <button
             type="button"
             onClick={() => togglePane("months")}
@@ -235,9 +238,8 @@ function CalendarBody() {
                 "l",
                 () => {
                   setDir(-1);
-                  setYearPage((y) => Math.max(minY, y - 12));
+                  setYearPage((y) => y - 12);
                 },
-                yearPage <= minY,
               )}
               <span className="tick-numerals flex-1 text-center text-xs">
                 {years[0]} – {years[years.length - 1]}
@@ -256,9 +258,8 @@ function CalendarBody() {
                     key={y}
                     type="button"
                     onClick={() => jumpTo(y, view.m)}
-                    disabled={past}
                     aria-pressed={on}
-                    className={`tick-numerals h-11 text-base ${on ? "brut-thin" : ""} ${past ? "pointer-events-none opacity-30" : ""}`}
+                    className={`tick-numerals h-11 text-base ${on ? "brut-thin" : ""} ${past && !on ? "opacity-50" : ""}`}
                     style={on ? { backgroundColor: PALETTE.teal, color: PALETTE.cream } : undefined}
                   >
                     {y}
@@ -279,9 +280,8 @@ function CalendarBody() {
                   key={label}
                   type="button"
                   onClick={() => jumpTo(view.y, i)}
-                  disabled={past}
                   aria-pressed={on}
-                  className={`h-11 text-xs font-bold uppercase ${on ? "brut-thin" : ""} ${past ? "pointer-events-none opacity-30" : ""}`}
+                  className={`h-11 text-xs font-bold uppercase ${on ? "brut-thin" : ""} ${past && !on ? "opacity-50" : ""}`}
                   style={on ? { backgroundColor: PALETTE.teal, color: PALETTE.cream } : undefined}
                 >
                   {label}
@@ -312,12 +312,11 @@ function CalendarBody() {
                   key={d.getTime()}
                   type="button"
                   onClick={() => setSelected(new Date(d))}
-                  disabled={past}
                   aria-pressed={isSelected}
                   aria-label={`${d.toDateString()}${marks.length ? `, ${marks.length} countdown${marks.length === 1 ? "" : "s"}` : ""}`}
                   className={`tick-numerals relative flex h-12 flex-col items-center justify-center gap-1 text-sm sm:h-16 sm:text-base ${
                     isSelected ? "brut-thin" : ""
-                  } ${past ? "pointer-events-none opacity-25" : outside && !isSelected ? "opacity-35" : ""}`}
+                  } ${past && !isSelected ? "opacity-45" : outside && !isSelected ? "opacity-35" : ""}`}
                   style={
                     isSelected
                       ? { backgroundColor: PALETTE.teal, color: PALETTE.cream }
@@ -346,12 +345,12 @@ function CalendarBody() {
         )}
       </div>
 
-      <DayPanel date={selected} items={selectedList} />
+      <DayPanel date={selected} items={selectedList} isPast={selected.getTime() < todayStart} />
     </div>
   );
 }
 
-function DayPanel({ date, items }: { date: Date; items: Countdown[] }) {
+function DayPanel({ date, items, isPast }: { date: Date; items: Countdown[]; isPast: boolean }) {
   const { format: timerFormat, toggle: toggleFormat } = useTimerFormat();
   // Only ever rendered after hydration, so viewer-locale formatting is safe here.
   const heading = date.toLocaleDateString(undefined, {
@@ -362,7 +361,11 @@ function DayPanel({ date, items }: { date: Date; items: Countdown[] }) {
   });
 
 
-  const newCountdownLink = (
+  const newCountdownLink = isPast ? (
+    <p className="text-xs font-bold uppercase text-muted-foreground">
+      This day has passed — you can't start a countdown here.
+    </p>
+  ) : (
     <Link
       to="/create-countdown"
       search={{ date: dayKey(date) }}
@@ -405,7 +408,7 @@ function DayPanel({ date, items }: { date: Date; items: Countdown[] }) {
       {items.length === 0 ? (
         <div className="flex flex-col items-start gap-3">
           <p className="font-bold text-muted-foreground">
-            A blank day. Suspiciously calm — want to put a clock on something?
+            {isPast ? "Nothing landed here." : "A blank day. Suspiciously calm — want to put a clock on something?"}
           </p>
           {newCountdownLink}
         </div>
@@ -457,7 +460,7 @@ function DayPanelRow({ countdown, format }: { countdown: Countdown; format: Time
           {countdown.title}
         </Link>
         <span className="block text-xs tabular-nums text-muted-foreground">
-          {lapsed ? "Lapsed" : `${landing} · ${text} to go`}
+          {countdown.archivedAt ? "Archived · " : ""}{lapsed ? "Lapsed" : `${landing} · ${text} to go`}
         </span>
       </span>
     </div>
