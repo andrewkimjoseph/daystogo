@@ -1,9 +1,12 @@
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
+import { getISOWeek } from "date-fns";
 import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown } from "lucide-react";
 import { PALETTE } from "@/lib/palette";
 import { localInputValue } from "@/lib/localTime";
 
 const WEEKDAYS = ["S", "M", "T", "W", "T", "F", "S"];
+/** Narrow week column + seven day cells. */
+const DAY_GRID = "grid-cols-[1.75rem_repeat(7,minmax(0,1fr))]";
 const MONTHS = [
   "January",
   "February",
@@ -35,12 +38,17 @@ function sameDay(a: Date, b: Date): boolean {
   );
 }
 
-/** Monday-first grid of 42 dates covering the given month. */
+/** Sunday-first grid of 42 dates covering the given month. */
 function monthGrid(year: number, month: number): Date[] {
   const first = new Date(year, month, 1);
   const offset = first.getDay();
   const start = new Date(year, month, 1 - offset);
   return Array.from({ length: 42 }, (_, i) => new Date(start.getFullYear(), start.getMonth(), start.getDate() + i));
+}
+
+/** Six Sunday–Saturday rows from a 42-day month grid. */
+function weekRows(days: Date[]): Date[][] {
+  return Array.from({ length: 6 }, (_, row) => days.slice(row * 7, row * 7 + 7));
 }
 
 function daysInMonth(year: number, month: number): number {
@@ -224,7 +232,13 @@ export function BrutalCalendar({ value, onChange }: Props) {
       )}
 
       {pane === "days" && (
-        <div key={`days-${view.y}-${view.m}`} className={`grid grid-cols-7 gap-1 ${swapClass}`}>
+        <div key={`days-${view.y}-${view.m}`} className={`grid ${DAY_GRID} gap-1 ${swapClass}`}>
+          <span
+            className="pb-1 text-center text-[10px] font-bold uppercase text-muted-foreground"
+            aria-hidden="true"
+          >
+            W
+          </span>
           {WEEKDAYS.map((w, i) => (
             <span
               key={i}
@@ -233,40 +247,53 @@ export function BrutalCalendar({ value, onChange }: Props) {
               {w}
             </span>
           ))}
-          {days.map((d) => {
-            const isSelected = sameDay(d, selected);
-            const isToday = sameDay(d, today);
-            const outside = d.getMonth() !== view.m;
-            const isPast = !isToday && d.getTime() < todayStart;
+          {weekRows(days).map((weekDays) => {
+            const thursday = weekDays[4]!;
+            const weekNum = getISOWeek(thursday);
             return (
-              <button
-                key={d.getTime()}
-                type="button"
-                disabled={isPast}
-                onClick={() => {
-                  if (!isPast) pickDay(d);
-                }}
-                aria-pressed={isSelected}
-                className={`tick-numerals h-11 text-base sm:h-9 sm:text-sm ${isSelected ? "brut-thin" : ""} ${
-                  isPast
-                    ? "cursor-not-allowed text-muted-foreground opacity-40"
-                    : outside && !isSelected
-                      ? "opacity-35"
-                      : ""
-                }`}
-                style={
-                  isSelected
-                    ? { backgroundColor: PALETTE.teal, color: PALETTE.cream }
-                    : isToday
-                      ? { boxShadow: "0 0 0 2px var(--ink) inset" }
-                      : undefined
-                }
-              >
-                {d.getDate()}
-              </button>
+              <Fragment key={thursday.getTime()}>
+                <span
+                  className="tick-numerals flex items-center justify-center text-[10px] font-bold text-muted-foreground"
+                  aria-label={`Week ${weekNum}`}
+                >
+                  {weekNum}
+                </span>
+                {weekDays.map((d) => {
+                  const isSelected = sameDay(d, selected);
+                  const isToday = sameDay(d, today);
+                  const outside = d.getMonth() !== view.m;
+                  const isPast = !isToday && d.getTime() < todayStart;
+                  return (
+                    <button
+                      key={d.getTime()}
+                      type="button"
+                      disabled={isPast}
+                      onClick={() => {
+                        if (!isPast) pickDay(d);
+                      }}
+                      aria-pressed={isSelected}
+                      className={`tick-numerals h-11 text-base sm:h-9 sm:text-sm ${isSelected ? "brut-thin" : ""} ${
+                        isPast
+                          ? "cursor-not-allowed text-muted-foreground opacity-40"
+                          : outside && !isSelected
+                            ? "opacity-35"
+                            : ""
+                      }`}
+                      style={
+                        isSelected
+                          ? { backgroundColor: PALETTE.teal, color: PALETTE.cream }
+                          : isToday
+                            ? { boxShadow: "0 0 0 2px var(--ink) inset" }
+                            : undefined
+                      }
+                    >
+                      {d.getDate()}
+                    </button>
+                  );
+                })}
+              </Fragment>
             );
           })}
-
         </div>
       )}
     </div>

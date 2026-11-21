@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { useAuthState } from "@/lib/useAuthState";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
+import { getISOWeek } from "date-fns";
 import { CalendarDays, ChevronLeft, ChevronRight, Clock } from "lucide-react";
 import { COUNTDOWNS_QUERY_KEY, countdownsRepo, remainingMs } from "@/lib/countdownsRepo";
 import { categoryMeta } from "@/lib/categories";
@@ -14,6 +15,8 @@ import { useHydrated } from "@/hooks/useHydrated";
 import { useCountdownTick } from "@/hooks/useCountdownTick";
 
 const WEEKDAYS = ["S", "M", "T", "W", "T", "F", "S"];
+/** Narrow week column + seven day cells. */
+const DAY_GRID = "grid-cols-[1.75rem_repeat(7,minmax(0,1fr))]";
 const MONTHS = [
   "January",
   "February",
@@ -46,7 +49,7 @@ function sameDay(a: Date, b: Date): boolean {
   );
 }
 
-/** Monday-first grid of 42 dates covering the given month. */
+/** Sunday-first grid of 42 dates covering the given month. */
 function monthGrid(year: number, month: number): Date[] {
   const first = new Date(year, month, 1);
   const offset = first.getDay();
@@ -55,6 +58,11 @@ function monthGrid(year: number, month: number): Date[] {
     { length: 42 },
     (_, i) => new Date(start.getFullYear(), start.getMonth(), start.getDate() + i),
   );
+}
+
+/** Six Sunday–Saturday rows from a 42-day month grid. */
+function weekRows(days: Date[]): Date[][] {
+  return Array.from({ length: 6 }, (_, row) => days.slice(row * 7, row * 7 + 7));
 }
 
 /** When a countdown lands. */
@@ -81,8 +89,8 @@ function CalendarSkeleton() {
       <div className="brut bg-card p-3 sm:p-4">
         <div className="mb-2 h-9 bg-cream/60" />
         <div className="mb-2 h-9 bg-cream/60" />
-        <div className="grid grid-cols-7 gap-1">
-          {Array.from({ length: 42 }, (_, i) => (
+        <div className={`grid ${DAY_GRID} gap-1`}>
+          {Array.from({ length: 48 }, (_, i) => (
             <div key={i} className="h-12 bg-cream/40 sm:h-16" />
           ))}
         </div>
@@ -292,7 +300,13 @@ function CalendarBody() {
         )}
 
         {pane === "days" && (
-          <div key={`days-${view.y}-${view.m}`} className={`grid grid-cols-7 gap-1 ${swapClass}`}>
+          <div key={`days-${view.y}-${view.m}`} className={`grid ${DAY_GRID} gap-1 ${swapClass}`}>
+            <span
+              className="pb-1 text-center text-[10px] font-bold uppercase text-muted-foreground"
+              aria-hidden="true"
+            >
+              W
+            </span>
             {WEEKDAYS.map((w, i) => (
               <span
                 key={i}
@@ -301,44 +315,58 @@ function CalendarBody() {
                 {w}
               </span>
             ))}
-            {days.map((d) => {
-              const marks = buckets.get(dayKey(d)) ?? [];
-              const isSelected = sameDay(d, selected);
-              const isToday = sameDay(d, today);
-              const outside = d.getMonth() !== view.m;
-              const past = d.getTime() < todayStart;
+            {weekRows(days).map((weekDays) => {
+              const thursday = weekDays[4]!;
+              const weekNum = getISOWeek(thursday);
               return (
-                <button
-                  key={d.getTime()}
-                  type="button"
-                  onClick={() => setSelected(new Date(d))}
-                  aria-pressed={isSelected}
-                  aria-label={`${d.toDateString()}${marks.length ? `, ${marks.length} countdown${marks.length === 1 ? "" : "s"}` : ""}`}
-                  className={`tick-numerals relative flex h-12 flex-col items-center justify-center gap-1 text-sm sm:h-16 sm:text-base ${
-                    isSelected ? "brut-thin" : ""
-                  } ${past && !isSelected ? "opacity-45" : outside && !isSelected ? "opacity-35" : ""}`}
-                  style={
-                    isSelected
-                      ? { backgroundColor: PALETTE.teal, color: PALETTE.cream }
-                      : isToday
-                        ? { boxShadow: "0 0 0 2px var(--ink) inset" }
-                        : undefined
-                  }
-                >
-                  <span>{d.getDate()}</span>
-                  <span className="flex h-2 items-center gap-[3px]">
-                    {marks.slice(0, 3).map((c) => (
-                      <span
-                        key={c.id}
-                        className="block h-1.5 w-1.5 border border-ink"
-                        style={{ backgroundColor: c.colorTag }}
-                      />
-                    ))}
-                    {marks.length > 3 && (
-                      <span className="text-[9px] leading-none font-bold">+{marks.length - 3}</span>
-                    )}
+                <Fragment key={thursday.getTime()}>
+                  <span
+                    className="tick-numerals flex items-center justify-center text-[10px] font-bold text-muted-foreground"
+                    aria-label={`Week ${weekNum}`}
+                  >
+                    {weekNum}
                   </span>
-                </button>
+                  {weekDays.map((d) => {
+                    const marks = buckets.get(dayKey(d)) ?? [];
+                    const isSelected = sameDay(d, selected);
+                    const isToday = sameDay(d, today);
+                    const outside = d.getMonth() !== view.m;
+                    const past = d.getTime() < todayStart;
+                    return (
+                      <button
+                        key={d.getTime()}
+                        type="button"
+                        onClick={() => setSelected(new Date(d))}
+                        aria-pressed={isSelected}
+                        aria-label={`${d.toDateString()}${marks.length ? `, ${marks.length} countdown${marks.length === 1 ? "" : "s"}` : ""}`}
+                        className={`tick-numerals relative flex h-12 flex-col items-center justify-center gap-1 text-sm sm:h-16 sm:text-base ${
+                          isSelected ? "brut-thin" : ""
+                        } ${past && !isSelected ? "opacity-45" : outside && !isSelected ? "opacity-35" : ""}`}
+                        style={
+                          isSelected
+                            ? { backgroundColor: PALETTE.teal, color: PALETTE.cream }
+                            : isToday
+                              ? { boxShadow: "0 0 0 2px var(--ink) inset" }
+                              : undefined
+                        }
+                      >
+                        <span>{d.getDate()}</span>
+                        <span className="flex h-2 items-center gap-[3px]">
+                          {marks.slice(0, 3).map((c) => (
+                            <span
+                              key={c.id}
+                              className="block h-1.5 w-1.5 border border-ink"
+                              style={{ backgroundColor: c.colorTag }}
+                            />
+                          ))}
+                          {marks.length > 3 && (
+                            <span className="text-[9px] leading-none font-bold">+{marks.length - 3}</span>
+                          )}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </Fragment>
               );
             })}
           </div>
